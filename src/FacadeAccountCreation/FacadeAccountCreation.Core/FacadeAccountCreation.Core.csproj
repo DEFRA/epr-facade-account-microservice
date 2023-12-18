@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>FacadeAccountCreation.Core</AssemblyName>
+        <RootNamespace>FacadeAccountCreation.Core</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <!-- SonarCloud does not recognise file-scoped namespaces in current version. -->
+        <NoWarn>S3903</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Enums.NET" Version="4.0.1" />
+      <PackageReference Include="EPR.Common.Logging" Version="1.0.4" />
+      <PackageReference Include="GovukNotify" Version="6.1.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+      <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="2.6.1" />
+    </ItemGroup>
+
+</Project>

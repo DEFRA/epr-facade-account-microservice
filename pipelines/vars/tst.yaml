@@ -1,0 +1,6 @@
+variables:
+  azureSubscription: 'AZD-RWD-TST1'
+  docker.imageName: 'facadeaccountcreationrepository'
+  acr.azureContainerRegistryName: 'tstrwdinfac1401'
+  acr.repositoryName: 'facadeaccountcreationrepository'
+  serviceName: 'tstrwdwebwa1404'
