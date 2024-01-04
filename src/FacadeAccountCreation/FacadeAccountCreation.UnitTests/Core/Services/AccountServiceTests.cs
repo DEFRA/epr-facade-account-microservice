@@ -24,6 +24,7 @@ public class AccountServiceTests
     private const string EnrolInvitedUserEndpoint = "api/accounts-management/enrol-invited-user";
     private const string AddAccountPostUrl = $"{BaseAddress}/{AccountsEndpoint}";
     private const string EnrolInvitedUserUri = $"{BaseAddress}/{EnrolInvitedUserEndpoint}";
+    private const string AddApprovedUserUri = $"{BaseAddress}/api/producer-accounts/ApprovedUser";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
@@ -177,7 +178,8 @@ public class AccountServiceTests
             Accounts = "api/producer-accounts",
             Organisations = "api/organisations",
             InviteUser = "api/accounts-management/invite-user",
-            EnrolInvitedUser = "api/accounts-management/enrol-invited-user"
+            EnrolInvitedUser = "api/accounts-management/enrol-invited-user",
+            ApprovedUserAccounts = "/api/producer-accounts/ApprovedUser"
         });
         
         var sut = new AccountService(httpClient, accountsEndpointsOptions);
@@ -206,5 +208,39 @@ public class AccountServiceTests
 
         // Assert
         result.Should().BeNull();
+    }
+    
+    [TestMethod]
+    public async Task AddApprovedUserAccountAsync_ShouldReturnPersonResponse()
+    {
+        // Arrange
+        var apiResponse = _fixture.Create<CreateAccountResponse?>();
+        var apiRequest = _fixture.Create<AccountModel>();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == AddApprovedUserUri),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            { 
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        var sut = GetAccountService();
+        
+        //Act
+        var result = await sut.AddApprovedUserAccountAsync(It.IsAny<AccountModel>());
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Post &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == AddApprovedUserUri),
+            ItExpr.IsAny<CancellationToken>());
     }
 }

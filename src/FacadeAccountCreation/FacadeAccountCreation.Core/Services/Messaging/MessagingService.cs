@@ -435,6 +435,49 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                 default:
                     throw new ArgumentException("Nation not valid");
             }
+        }      
+        public string? SendApprovedUserAccountCreationConfirmation(
+            string companyName,
+            string firstName,
+            string lastName,
+            string organisationNumber,
+            string recipient)
+        {
+            if (string.IsNullOrWhiteSpace(companyName))
+            {
+                throw new ArgumentException("Cannot be empty string", nameof(firstName));
+            }
+            
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                throw new ArgumentException("Cannot be empty string", nameof(firstName));
+            }
+
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                throw new ArgumentException("Cannot be empty string", nameof(lastName));
+            }
+            
+            var parameters = new Dictionary<string, object>();
+            parameters.Add("companyName", companyName);
+            parameters.Add("firstName", firstName);
+            parameters.Add("lastName", lastName);
+            parameters.Add("organisationNumber", organisationNumber.ToReferenceNumberFormat());
+
+            var templateId = _messagingConfig.ApprovedUserAccountConfirmationTemplateId;
+            string? notificationId = null;
+
+            try
+            {
+                var response = _notificationClient.SendEmail(recipient, templateId, parameters);
+                notificationId = response.id;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ExceptionLogMessage, organisationNumber, $"{firstName} {lastName}",templateId);
+            }
+
+            return notificationId;
         }
     }
 }

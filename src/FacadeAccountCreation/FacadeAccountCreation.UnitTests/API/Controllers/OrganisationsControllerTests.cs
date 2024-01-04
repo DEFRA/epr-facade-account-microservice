@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.Text.Json;
+using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Web;
 
@@ -30,6 +31,8 @@ public class OrganisationsControllerTests
     private OrganisationsController _sut = null!;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private Mock<HttpContext>? _httpContextMock;
+    
+    private readonly string _token = "test token";
     
     [TestInitialize]
     public void Setup()
@@ -189,4 +192,34 @@ public class OrganisationsControllerTests
         statusCodeResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
     }
     
+    [TestMethod]
+    public async Task GetOrganisationNameByInviteToken_Should_return_Success()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x => 
+            x.GetOrganisationNameByInviteToken(It.IsAny<string>())).ReturnsAsync(new ApprovedPersonOrganisationModel
+        {
+            SubBuildingName = "",
+            BuildingName = "",
+            BuildingNumber = "",
+            Street = "",
+            Town = "",
+            County = "",
+            Postcode = "",
+            Locality = "",
+            DependentLocality = "",
+            Country = "United Kingdom",
+            IsUkAddress = true,
+            OrganisationName = "testOrganisation",
+            ApprovedUserEmail = "adas@sdad.com"
+        });
+
+        _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles()).Returns(new List<ServiceRolesLookupModel>());
+
+        // Act
+        var result = await _sut.GetNationIdByOrganisationId(_token);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+    }
 }

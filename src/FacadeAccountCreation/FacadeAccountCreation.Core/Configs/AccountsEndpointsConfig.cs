@@ -9,4 +9,5 @@ public class AccountsEndpointsConfig
     public string InviteUser { get; set; }
     public string EnrolInvitedUser { get; set; }
     public string DeleteUser { get; set; }
+    public string ApprovedUserAccounts { get; set; }
 }

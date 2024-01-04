@@ -3,6 +3,7 @@ using FacadeAccountCreation.Core.Models.Person;
 using System.Net;
 using System.Net.Http.Json;
 using FacadeAccountCreation.Core.Exceptions;
+using FacadeAccountCreation.Core.Models.Organisations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FacadeAccountCreation.Core.Services.Person
@@ -11,6 +12,7 @@ namespace FacadeAccountCreation.Core.Services.Person
     {
         private const string PersonsUri = "api/persons";
         private const string PersonsWithExternalIdUri = "api/persons/person-by-externalId";
+        private const string PersonsByInviteToken = "api/persons/person-by-invite-token";
         private readonly HttpClient _httpClient;
 
         public PersonService(HttpClient httpClient)
@@ -30,7 +32,7 @@ namespace FacadeAccountCreation.Core.Services.Person
 
             return await response.Content.ReadFromJsonWithEnumsAsync<PersonResponseModel>();
         }
-        
+
         public async Task<PersonResponseModel?> GetPersonByExternalIdAsync(Guid externalId)
         {
             var response = await _httpClient.GetAsync($"{PersonsWithExternalIdUri}?externalId={externalId}");
@@ -38,7 +40,7 @@ namespace FacadeAccountCreation.Core.Services.Person
             {
                 return null;
             }
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
@@ -52,6 +54,29 @@ namespace FacadeAccountCreation.Core.Services.Person
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonWithEnumsAsync<PersonResponseModel>();
+        }
+
+        public async Task<InviteApprovedUserModel> GetPersonByInviteToken(string token)
+        {
+            var response = await _httpClient.GetAsync($"{PersonsByInviteToken}?token={token}");
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+                if (problemDetails != null)
+                {
+                    throw new ProblemResponseException(problemDetails, response.StatusCode);
+                }
+            }
+
+            response.EnsureSuccessStatusCode();
+            var serviceRoleId = response.Content.ReadFromJsonWithEnumsAsync<InviteApprovedUserModel>();
+            return serviceRoleId.Result;
         }
     }
 }

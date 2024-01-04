@@ -12,4 +12,6 @@ public class AccountModel
 
     [Required]
     public ConnectionModel Connection { get; set; } = null!;
+    
+    public Guid? UserId { get; set; }
 }

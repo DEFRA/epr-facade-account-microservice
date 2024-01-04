@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Extensions;
+using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ public class OrganisationService : IOrganisationService
     private readonly ILogger<OrganisationService> _logger;
     private readonly IConfiguration _config;
     private const string OrganisationUri = "api/organisations/organisation-by-externalId";
+    private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
     
     public OrganisationService(
         HttpClient httpClient,
@@ -65,5 +67,29 @@ public class OrganisationService : IOrganisationService
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonWithEnumsAsync<RemovedUserOrganisationModel>();
+    }
+    
+    public async Task<ApprovedPersonOrganisationModel> GetOrganisationNameByInviteToken(string token)
+    {
+        var response = await _httpClient.GetAsync($"{OrganisationNameUri}?token={token}");
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            return null;
+        }
+                
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+        var organisationName = response.Content.
+            ReadFromJsonWithEnumsAsync<ApprovedPersonOrganisationModel>();
+        return organisationName.Result; 
     }
 }

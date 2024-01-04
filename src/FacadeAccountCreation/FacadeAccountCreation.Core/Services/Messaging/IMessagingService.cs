@@ -13,5 +13,6 @@ namespace FacadeAccountCreation.Core.Services.Messaging
         string? SendRemovedUserNotification(RemovedUserNotificationEmailModel input);
         List<string?> SendMemberDissociationRegulatorsNotification(MemberDissociationRegulatorsEmailInput input);
         List<string?> SendMemberDissociationProducersNotification(NotifyComplianceSchemeProducerEmailInput input);
+        string? SendApprovedUserAccountCreationConfirmation(string companyName, string firstName, string lastName, string? organisationNumber, string recipient);
     }
 }

@@ -1,4 +1,5 @@
-﻿using FacadeAccountCreation.Core.Models.Person;
+﻿using FacadeAccountCreation.Core.Models.Organisations;
+using FacadeAccountCreation.Core.Models.Person;
 
 namespace FacadeAccountCreation.Core.Services.Person
 {
@@ -7,5 +8,6 @@ namespace FacadeAccountCreation.Core.Services.Person
         Task<PersonResponseModel?> GetPersonByUserIdAsync(Guid userId);
         
         Task<PersonResponseModel?> GetPersonByExternalIdAsync(Guid externalId);
+        Task<InviteApprovedUserModel> GetPersonByInviteToken(string token);
     }
 }

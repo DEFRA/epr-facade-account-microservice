@@ -2,6 +2,7 @@
 using System.Text.Json;
 using AutoFixture;
 using AutoFixture.AutoMoq;
+using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FluentAssertions;
@@ -19,6 +20,7 @@ public class OrganisationServiceTests
     private const string GetNationIdByOrganisationIdEndpoint = "api/regulator-organisation/organisation-nation";
     private const string BaseAddress = "http://localhost";
     private const string GetOrganisationByExternalIdEndpoint = "api/organisations/organisation-by-externalId";
+    private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<OrganisationService> _logger = new();
@@ -27,7 +29,6 @@ public class OrganisationServiceTests
     private readonly Guid _userOid = Guid.NewGuid();
     private readonly Guid _organisationId = Guid.NewGuid();
     private readonly Guid _organisationExternalId = Guid.NewGuid();
-    
     private readonly int _serviceRoleId = 1;
     
     private static IConfiguration GetConfig()
@@ -140,37 +141,7 @@ public class OrganisationServiceTests
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
-    
-    [TestMethod]
-    public async Task Get_organisationsByExternalId_users_should_return_successful_response()
-    {
-        var apiResponse = _fixture.Create<RemovedUserOrganisationModel>();
 
-        var expectedUrl =
-            $"{BaseAddress}/{GetOrganisationByExternalIdEndpoint}?externalId={_organisationExternalId}";
-        
-        _httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync",
-                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
-            }).Verifiable();
-        
-        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
-        httpClient.BaseAddress = new Uri(BaseAddress);
-
-        var sut = new OrganisationService(httpClient, _logger, _configuration);
-    
-        // Act
-        var response = await sut.GetOrganisationByExternalId(_organisationExternalId);
-
-        // Assert
-        response.Should().BeEquivalentTo(apiResponse);
-    }
-    
     [TestMethod]
     public async Task Get_organisationsByExternalId_users_throw_exception_when_no_response_returned()
     {
@@ -185,5 +156,77 @@ public class OrganisationServiceTests
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+    
+    [TestMethod]
+    public async Task GetOrganisationNameByInviteToken_ShouldReturnPersonResponse()
+    {
+        //Arrange
+        var token = "inviteToken";
+        var expectedUrl = $"{BaseAddress}/{OrganisationNameUri}?token={token}";
+        var apiResponse = _fixture.Create<ApprovedPersonOrganisationModel>();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        var result = await sut.GetOrganisationNameByInviteToken(token);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+
+        result.Should().BeOfType<ApprovedPersonOrganisationModel>();
+    }
+    
+    [TestMethod]
+    public async Task GetPersonByInviteToken_ShouldReturnNull()
+    {
+        //Arrange
+        var token = "inviteToken";
+        var expectedUrl = $"{BaseAddress}/{OrganisationNameUri}?token={token}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NoContent
+            }).Verifiable();
+        
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        var result = await sut.GetOrganisationNameByInviteToken(token);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+
+        result.Should().BeNull();
     }
 }

@@ -8,4 +8,5 @@ public interface IAccountService
     Task<IReadOnlyCollection<OrganisationResponseModel>?> GetOrganisationsByCompanyHouseNumberAsync(string companiesHouseNumber);
     Task<HttpResponseMessage> SaveInviteAsync(AccountInvitationModel accountInvitation);
     Task<HttpResponseMessage> EnrolInvitedUserAsync(EnrolInvitedUserModel enrolInvitedUserModel);
+    Task<CreateAccountResponse?> AddApprovedUserAccountAsync(AccountModel approvedUser);
 }

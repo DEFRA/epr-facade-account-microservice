@@ -13,5 +13,6 @@ public class MessagingConfig
     public string AccountCreationUrl { get; set; } = string.Empty;
     public string RemovedUserNotificationTemplateId { get; set; } = string.Empty;
     public string MemberDissociationProducersTemplateId { get; set; } = string.Empty;
+    public string ApprovedUserAccountConfirmationTemplateId { get; set; } = string.Empty;
 }
 

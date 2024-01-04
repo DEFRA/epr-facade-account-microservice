@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace FacadeAccountCreation.API.Controllers;
 
 using Extensions;
@@ -7,6 +9,7 @@ using Microsoft.Identity.Web.Resource;
 using Core.Models.Person;
 
 [ApiController]
+[AllowAnonymous]
 [RequiredScope("account-creation", "account-management")]
 [Route("api/persons")]
 public class PersonsController : ControllerBase
@@ -54,6 +57,19 @@ public class PersonsController : ControllerBase
     public async Task<IActionResult> GetPersonFromExternalId([FromQuery] Guid externalId)
     {
         var personResponse = await _personService.GetPersonByExternalIdAsync(externalId);
+
+        return personResponse == null ? NotFound() : Ok(personResponse);
+    }
+    
+    [HttpGet]
+    [Route("person-by-invite-token")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PersonResponseModel))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPersonFromInviteToken([FromQuery] string token)
+    {
+        var personResponse = await _personService.GetPersonByInviteToken(token);
 
         return personResponse == null ? NotFound() : Ok(personResponse);
     }

@@ -42,6 +42,28 @@ public class AccountService : IAccountService
         return result;
     }
 
+    public async Task<CreateAccountResponse?> AddApprovedUserAccountAsync(AccountModel approvedUser )
+    {
+        
+        var response = await _httpClient.PostAsJsonAsync(_accountsEndpointsConfig.ApprovedUserAccounts, approvedUser);
+        
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+        
+        var result = await response.Content.ReadFromJsonAsync<CreateAccountResponse>();
+
+        return result;
+    }
+    
     public async Task<IReadOnlyCollection<OrganisationResponseModel>?> GetOrganisationsByCompanyHouseNumberAsync(string companiesHouseNumber)
     {
         var response = await _httpClient.GetAsync($"{_accountsEndpointsConfig.Organisations}?companiesHouseNumber={companiesHouseNumber}");

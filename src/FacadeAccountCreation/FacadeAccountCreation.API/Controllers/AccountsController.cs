@@ -4,12 +4,10 @@ using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Services.CreateAccount;
 using FacadeAccountCreation.Core.Services.Messaging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
 
 namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
-[RequiredScope("account-creation")]
 [Route("api/producer-accounts")]
 public class AccountsController : ControllerBase
 {
@@ -49,6 +47,31 @@ public class AccountsController : ControllerBase
             createAccountResponse.ReferenceNumber!.ToReferenceNumberFormat(),
             createAccountResponse.OrganisationId,
             account.Organisation!.IsComplianceScheme);
+        
+        return Ok();
+    }
+    
+    [HttpPost]
+    [Route("ApprovedUser")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> CreateApprovedUserAccount(AccountModel approvedUser)
+    {
+        approvedUser.UserId = User.UserId();
+        var createAccountResponse = await _accountService.AddApprovedUserAccountAsync(approvedUser);
+
+        if (createAccountResponse == null)
+        {
+            return Problem("Failed to create account", statusCode: StatusCodes.Status500InternalServerError);
+        }
+        
+        _messagingService.SendApprovedUserAccountCreationConfirmation(
+            approvedUser.Organisation.Name,
+            approvedUser.Person.FirstName,
+            approvedUser.Person.LastName,
+            createAccountResponse.ReferenceNumber,
+            approvedUser.Person.ContactEmail);
         
         return Ok();
     }

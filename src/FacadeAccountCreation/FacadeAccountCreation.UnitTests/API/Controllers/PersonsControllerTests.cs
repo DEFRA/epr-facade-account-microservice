@@ -1,4 +1,6 @@
-﻿namespace FacadeAccountCreation.UnitTests.API.Controllers;
+﻿using FacadeAccountCreation.Core.Models.Organisations;
+
+namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
 using AutoFixture;
 using AutoFixture.AutoMoq;
@@ -153,5 +155,26 @@ public class PersonsControllerTests
         var notFoundResult = result as NotFoundResult;
         notFoundResult.Should().NotBeNull();
         notFoundResult?.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+    }
+    
+    [TestMethod]
+    public async Task GetPersonFromInviteToken_ShouldReturnOK()
+    {
+        // arrange
+        var handlerResponse = _fixture.Create<InviteApprovedUserModel>();
+
+        _mockPersonService
+            .Setup(x => x.GetPersonByInviteToken(It.IsAny<string>()))
+            .ReturnsAsync(handlerResponse);
+
+        // act
+        var result = await _sut.GetPersonFromInviteToken(It.IsAny<string>());
+
+        // assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult?.Value.Should().BeEquivalentTo(handlerResponse);
+        okResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
     }
 }

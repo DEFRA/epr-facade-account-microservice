@@ -76,4 +76,25 @@ public class AccountsControllerTests
         var obj = result as OkObjectResult;
         obj?.Value.Should().BeEquivalentTo(200);
     }
+    
+    [TestMethod]
+    public async Task ShouldAcceptApprovedUserAccountModel_ThenPostWith_CorrectModelValue()
+    {
+        // Arrange
+        var account = _fixture.Create<AccountModel>();
+
+        _mockAccountServiceMock
+            .Setup(x => x.AddApprovedUserAccountAsync(It.IsAny<AccountModel>())).ReturnsAsync(new CreateAccountResponse());
+
+        // Act
+        var result = await _sut.CreateApprovedUserAccount(account);
+
+        // Assert
+        result.Should().BeOfType<OkResult>();
+        
+        _mockAccountServiceMock.Verify(x => x.AddApprovedUserAccountAsync(It.IsAny<AccountModel>()), Times.Once);
+        _mockMessagingService.Verify(x => x.SendApprovedUserAccountCreationConfirmation(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        var obj = result as ObjectResult;
+        obj?.Value.Should().BeEquivalentTo(200);
+    }
 }
