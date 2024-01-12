@@ -70,7 +70,7 @@ public class AccountsController : ControllerBase
             approvedUser.Organisation.Name,
             approvedUser.Person.FirstName,
             approvedUser.Person.LastName,
-            createAccountResponse.ReferenceNumber,
+            approvedUser.Organisation.OrganisationId,
             approvedUser.Person.ContactEmail);
         
         return Ok();
