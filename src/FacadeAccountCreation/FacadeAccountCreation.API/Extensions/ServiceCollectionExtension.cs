@@ -1,5 +1,6 @@
 ﻿using FacadeAccountCreation.API.Configs;
 using FacadeAccountCreation.Core.Configs;
+using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 using FacadeAccountCreation.Core.Services.Messaging;
@@ -35,5 +36,6 @@ public static class ServiceCollectionExtension
         services.AddSingleton<INotificationClient>(_ => new NotificationClient(configuration.GetValue<string>("MessagingConfig:ApiKey")));
         services.AddSingleton<IMessagingService, MessagingService>();
         services.AddSingleton<IServiceRolesLookupService, ServiceRolesLookupService>();
+        services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
     }
 }

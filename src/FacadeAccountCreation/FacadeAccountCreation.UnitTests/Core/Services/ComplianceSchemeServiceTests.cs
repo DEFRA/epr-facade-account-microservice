@@ -6,12 +6,12 @@ using AutoFixture.AutoMoq;
 using EPR.Common.Logging.Constants;
 using EPR.Common.Logging.Models;
 using EPR.Common.Logging.Services;
+using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
 using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Services;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
 using FluentAssertions;
-using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -42,12 +42,14 @@ public class ComplianceSchemeServiceTests
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
     private readonly IConfiguration _configuration = GetConfig();
     private Mock<ILoggingService> _loggingServiceMock;
+    private Mock<ICorrelationIdProvider> _correlationIdProviderMock;
 
 
     [TestInitialize]
     public void TestInitialize()
     {
         _loggingServiceMock = new Mock<ILoggingService>();
+        _correlationIdProviderMock = new Mock<ICorrelationIdProvider>();
     }
 
     private static IConfiguration GetConfig()
@@ -123,7 +125,7 @@ public class ComplianceSchemeServiceTests
             BaseAddress = new Uri(BaseAddress)
         };
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         HttpResponseMessage? response = await sut.GetComplianceSchemeMembersAsync(userId, organisationId, selectedSchemeId, query, pageSize, page);
 
@@ -157,7 +159,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         HttpResponseMessage response = await sut.GetAllComplianceSchemesAsync();
@@ -187,7 +189,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         HttpResponseMessage response = await sut.GetAllComplianceSchemesAsync();
@@ -219,7 +221,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         HttpResponseMessage? response = await sut.GetComplianceSchemeForProducerAsync(organisationId, userOid);
@@ -249,7 +251,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         HttpResponseMessage response = await sut.GetAllComplianceSchemesAsync();
@@ -265,7 +267,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         Func<Task> act = () => sut.GetAllComplianceSchemesAsync();
@@ -297,7 +299,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         var response = await sut.RemoveComplianceScheme(req);
@@ -315,7 +317,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         Func<Task> act = () => sut.RemoveComplianceScheme(req);
@@ -347,7 +349,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         var response = await sut.SelectComplianceSchemeAsync(req);
@@ -365,7 +367,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         Func<Task> act = () => sut.SelectComplianceSchemeAsync(req);
@@ -397,7 +399,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         var response = await sut.UpdateComplianceSchemeAsync(req);
@@ -415,7 +417,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         Func<Task> act = () => sut.UpdateComplianceSchemeAsync(req);
@@ -446,7 +448,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
         
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
         
         // Act
         HttpResponseMessage response = await sut.GetComplianceSchemesForOperatorAsync(organisationId);
@@ -479,7 +481,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
         
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
         
         // Act
         var response = await sut.GetComplianceSchemeMemberDetailsAsync(userOid, organisationId, selectedSchemeId);
@@ -499,7 +501,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
         
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
         
         // Act
         Func<Task> act = () => sut.GetComplianceSchemeMemberDetailsAsync(userOid, organisationId, selectedSchemeId);
@@ -542,7 +544,7 @@ public class ComplianceSchemeServiceTests
             BaseAddress = new Uri(BaseAddress)
         };
 
-        var service = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var service = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         var result = await service.GetComplianceSchemesSummary(complianceSchemeId, organisationId: Guid.NewGuid(), userId: Guid.NewGuid());
@@ -561,7 +563,7 @@ public class ComplianceSchemeServiceTests
             BaseAddress = new Uri(BaseAddress)
         };
 
-        var service = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var service = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         _httpMessageHandlerMock
             .Protected()
@@ -598,7 +600,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         HttpResponseMessage response = await sut.GetAllReasonsForRemovalsAsync();
@@ -639,7 +641,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
         
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
         
         // Act
         var response = await sut.RemoveComplianceSchemeMember(organisationId, selectedSchemeId, userId, req);
@@ -680,7 +682,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         var response = await sut.RemoveComplianceSchemeMember(organisationId, selectedSchemeId, userId, req);
@@ -697,6 +699,8 @@ public class ComplianceSchemeServiceTests
                                    monitoringEvent.Message == $"Scheme membership removed for the organisation id: '{organisationId}' and selected scheme id: {selectedSchemeId}" &&
                                    monitoringEvent.AdditionalInfo == $"OrganisationId: '{organisationId}'"
                 )), Times.Once);
+        
+        _correlationIdProviderMock.Verify(service => service.GetHttpRequestCorrelationIdOrNew(), Times.Once);
     }
 
     [TestMethod]
@@ -735,7 +739,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
         var loggerMock = new Mock<ILogger<ComplianceSchemeService>>();
-        var sut = new ComplianceSchemeService(httpClient, loggerMock.Object, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, loggerMock.Object, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         var act = async() => await sut.RemoveComplianceSchemeMember(organisationId, selectedSchemeId, userId, req);
@@ -763,7 +767,7 @@ public class ComplianceSchemeServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
         
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
         
         // Act
         Func<Task> act = () => sut.RemoveComplianceSchemeMember(organisationId, selectedSchemeId, userId, req);
@@ -808,7 +812,7 @@ public class ComplianceSchemeServiceTests
             BaseAddress = new Uri(BaseAddress)
         };
 
-        var service = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _configuration);
+        var service = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
         var result = await service.GetInfoForSelectedSchemeRemoval(organisationId, selectedSchemeId, userId: Guid.NewGuid());

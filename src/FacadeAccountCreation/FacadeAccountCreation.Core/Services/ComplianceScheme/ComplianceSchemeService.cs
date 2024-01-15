@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using EPR.Common.Logging.Constants;
 using EPR.Common.Logging.Models;
 using EPR.Common.Logging.Services;
+using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -14,17 +15,20 @@ public class ComplianceSchemeService : IComplianceSchemeService
     private readonly ILogger<ComplianceSchemeService> _logger;
     private readonly IConfiguration _config;
     private readonly ILoggingService _loggingService;
+    private readonly ICorrelationIdProvider _correlationIdProvider;
     private const string XEprUserHeader = "X-EPR-User";
 
     public ComplianceSchemeService(
         HttpClient httpClient,
         ILogger<ComplianceSchemeService> logger,
         ILoggingService loggingService,
+        ICorrelationIdProvider correlationIdProvider,
         IConfiguration config)
     {
         _httpClient = httpClient;
         _logger = logger;
         _loggingService = loggingService;
+        _correlationIdProvider = correlationIdProvider;
         _config = config;
     }
 
@@ -233,11 +237,11 @@ public class ComplianceSchemeService : IComplianceSchemeService
             
             var response  = await _httpClient.PostAsJsonAsync(endpoint, model);
 
-            // Specific try catch here for logging preventive monitoring event
+            // Specific try catch here for logging protective monitoring event
             // as we don't want failure if protective monitoring call fails
             try
             {
-                await LogAsync(organisationId, selectedSchemeId, userId);
+                await ProtectiveMonitoringLogAsync(organisationId, selectedSchemeId, userId, _correlationIdProvider.GetHttpRequestCorrelationIdOrNew());
             }
             catch (Exception exception)
             {
@@ -260,12 +264,12 @@ public class ComplianceSchemeService : IComplianceSchemeService
         }
     }
 
-    private async Task LogAsync(Guid organisationId, Guid selectedSchemeId, Guid userId)
+    private async Task ProtectiveMonitoringLogAsync(Guid organisationId, Guid selectedSchemeId, Guid userId, Guid correlationId)
     {
         await _loggingService.SendEventAsync(
             userId,
             new ProtectiveMonitoringEvent(
-                SessionId: Guid.NewGuid(),
+                SessionId: correlationId,
                 Component: "facade-account-microservice",
                 PmcCode: PmcCodes.Code0706,
                 Priority: Priorities.NormalEvent,

@@ -2,6 +2,7 @@ using System.Net;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
+using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
 using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
@@ -10,6 +11,7 @@ using FacadeAccountCreation.UnitTests.TestHelpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
@@ -146,8 +148,8 @@ public class ComplianceSchemesControllerMemberTests
         var serviceResponse = (RemoveComplianceSchemeMemberResponse?)null;
 
         _mockComplianceSchemeServiceMock
-            .Setup(x => x.RemoveComplianceSchemeMember(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(),
-                It.IsAny<RemoveComplianceSchemeMemberModel>()))
+            .Setup(x => 
+                x.RemoveComplianceSchemeMember(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<RemoveComplianceSchemeMemberModel>()))
             .ReturnsAsync(serviceResponse);
 
         var result = await _sut.RemoveComplianceSchemeMember(Guid.NewGuid(), Guid.NewGuid(), It.IsAny<RemoveComplianceSchemeMemberModel>());
