@@ -14,5 +14,6 @@ public class MessagingConfig
     public string RemovedUserNotificationTemplateId { get; set; } = string.Empty;
     public string MemberDissociationProducersTemplateId { get; set; } = string.Empty;
     public string ApprovedUserAccountConfirmationTemplateId { get; set; } = string.Empty;
+    public string ProducerResubmissionTemplateId { get; set; } = string.Empty;
+    public string ComplianceSchemeResubmissionTemplateId { get; set; } = string.Empty;
 }
-

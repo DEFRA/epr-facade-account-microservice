@@ -3,9 +3,11 @@ using System.Text.Json;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
+using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -18,6 +20,7 @@ public class OrganisationServiceTests
 {
     private const string GetOrganisationUsersListEndpoint = "api/organisations/users";
     private const string GetNationIdByOrganisationIdEndpoint = "api/regulator-organisation/organisation-nation";
+    private const string GetOrganisationIdFromNationEndpoint = "api/regulator-organisation?nation=";
     private const string BaseAddress = "http://localhost";
     private const string GetOrganisationByExternalIdEndpoint = "api/organisations/organisation-by-externalId";
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
@@ -37,7 +40,8 @@ public class OrganisationServiceTests
         {
             {"ApiConfig:AccountServiceBaseUrl", BaseAddress},
             {"ComplianceSchemeEndpoints:GetOrganisationUsers", GetOrganisationUsersListEndpoint},
-            {"RegulatorOrganisationEndpoints:GetNationIdFromOrganisationId", GetNationIdByOrganisationIdEndpoint}
+            {"RegulatorOrganisationEndpoints:GetNationIdFromOrganisationId", GetNationIdByOrganisationIdEndpoint},
+            {"RegulatorOrganisationEndpoints:GetOrganisationIdFromNation", GetOrganisationIdFromNationEndpoint}
         };
 
         var configuration = new ConfigurationBuilder()
@@ -228,5 +232,123 @@ public class OrganisationServiceTests
             ItExpr.IsAny<CancellationToken>());
 
         result.Should().BeNull();
+    }
+
+    [TestMethod]
+    [DataRow(1,"England")]
+    [DataRow(2, "Northern Ireland")]
+    [DataRow(3, "Scotland")]
+    [DataRow(4, "Wales")]
+    public async Task Get_GetRegulatorOrganisationByNationId_ShouldReturnSuccessfulResponse(int nationId, string nationName)
+    {
+        // Arrange
+        var apiResponse = _fixture.Create<CheckRegulatorOrganisationExistResponseModel>();
+
+
+        var expectedUrl =
+            $"{BaseAddress}/{GetOrganisationIdFromNationEndpoint}{nationName}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        var response = await sut.GetRegulatorOrganisationByNationId(nationId);
+
+        // Assert
+        response.Should().BeEquivalentTo(apiResponse);
+    }
+
+    [TestMethod]
+    public async Task Get_GetRegulatorOrganisationByNationId_ThrowExceptionWhenNoResponseReturned()
+    {
+        // Arrange
+        var nationId = 1;
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        Func<Task> act = () => sut.GetRegulatorOrganisationByNationId(nationId);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [TestMethod]
+    public async Task Get_GetRegulatorOrganisationByNationId_ShouldReturnEmptyResponse()
+    {
+        // Arrange
+        int nationId = 1;
+        string nationName = "England";
+
+        var expectedUrl =
+            $"{BaseAddress}/{GetOrganisationIdFromNationEndpoint}{nationName}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = null
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        Func<Task> act = async () => await sut.GetRegulatorOrganisationByNationId(nationId);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidDataException>();
+    }
+
+    [TestMethod]
+    public async Task Get_GetRegulatorOrganisationByNationId_ShouldReturnUnsuccessfulResponse()
+    {
+        // Arrange
+        var apiResponse = _fixture.Create<ProblemDetails>();
+        int nationId = 1;
+        string nationName = "England";
+
+        var expectedUrl =
+            $"{BaseAddress}/{GetOrganisationIdFromNationEndpoint}{nationName}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.Forbidden,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        Func<Task> act = async () => await sut.GetRegulatorOrganisationByNationId(nationId);
+
+        // Assert
+        await act.Should().ThrowAsync<ProblemResponseException>();
     }
 }

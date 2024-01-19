@@ -12,4 +12,6 @@ public interface IOrganisationService
     Task<RemovedUserOrganisationModel?> GetOrganisationByExternalId(Guid organisationExternalId);
 
     Task<ApprovedPersonOrganisationModel> GetOrganisationNameByInviteToken(string token);
+
+    Task<CheckRegulatorOrganisationExistResponseModel> GetRegulatorOrganisationByNationId(int nationId);
 }

@@ -1,10 +1,13 @@
 ﻿using FacadeAccountCreation.Core.Extensions;
+using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Enrolments;
 using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Notify.Interfaces;
+using FacadeAccountCreation.Core.Constants;
+using System.Text.RegularExpressions;
 
 namespace FacadeAccountCreation.Core.Services.Messaging
 {
@@ -24,6 +27,33 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             _messagingConfig = messagingConfig.Value;
             _regulatorEmailConfig = regulatorEmailConfig.Value;
             _logger = logger;
+        }
+
+        public string? SendPoMResubmissionEmailToRegulator(ResubmissionNotificationEmailInput input)
+        {
+            var nationLookup = new NationLookup();
+            var nationName = nationLookup.GetNationName(input.NationId);
+            var regulatorEmail = GetRegulatorEmail(nationName);
+
+            var templateId = input.IsComplianceScheme ?
+                _messagingConfig.ComplianceSchemeResubmissionTemplateId : _messagingConfig.ProducerResubmissionTemplateId;
+
+            Dictionary<string, object> parameters = PopulateEmailParameters(input);
+
+            string? notificationId = null;
+
+            try
+            {
+                var response = _notificationClient.SendEmail(regulatorEmail, templateId, parameters);
+                notificationId = response.id;
+            }
+            catch (Exception ex)
+            {
+                string exceptionMessage = "GOV UK NOTIFY ERROR. Method: SendEmail, Nation ID: {NationId}, Organisation Number: {OrganisationNumber}, Template: {TemplateId}";
+                _logger.LogError(ex, exceptionMessage, input.NationId, input.OrganisationNumber, templateId);
+            }
+
+            return notificationId;
         }
 
         public string? SendAccountCreationConfirmation(
@@ -422,6 +452,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
 
         private string GetRegulatorEmail(string nation)
         {
+            nation = Regex.Replace(nation, @"\s", string.Empty);
             switch (nation)
             {
                 case "England":
@@ -478,6 +509,32 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             }
 
             return notificationId;
+        }
+
+        private static Dictionary<string, object> PopulateEmailParameters(ResubmissionNotificationEmailInput input)
+        {
+            if (input.IsComplianceScheme)
+            {
+                return new Dictionary<string, object>
+                {
+                    { "complianceSchemePersonName", input.ComplianceSchemePersonName },
+                    { "regulatorOrganisationName", input.RegulatorOrganisationName },
+                    { "complianceSchemeName", input.ComplianceSchemeName },
+                    { "organisationName", input.ProducerOrganisationName },
+                    { "submissionPeriod", input.SubmissionPeriod },
+                    { "organisationNumber", input.OrganisationNumber },
+                };
+            }
+            else
+            {
+                return new Dictionary<string, object>
+                {
+                    { "producerName", input.ProducerOrganisationName },
+                    { "regulatorOrganisationName", input.RegulatorOrganisationName },
+                    { "submissionPeriod", input.SubmissionPeriod },
+                    { "organisationNumber", input.OrganisationNumber },
+                };
+            }
         }
     }
 }

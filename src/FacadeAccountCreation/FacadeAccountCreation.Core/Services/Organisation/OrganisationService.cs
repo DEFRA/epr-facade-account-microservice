@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
+using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
@@ -45,7 +46,7 @@ public class OrganisationService : IOrganisationService
         
         return await _httpClient.GetAsync(url);
     }
-    
+
     public async Task<RemovedUserOrganisationModel?> GetOrganisationByExternalId(Guid organisationExternalId)
     {
         var response = await _httpClient.GetAsync($"{OrganisationUri}?externalId={organisationExternalId}");
@@ -91,5 +92,34 @@ public class OrganisationService : IOrganisationService
         var organisationName = response.Content.
             ReadFromJsonWithEnumsAsync<ApprovedPersonOrganisationModel>();
         return organisationName.Result; 
+    }
+
+    public async Task<CheckRegulatorOrganisationExistResponseModel> GetRegulatorOrganisationByNationId(int nationId)
+    {
+        var nationLookup = new NationLookup();
+        var nationName = nationLookup.GetNationName(nationId);
+        var url = $"{_config.GetSection("RegulatorOrganisationEndpoints").GetSection("GetOrganisationIdFromNation").Value}{nationName}";
+        _logger.LogInformation("Attempting to fetch the Regulator Organisation for nation id {nationName} from the backend", nationName);
+
+        var response = await _httpClient.GetAsync(url);
+
+        if (string.IsNullOrEmpty(await response.Content.ReadAsStringAsync()))
+        {
+            throw new InvalidDataException($"Could not retrieve Regulator Data for NationId:{nationId}");
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        return response.Content.ReadFromJsonAsync<CheckRegulatorOrganisationExistResponseModel>().Result;
     }
 }

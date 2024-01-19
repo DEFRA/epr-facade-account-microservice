@@ -7,4 +7,6 @@ public class ComplianceSchemeModel
     public string Name { get; set; }
     
     public DateTimeOffset CreatedOn { get; set; }
+
+    public int NationId { get; set; }
 }

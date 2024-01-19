@@ -26,7 +26,8 @@ public class BaseMessagingTest
             ProducerAccountConfirmationTemplateId = "dummytemplate",
             MemberDissociationRegulatorsTemplateId = "dummytemplate",
             MemberDissociationProducersTemplateId = "dummytemplate",
-
+            ComplianceSchemeResubmissionTemplateId = "ComplianceSchemeResubmissionTemplateId",
+            ProducerResubmissionTemplateId = "ProducerResubmissionTemplateId"
         });
         _regulatorEmailConfig = Options.Create(new RegulatorEmailConfig()
         {
