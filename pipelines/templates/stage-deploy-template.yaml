@@ -1,0 +1,16 @@
+
+stages:
+  - stage: DeployToDev4Regulators
+    jobs:
+      - job: DeployToDev4Regulators
+        displayName: DeployToDev4 (Regulators)
+        condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/main'))
+        steps:
+          - template: templates/deployment.yaml@CommonTemplates
+            parameters:
+              imageTag: 'main-latest'
+              azureSubscription: 'AZD-RWD-DEV4'
+              acrName: 'devrwdinfac1401'
+              registryName: 'facadeaccountcreationrepository'
+              serviceName: 'devrwdwebwa4413'
+              targetEnvironment: 'development'
