@@ -63,34 +63,41 @@ namespace FacadeAccountCreation.API.Controllers
                 _logger.LogError("Invalid role key: {key}", invitation.InvitedUser.Rolekey);
                 return Problem("Invalid role key", statusCode: StatusCodes.Status500InternalServerError);
             }
-
+ 
             invitation.InvitedUser.ServiceRoleId = serviceRolesLookupModel.ServiceRoleId;
             invitation.InvitedUser.PersonRoleId = serviceRolesLookupModel.PersonRoleId;
 
             var sendInviteResponse = await _accountService.SaveInviteAsync(invitation);
             var inviteToken = await sendInviteResponse.Content.ReadAsStringAsync();
+
+            var invitedUserEmail = invitation.InvitedUser.Email;
+            if (sendInviteResponse.StatusCode == HttpStatusCode.BadRequest &&
+                (inviteToken.Contains($"User '{invitedUserEmail}' is already invited") ||
+                 inviteToken.Contains($"Invited user '{invitedUserEmail}' is enrolled already")))
+            {
+                _logger.LogError("User already invited");
+                return Problem("User already invited", statusCode: StatusCodes.Status400BadRequest);
+            }
             
             if (sendInviteResponse.StatusCode == HttpStatusCode.BadRequest &&
-                inviteToken.Contains($"User '{invitation.InvitedUser.Email}' is already invited"))
+                inviteToken.Contains($"Invited user '{invitedUserEmail}' doesn't belong to the same organisation"))
             {
-                _logger.LogError("User already invited. User email: {UserEmail}", invitation.InvitedUser.Email);
-                return Problem("User already invited", statusCode: StatusCodes.Status400BadRequest);
+                _logger.LogError("Invited user doesn't belong to the same organisation");
+                return Problem("Invited user doesn't belong to the same organisation", statusCode: StatusCodes.Status400BadRequest);
             }
             
             if (!sendInviteResponse.IsSuccessStatusCode || string.IsNullOrWhiteSpace(inviteToken))
             {
-                _logger.LogError("Failed to save invitation. Request model: {invitation}", JsonSerializer.Serialize(invitation));
+                _logger.LogError("Failed to save invitation");
                 return Problem("Failed to save invitation", statusCode: StatusCodes.Status500InternalServerError);
             }
-
-           
 
             var notificationId = _messagingService.SendInviteToUser(new InviteUserEmailInput()
             {
                 UserId = User.UserId(),
                 FirstName = invitation.InvitingUser.FirstName,
                 LastName = invitation.InvitingUser.LastName,
-                Recipient = invitation.InvitedUser.Email,
+                Recipient = invitedUserEmail,
                 OrganisationId = invitation.InvitedUser.OrganisationId,
                 OrganisationName = invitation.InvitedUser.OrganisationName,
                 JoinTheTeamLink = $"{_messagingConfig.AccountCreationUrl}{HttpUtility.UrlEncode(inviteToken)}",

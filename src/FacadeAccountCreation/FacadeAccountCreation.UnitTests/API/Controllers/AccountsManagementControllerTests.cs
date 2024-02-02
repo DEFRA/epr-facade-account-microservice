@@ -90,6 +90,72 @@ public class AccountsManagementControllerTests
         result?.StatusCode.Should().Be(400);
         _mockMessagingService.Verify(x => x.SendInviteToUser(It.IsAny<InviteUserEmailInput>()), Times.Never);
     }
+    
+    [TestMethod]
+    public async Task ShouldReturnBadRequest_When_UserWasInvitedBefore()
+    {
+        // Arrange
+        var accountInvitationModel = _fixture.Create<AccountInvitationModel>();
+        accountInvitationModel.InvitedUser.Rolekey = "Basic.Admin";
+        var sendInviteResponse = _fixture.Create<Task<HttpResponseMessage>>();
+        sendInviteResponse.Result.StatusCode = HttpStatusCode.BadRequest;
+        sendInviteResponse.Result.Content = new StringContent($"User '{accountInvitationModel.InvitedUser.Email}' is already invited");
+
+        _mockAccountServiceMock.Setup(x => x.SaveInviteAsync(It.IsAny<AccountInvitationModel>()))
+            .Returns(sendInviteResponse);
+
+        // Act
+        var result = await _sut.InviteUser(accountInvitationModel) as ObjectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result?.StatusCode.Should().Be(400);
+        _mockMessagingService.Verify(x => x.SendInviteToUser(It.IsAny<InviteUserEmailInput>()), Times.Never);
+    }
+    
+    [TestMethod]
+    public async Task ShouldReturnBadRequest_When_UserWasEnrolledAlready()
+    {
+        // Arrange
+        var accountInvitationModel = _fixture.Create<AccountInvitationModel>();
+        accountInvitationModel.InvitedUser.Rolekey = "Basic.Admin";
+        var sendInviteResponse = _fixture.Create<Task<HttpResponseMessage>>();
+        sendInviteResponse.Result.StatusCode = HttpStatusCode.BadRequest;
+        sendInviteResponse.Result.Content = new StringContent($"Invited user '{accountInvitationModel.InvitedUser.Email}' is enrolled already");
+
+        _mockAccountServiceMock.Setup(x => x.SaveInviteAsync(It.IsAny<AccountInvitationModel>()))
+            .Returns(sendInviteResponse);
+
+        // Act
+        var result = await _sut.InviteUser(accountInvitationModel) as ObjectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result?.StatusCode.Should().Be(400);
+        _mockMessagingService.Verify(x => x.SendInviteToUser(It.IsAny<InviteUserEmailInput>()), Times.Never);
+    }
+    
+    [TestMethod]
+    public async Task ShouldReturnBadRequest_When_UserDoesNotBelongToSameOrganisation()
+    {
+        // Arrange
+        var accountInvitationModel = _fixture.Create<AccountInvitationModel>();
+        accountInvitationModel.InvitedUser.Rolekey = "Basic.Admin";
+        var sendInviteResponse = _fixture.Create<Task<HttpResponseMessage>>();
+        sendInviteResponse.Result.StatusCode = HttpStatusCode.BadRequest;
+        sendInviteResponse.Result.Content = new StringContent($"Invited user '{accountInvitationModel.InvitedUser.Email}' doesn't belong to the same organisation");
+
+        _mockAccountServiceMock.Setup(x => x.SaveInviteAsync(It.IsAny<AccountInvitationModel>()))
+            .Returns(sendInviteResponse);
+
+        // Act
+        var result = await _sut.InviteUser(accountInvitationModel) as ObjectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result?.StatusCode.Should().Be(400);
+        _mockMessagingService.Verify(x => x.SendInviteToUser(It.IsAny<InviteUserEmailInput>()), Times.Never);
+    }
 
     [TestMethod]
     public async Task AccountsController_ShouldCallEmailService_WhenInvitationCreatedForAdmin()
