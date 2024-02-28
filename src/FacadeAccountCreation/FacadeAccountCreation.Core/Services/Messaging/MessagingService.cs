@@ -520,7 +520,6 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                     { "complianceSchemePersonName", input.ComplianceSchemePersonName },
                     { "regulatorOrganisationName", input.RegulatorOrganisationName },
                     { "complianceSchemeName", input.ComplianceSchemeName },
-                    { "organisationName", input.ProducerOrganisationName },
                     { "submissionPeriod", input.SubmissionPeriod },
                     { "organisationNumber", input.OrganisationNumber },
                 };
