@@ -14,4 +14,8 @@ public class AccountModel
     public ConnectionModel Connection { get; set; } = null!;
     
     public Guid? UserId { get; set; }
+
+    public string? DeclarationFullName { get; set; }
+
+    public DateTime? DeclarationTimeStamp { get; set; }
 }
