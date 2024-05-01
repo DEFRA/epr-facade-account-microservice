@@ -228,7 +228,8 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                     { "organisationNumber", input.OrganisationNumber.ToReferenceNumberFormat() },
                     { "organisationName", input.OrganisationName },
                     { "approvedPersonFirstName", input.NominatorFirstName },
-                    { "approvedPersonLastName", input.NominatorLastName }
+                    { "approvedPersonLastName", input.NominatorLastName },
+                    { "accountLoginUrl", input.AccountLoginUrl }
                 };
 
             string? notificationId = null;
