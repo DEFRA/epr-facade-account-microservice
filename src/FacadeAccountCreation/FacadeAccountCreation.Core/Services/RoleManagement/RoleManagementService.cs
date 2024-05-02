@@ -97,7 +97,29 @@ public class RoleManagementService : IRoleManagementService
 
         return response;
     }
-    
+
+    public async Task<HttpResponseMessage> AcceptNominationForApprovedPerson(Guid enrolmentId, 
+        Guid userId, Guid organisationId, string serviceKey, AcceptNominationApprovedPersonRequest acceptNominationRequest)
+    {
+        _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
+        _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
+
+        string requestUri = $"api/enrolments/{enrolmentId}/approved-person-acceptance?serviceKey={serviceKey}";
+
+        var jsonSerializerOptions = new JsonSerializerOptions();
+
+        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(acceptNominationRequest, jsonSerializerOptions), Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PutAsync(requestUri, requestContent);
+
+        response.EnsureSuccessStatusCode();
+
+        return response;
+    }
+
+
     public async Task<DelegatedPersonNominatorModel> GetDelegatedPersonNominator(Guid enrolmentId, Guid userId, Guid organisationId, string serviceKey)
     {
         _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
