@@ -249,7 +249,8 @@ namespace FacadeAccountCreation.API.Controllers
                     NominatorLastName = nominatingPerson.LastName,
                     OrganisationNumber = nominatedPerson.OrganisationReferenceNumber.ToReferenceNumberFormat(),
                     Recipient = nominatedPerson.Email,
-                    TemplateId = _messagingConfig.NominateDelegatedUserTemplateId
+                    TemplateId = _messagingConfig.NominateDelegatedUserTemplateId,
+                    AccountLoginUrl = _messagingConfig.AccountLoginUrl
                 });
             }
         }
