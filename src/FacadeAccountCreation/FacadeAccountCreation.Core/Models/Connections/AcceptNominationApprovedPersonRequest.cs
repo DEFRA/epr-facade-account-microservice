@@ -18,5 +18,15 @@ namespace FacadeAccountCreation.Core.Models.Connections
 
         [Required]
         public DateTime? DeclarationTimeStamp { get; set; }
+
+        public string OrganisationName { get; set; }
+
+        public string PersonFirstName { get; set; }
+
+        public string PersonLastName { get; set; }
+
+        public string OrganisationNumber { get; set; }
+
+        public string ContactEmail { get; set; }
     }
 }

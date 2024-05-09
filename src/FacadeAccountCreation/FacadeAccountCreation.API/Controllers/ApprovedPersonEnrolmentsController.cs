@@ -5,6 +5,7 @@ using FacadeAccountCreation.API.Extensions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using FacadeAccountCreation.Core.Services.Messaging;
 
 namespace FacadeAccountCreation.API.Controllers
 {
@@ -13,11 +14,13 @@ namespace FacadeAccountCreation.API.Controllers
     public class ApprovedPersonEnrolmentsController : Controller
     {
         private readonly IRoleManagementService _roleManagementService;
+        private readonly IMessagingService _messagingService;
         private readonly ILogger<ApprovedPersonEnrolmentsController> _logger;
 
-        public ApprovedPersonEnrolmentsController(IRoleManagementService roleManagementService, ILogger<ApprovedPersonEnrolmentsController> logger)
+        public ApprovedPersonEnrolmentsController(IRoleManagementService roleManagementService, IMessagingService? messagingService, ILogger<ApprovedPersonEnrolmentsController> logger)
         {
             _roleManagementService = roleManagementService;
+            _messagingService = messagingService;
             _logger = logger;
         }
          
@@ -38,20 +41,27 @@ namespace FacadeAccountCreation.API.Controllers
             {
                 var result = await _roleManagementService.AcceptNominationForApprovedPerson(enrolmentId, userId, organisationId, serviceKey, acceptNominationRequest);
 
-                if (result.StatusCode == HttpStatusCode.OK)
+                if (result.StatusCode != HttpStatusCode.OK)
                 {
-                    _logger.LogInformation(
-                        "Nominated user {UserId} from organisation {OrganisationId} accepted the nomination to Delegated Person of service '{ServiceKey}'",
-                        userId, organisationId, serviceKey);
+                    _logger.LogError(
+                        "Accept nomination failed for user {UserId} from organisation {OrganisationId} of service '{ServiceKey}'. StatusCode: {StatusCode}",
+                        userId, organisationId, serviceKey, result.StatusCode);
 
-                    return Ok();
+                    return HandleError.HandleErrorWithStatusCode(result.StatusCode);
                 }
 
-                _logger.LogError(
-                    "Accept nomination failed for user {UserId} from organisation {OrganisationId} of service '{ServiceKey}'. StatusCode: {StatusCode}",
-                    userId, organisationId, serviceKey, result.StatusCode);
+                _messagingService.SendApprovedUserAccountCreationConfirmation(
+                    acceptNominationRequest.OrganisationName,
+                    acceptNominationRequest.PersonFirstName,
+                    acceptNominationRequest.PersonLastName,
+                    acceptNominationRequest.OrganisationNumber,
+                    acceptNominationRequest.ContactEmail);
 
-                return HandleError.HandleErrorWithStatusCode(result.StatusCode);
+                _logger.LogInformation(
+                        "Nominated user {UserId} from organisation {OrganisationId} accepted the nomination to become an approved person. Service: '{ServiceKey}'",
+                        userId, organisationId, serviceKey);
+
+                return Ok();                
             }
             catch (Exception exception)
             {
