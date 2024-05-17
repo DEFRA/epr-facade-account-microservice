@@ -12,4 +12,5 @@ public class NominateUserEmailInput
     public string OrganisationNumber { get; set; } = default!;
     public string NominatorFirstName { get; set; } = default!;
     public string NominatorLastName { get; set; } = default!;
+    public string AccountLoginUrl { get; set; } = default!;
 }
