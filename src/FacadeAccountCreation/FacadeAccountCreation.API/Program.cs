@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using EPR.Common.Logging.Extensions;
 using Microsoft.FeatureManagement;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddServicesAndHttpClients();
 
 // Logging
 builder.Services.AddLogging();
+
+builder.Services.AddHealthChecks();
 
 // Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -81,5 +84,13 @@ app.MapControllers();
 app.MapHealthChecks(
     builder.Configuration.GetValue<string>("HealthCheckPath"),
     HealthCheckOptionBuilder.Build()).AllowAnonymous();
+
+app.MapHealthChecks("/admin/error", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status500InternalServerError
+    }
+}).AllowAnonymous();
 
 app.Run();
