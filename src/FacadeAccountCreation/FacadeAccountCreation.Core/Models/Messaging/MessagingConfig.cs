@@ -16,4 +16,5 @@ public class MessagingConfig
     public string ApprovedUserAccountConfirmationTemplateId { get; set; } = string.Empty;
     public string ProducerResubmissionTemplateId { get; set; } = string.Empty;
     public string ComplianceSchemeResubmissionTemplateId { get; set; } = string.Empty;
+    public string AccountLoginUrl { get; set; }
 }

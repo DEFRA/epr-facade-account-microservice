@@ -20,7 +20,12 @@ namespace FacadeAccountCreation.Core.Services.Connection
         /// User (userId) from organisation (organisationId) updates their EnrolmentState from Nominated to Pending.
         /// </summary>
         Task<HttpResponseMessage> AcceptNominationToDelegatedPerson(Guid enrolmentId, Guid userId, Guid organisationId, string serviceKey, AcceptNominationRequest acceptNominationRequest);
-        
+
+        /// <summary>
+        /// Nominated approved person with user (userId) from organisation (organisationId) updates their EnrolmentState from Nominated to Pending.
+        /// </summary>
+        Task<HttpResponseMessage> AcceptNominationForApprovedPerson(Guid enrolmentId, Guid userId, Guid organisationId, string serviceKey, AcceptNominationApprovedPersonRequest acceptNominationRequest);
+
         Task<DelegatedPersonNominatorModel> GetDelegatedPersonNominator(Guid enrolmentId, Guid userId, Guid organisationId, string serviceKey);
     }
 }
