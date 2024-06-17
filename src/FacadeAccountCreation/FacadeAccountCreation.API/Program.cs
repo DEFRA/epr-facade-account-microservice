@@ -1,14 +1,14 @@
+using EPR.Common.Logging.Extensions;
 using FacadeAccountCreation.API.Extensions;
-using FacadeAccountCreation.API.Swagger;
 using FacadeAccountCreation.API.HealthChecks;
+using FacadeAccountCreation.API.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.FeatureManagement;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
-using EPR.Common.Logging.Extensions;
-using Microsoft.FeatureManagement;
 
 var builder = WebApplication.CreateBuilder(args);
 

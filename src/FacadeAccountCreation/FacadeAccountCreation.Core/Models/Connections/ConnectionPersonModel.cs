@@ -1,5 +1,8 @@
-﻿namespace FacadeAccountCreation.Core.Models.Connections
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FacadeAccountCreation.Core.Models.Connections
 {
+    [ExcludeFromCodeCoverage]
     public class ConnectionPersonModel
     {
         public string FirstName { get; set; }
