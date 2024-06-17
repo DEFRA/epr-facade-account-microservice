@@ -1,12 +1,13 @@
-using Microsoft.AspNetCore.Authorization;
-
 namespace FacadeAccountCreation.API.Controllers;
 
-using Extensions;
+using Core.Models.Person;
 using Core.Services.Person;
+using Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
-using Core.Models.Person;
+
+
 
 [ApiController]
 [AllowAnonymous]

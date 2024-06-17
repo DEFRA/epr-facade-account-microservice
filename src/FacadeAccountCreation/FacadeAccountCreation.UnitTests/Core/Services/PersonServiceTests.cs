@@ -1,5 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
+using FacadeAccountCreation.Core.Exceptions;
+using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Person;
 using FacadeAccountCreation.Core.Services.Person;
 using FluentAssertions;
@@ -7,7 +9,6 @@ using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Text.Json;
-using FacadeAccountCreation.Core.Models.Organisations;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -124,9 +125,45 @@ public class PersonServiceTests
                        req.RequestUri.ToString() == expectedUrl),
             ItExpr.IsAny<CancellationToken>());
 
+        result.Should().BeOfType<ProblemResponseException>();
+    }
+
+    [TestMethod]
+    public async Task GetPersonByExternalIdAsync_WhenInValidUserId_ShouldReturnProblemResponseExceptionResponse()
+    {
+        var externalId = Guid.NewGuid();
+        var expectedUrl = $"{BaseAddress}/{ExternalIdEndpoint}?externalId={externalId}";
+        var apiResponse = _fixture.Create<PersonResponseModel>();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.Unauthorized,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new PersonService(httpClient);
+
+        // Act
+        var result = await sut.GetPersonByExternalIdAsync(externalId);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+
         result.Should().BeOfType<PersonResponseModel>();
     }
-    
+
     [TestMethod]
     public async Task GetPersonByExternalIdAsync_WhenInvalidUserId_ShouldReturnNull()
     {

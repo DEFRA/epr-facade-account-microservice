@@ -1,11 +1,11 @@
-﻿using System.Net;
-using FacadeAccountCreation.Core.Configs;
+﻿using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Models.Enrolments;
 using FacadeAccountCreation.Core.Services.Enrolments;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
+using System.Net;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

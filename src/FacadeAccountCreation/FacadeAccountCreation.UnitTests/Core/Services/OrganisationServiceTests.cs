@@ -1,9 +1,7 @@
-﻿using System.Net;
-using System.Text.Json;
-using AutoFixture;
+﻿using AutoFixture;
 using AutoFixture.AutoMoq;
-using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Exceptions;
+using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FluentAssertions;
@@ -12,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Protected;
+using System.Net;
+using System.Text.Json;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

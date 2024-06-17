@@ -1,8 +1,8 @@
+using FacadeAccountCreation.Core.Models.AddressLookup;
 using FacadeAccountCreation.Core.Services.AddressLookup;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
 using System.ComponentModel.DataAnnotations;
-using FacadeAccountCreation.Core.Models.AddressLookup;
 
 namespace FacadeAccountCreation.API.Controllers;
 

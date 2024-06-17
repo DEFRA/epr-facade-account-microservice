@@ -1,4 +1,3 @@
-using System.Net;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Moq;
+using System.Net;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

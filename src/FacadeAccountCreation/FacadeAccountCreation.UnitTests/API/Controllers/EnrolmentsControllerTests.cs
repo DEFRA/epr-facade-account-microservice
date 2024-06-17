@@ -1,5 +1,4 @@
-﻿using System.Net;
-using FacadeAccountCreation.API.Controllers;
+﻿using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Models.Enrolments;
 using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.Organisations;
@@ -15,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
+using System.Net;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

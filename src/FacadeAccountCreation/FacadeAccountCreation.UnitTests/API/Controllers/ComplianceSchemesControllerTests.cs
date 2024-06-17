@@ -1,5 +1,3 @@
-using System.Net;
-using System.Security.Claims;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
@@ -17,6 +15,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Microsoft.Identity.Web;
 using Moq;
+using System.Net;
+using System.Security.Claims;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

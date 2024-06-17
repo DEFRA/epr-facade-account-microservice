@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Security.Claims;
-using AutoFixture;
+﻿using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Models.CreateAccount;
@@ -12,10 +10,12 @@ using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Moq;
-using Microsoft.Extensions.Logging.Abstractions;
+using System.Net;
+using System.Security.Claims;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

@@ -1,6 +1,3 @@
-using System.Net;
-using System.Net.Http.Json;
-using System.Text;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using EPR.Common.Logging.Constants;
@@ -17,6 +14,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Protected;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
