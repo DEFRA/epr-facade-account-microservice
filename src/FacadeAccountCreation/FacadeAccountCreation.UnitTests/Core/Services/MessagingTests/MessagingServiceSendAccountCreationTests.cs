@@ -556,6 +556,50 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             null), Times.Once);
     }
 
+    [TestMethod]
+    public void SendDelegatedRoleRemove_Notification_SendsWithCorrectInput()
+    {
+        //Arrange
+        var delagateRoleEmailInput = EmailInput();
+        _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
+            delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
+           null,
+            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p12356" });
+        _sut = GetServiceUnderTest();
+
+        //Act
+        var result = _sut.SendDelegatedRoleRemovedNotification(delagateRoleEmailInput);
+
+        //Assert
+        result.Should().NotBeNull();
+        _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
+            null,
+            null), Times.Once);
+    }
+
+
+
+    [TestMethod]
+    public void SendNominationCancelledNotification_SendsWithCorrectInput()
+    {
+        //Arrange
+        var delagateRoleEmailInput = EmailInput();
+        _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
+            delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
+           null,
+            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p78655" });
+        _sut = GetServiceUnderTest();
+
+        //Act
+        var result = _sut.SendNominationCancelledNotification(delagateRoleEmailInput);
+
+        //Assert
+        result.Should().NotBeNull();
+        _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
+            null,
+            null), Times.Once);
+    }
+
 
     private DelegatedRoleEmailInput EmailInput()
     {

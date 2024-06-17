@@ -98,7 +98,33 @@ public class EnrolmentsControllerTests
         response.Should().BeOfType<NoContentResult>();
         _mockMessagingService.Verify(x => x.SendRemovedUserNotification(It.IsAny<RemovedUserNotificationEmailModel>()), Times.Once);
     }
-    
+
+
+
+    [TestMethod]
+    [DataRow(HttpStatusCode.OK)]
+    [DataRow(HttpStatusCode.NoContent)]
+    public async Task When_service_successfully_deletes_role(HttpStatusCode statusCode)
+    {
+        // Arrange
+        _enrolmentService.Setup(x => x.DeleteUser(It.IsAny<DeleteUserModel>()))
+            .ReturnsAsync(new HttpResponseMessage(statusCode));
+
+        _mockPersonService.Setup(x => x.GetPersonByExternalIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(new PersonResponseModel());
+        _mockOrganisationService.Setup(x => x.GetOrganisationByExternalId(It.IsAny<Guid>()))
+            .ReturnsAsync(new RemovedUserOrganisationModel());
+        _mockServiceRolesLookup.Setup(x => x.IsProducer(1)).Returns(true);
+
+        // Act
+        var response = await _sut.Delete(Guid.NewGuid(), Guid.NewGuid(), _deleteUserModel.ServiceRoleId);
+
+        // Assert
+        response.Should().BeOfType<NoContentResult>();
+        _mockMessagingService.Verify(x => x.SendRemovedUserNotification(It.IsAny<RemovedUserNotificationEmailModel>()), Times.Once);
+    }
+
+
     [TestMethod]
     [DataRow(HttpStatusCode.OK)]
     [DataRow(HttpStatusCode.NoContent)]

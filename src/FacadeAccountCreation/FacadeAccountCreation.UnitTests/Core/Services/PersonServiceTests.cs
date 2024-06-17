@@ -125,7 +125,7 @@ public class PersonServiceTests
                        req.RequestUri.ToString() == expectedUrl),
             ItExpr.IsAny<CancellationToken>());
 
-        result.Should().BeOfType<ProblemResponseException>();
+        result.Should().BeOfType<PersonResponseModel>();
     }
 
     [TestMethod]
@@ -133,7 +133,7 @@ public class PersonServiceTests
     {
         var externalId = Guid.NewGuid();
         var expectedUrl = $"{BaseAddress}/{ExternalIdEndpoint}?externalId={externalId}";
-        var apiResponse = _fixture.Create<PersonResponseModel>();
+        var apiResponse = _fixture.Create<ProblemResponseException>();
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -161,7 +161,7 @@ public class PersonServiceTests
                        req.RequestUri.ToString() == expectedUrl),
             ItExpr.IsAny<CancellationToken>());
 
-        result.Should().BeOfType<PersonResponseModel>();
+        result.Should().BeOfType<ProblemResponseException>();
     }
 
     [TestMethod]
@@ -268,5 +268,5 @@ public class PersonServiceTests
             ItExpr.IsAny<CancellationToken>());
 
         result.Should().BeNull();
-    }
+    }    
 }

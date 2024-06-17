@@ -122,7 +122,28 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
         _ = _sut.SendRemovedUserNotification(emailInput);
 
     }
-    
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void SendDelegatedUserNomination_WhenInvalidUserEmail_ItShouldThrowException()
+    {
+        _sut = GetServiceUnderTest();
+
+        var emailInput = new RemovedUserNotificationEmailModel
+        {
+            FirstName = "Johnny",
+            LastName = "Ramone",
+            RecipientEmail = string.Empty,
+            TemplateId = Guid.NewGuid().ToString(),
+            OrganisationId = "100 125",
+            CompanyName = "The Ramones",
+            UserId = Guid.NewGuid()
+        };
+        _ = _sut.SendRemovedUserNotification(emailInput);
+
+    }
+
+
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInvalidTemplateId_ItShouldThrowException()
@@ -202,5 +223,43 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
         _ = _sut.SendRemovedUserNotification(emailInput);
 
     }
-   
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void SendDelegatedUserNomination_WhenInvalidOrganisationId_ItShouldThrowException()
+    {
+        _sut = GetServiceUnderTest();
+
+        var emailInput = new RemovedUserNotificationEmailModel
+        {
+            FirstName = "Johnny",
+            LastName = "Ramone",
+            RecipientEmail = "johnny@ramones.com",
+            TemplateId = Guid.NewGuid().ToString(),
+            OrganisationId = string.Empty,
+            CompanyName = "The Ramones",
+            UserId = Guid.NewGuid()
+        };
+        _ = _sut.SendRemovedUserNotification(emailInput);
+
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void SendDelegatedUserNomination_WhenNullemplateId_ItShouldThrowException()
+    {
+        _sut = GetServiceUnderTest();
+
+        var emailInput = new RemovedUserNotificationEmailModel
+        {
+            FirstName = "Johnny",
+            LastName = "Ramone",
+            RecipientEmail = "johnny@ramones.com",
+            TemplateId = null,
+            OrganisationId = "100 125",
+            CompanyName = "The Ramones",
+            UserId = Guid.NewGuid()
+        };
+        _ = _sut.SendRemovedUserNotification(emailInput);
+    }
 }
