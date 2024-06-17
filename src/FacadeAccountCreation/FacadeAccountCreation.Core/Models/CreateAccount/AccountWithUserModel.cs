@@ -1,7 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace FacadeAccountCreation.Core.Models.CreateAccount;
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
+[ExcludeFromCodeCoverage]
 public class AccountWithUserModel : AccountModel
 {
     public AccountWithUserModel(AccountModel account, UserModel user)

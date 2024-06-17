@@ -3,7 +3,9 @@
 namespace FacadeAccountCreation.Core.Models.CreateAccount;
 
 using Attributes;
+using System.Diagnostics.CodeAnalysis;
 
+[ExcludeFromCodeCoverage]
 public class EnrolInvitedUserModel
 {
     [Required]

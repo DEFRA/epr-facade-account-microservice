@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace FacadeAccountCreation.Core.Models.AddressLookup;
 
+[ExcludeFromCodeCoverage]
 public class AddressLookupErrorResponse
 {
     public class ErrorDetails
