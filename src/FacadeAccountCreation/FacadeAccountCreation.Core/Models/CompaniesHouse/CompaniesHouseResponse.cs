@@ -1,5 +1,7 @@
-﻿namespace FacadeAccountCreation.Core.Models.CompaniesHouse;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FacadeAccountCreation.Core.Models.CompaniesHouse;
+[ExcludeFromCodeCoverage]
 public class CompaniesHouseResponse
 {
     public OrganisationDto? Organisation { get; set; }

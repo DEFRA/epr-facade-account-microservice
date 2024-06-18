@@ -1,5 +1,7 @@
-﻿namespace FacadeAccountCreation.API.Configs;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FacadeAccountCreation.API.Configs;
+[ExcludeFromCodeCoverage]
 public class ApiConfig
 {
     public const string SectionName = "ApiConfig";

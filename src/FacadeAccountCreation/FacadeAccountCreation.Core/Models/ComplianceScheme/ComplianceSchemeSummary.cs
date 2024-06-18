@@ -1,8 +1,9 @@
-﻿using System.Text.Json.Serialization;
-using FacadeAccountCreation.Core.Models.CreateAccount;
+﻿using FacadeAccountCreation.Core.Models.CreateAccount;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
-
+[ExcludeFromCodeCoverage]
 public record ComplianceSchemeSummary
 {
     public string Name { get; init; }

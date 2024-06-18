@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
 
+[ExcludeFromCodeCoverage]
 public class ProducerComplianceSchemeModel
 {
     public Guid SelectedSchemeId { get; set; }
