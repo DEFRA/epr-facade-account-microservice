@@ -2,10 +2,12 @@ using Azure.Core;
 using Azure.Identity;
 using FacadeAccountCreation.API.Configs;
 using Microsoft.Extensions.Options;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
 
 namespace FacadeAccountCreation.API.Handlers;
 
+[ExcludeFromCodeCoverage]
 public class AccountServiceAuthorisationHandler : DelegatingHandler
 {
     private readonly TokenRequestContext _tokenRequestContext;
