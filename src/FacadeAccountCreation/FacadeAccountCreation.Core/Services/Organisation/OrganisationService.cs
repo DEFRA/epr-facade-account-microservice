@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using FacadeAccountCreation.Core.Constants;
+﻿using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
@@ -8,6 +6,8 @@ using FacadeAccountCreation.Core.Models.Organisations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace FacadeAccountCreation.Core.Services.Organisation;
 

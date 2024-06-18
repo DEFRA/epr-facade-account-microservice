@@ -1,6 +1,5 @@
 ﻿using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Extensions;
-using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Enrolments;
 using FacadeAccountCreation.Core.Models.Messaging;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,3 @@
-using System.Net.Http.Json;
 using EPR.Common.Logging.Constants;
 using EPR.Common.Logging.Models;
 using EPR.Common.Logging.Services;
@@ -6,6 +5,7 @@ using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
 
 namespace FacadeAccountCreation.Core.Services.ComplianceScheme;
 
