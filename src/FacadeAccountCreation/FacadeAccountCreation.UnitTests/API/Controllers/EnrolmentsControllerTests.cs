@@ -124,7 +124,6 @@ public class EnrolmentsControllerTests
         _mockMessagingService.Verify(x => x.SendRemovedUserNotification(It.IsAny<RemovedUserNotificationEmailModel>()), Times.Once);
     }
 
-
     [TestMethod]
     [DataRow(HttpStatusCode.OK)]
     [DataRow(HttpStatusCode.NoContent)]
