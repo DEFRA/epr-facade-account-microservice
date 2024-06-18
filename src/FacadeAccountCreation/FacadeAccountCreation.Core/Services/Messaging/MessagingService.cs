@@ -5,6 +5,7 @@ using FacadeAccountCreation.Core.Models.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Notify.Interfaces;
+using Notify.Models;
 using System.Text.RegularExpressions;
 
 namespace FacadeAccountCreation.Core.Services.Messaging
@@ -15,7 +16,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
         private readonly MessagingConfig _messagingConfig;
         private readonly RegulatorEmailConfig _regulatorEmailConfig;
         private readonly ILogger<MessagingService> _logger;
-        private static readonly int timeoutInSeconds = 60;
+        private const int timeoutInSeconds = 60;
         private const string ExceptionLogMessage = "GOV UK NOTIFY ERROR. Method: SendEmail, Organisation ID: {OrganisationId}, User ID: {UserId}, Template: {TemplateId}";
 
         public MessagingService(INotificationClient notificationClient, IOptions<MessagingConfig> messagingConfig,
@@ -470,11 +471,13 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                         throw new ArgumentException("Nation not valid");
                 }
             }
-            catch
+            catch (RegexMatchTimeoutException ex)
             {
+                _logger.LogError(ex, "Regular Expression timeout out {Nation}", nation);
                 throw new ArgumentException("Nation not valid");
             }
-        }      
+        }
+
         public string? SendApprovedUserAccountCreationConfirmation(
             string companyName,
             string firstName,
