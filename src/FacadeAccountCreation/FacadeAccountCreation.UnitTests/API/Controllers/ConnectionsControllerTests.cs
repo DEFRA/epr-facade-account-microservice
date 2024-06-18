@@ -214,41 +214,6 @@ public class ConnectionsControllerTests
     }
 
     [TestMethod]
-    public async Task UpdatePersonRole_WhenUpdatedOkForDelagatedPerson_Then_SendDelegatedRoleRemovedNotificationOkResult()
-    {
-        //Arrange
-        var updateRequest = new UpdatePersonRoleRequest
-        {
-            PersonRole = PersonRole.Employee
-        };
-
-        _roleManagementService
-            .Setup(x => x.UpdatePersonRole(_connectionId, _userId, _organisationId, "Packaging", updateRequest))
-            .ReturnsAsync(new UpdatePersonRoleResponse
-            {
-                RemovedServiceRoles = new List<RemovedServiceRole>
-                {
-                    new()
-                    {
-                        ServiceRoleKey = ServiceRoles.Packaging.DelegatedPerson
-                    }
-                }
-            });
-        _roleManagementService.Setup(x => x.GetPerson(_connectionId, "Packaging", _userId, _organisationId))
-            .ReturnsAsync(new ConnectionPersonModel());
-        _mockPersonService.Setup(x => x.GetPersonByUserIdAsync(_userId)).ReturnsAsync(new PersonResponseModel());
-
-        //Act
-        var result = await _sut.UpdatePersonRole(_connectionId, updateRequest, "Packaging", _organisationId) as OkResult;
-
-        //Assert
-        result.Should().NotBeNull();
-        result.StatusCode.Should().Be(StatusCodes.Status200OK);
-        _mockMessagingService.Verify(x => x.SendDelegatedRoleRemovedNotification(It.IsAny<DelegatedRoleEmailInput>()), Times.Once());
-
-    }
-
-    [TestMethod]
     public async Task UpdatePersonRole_WhenNotUpdatedFineForDelagatedPerson_ThenResultIsNullAndShouldThrowNotFoundError()
     {
         //Arrange

@@ -129,6 +129,7 @@ public class PersonServiceTests
     }
 
     [TestMethod]
+    [ExpectedException(typeof(ProblemResponseException))]
     public async Task GetPersonByExternalIdAsync_WhenInValidUserId_ShouldReturnProblemResponseExceptionResponse()
     {
         var externalId = Guid.NewGuid();
@@ -141,7 +142,7 @@ public class PersonServiceTests
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage
             {
-                StatusCode = HttpStatusCode.Unauthorized,
+                StatusCode = HttpStatusCode.BadGateway,
                 Content = new StringContent(JsonSerializer.Serialize(apiResponse))
             }).Verifiable();
 
