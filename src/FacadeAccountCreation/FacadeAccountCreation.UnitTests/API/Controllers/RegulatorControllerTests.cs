@@ -1,16 +1,16 @@
-﻿using AutoFixture.AutoMoq;
-using AutoFixture;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
+using FacadeAccountCreation.Core.Models.Messaging;
+using FacadeAccountCreation.Core.Models.Organisations;
+using FacadeAccountCreation.Core.Models.Regulators;
 using FacadeAccountCreation.Core.Services.Messaging;
+using FacadeAccountCreation.Core.Services.Organisation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Identity.Web;
 using Moq;
 using System.Security.Claims;
-using FacadeAccountCreation.Core.Services.Organisation;
-using FacadeAccountCreation.Core.Models.Regulators;
-using FacadeAccountCreation.Core.Models.Organisations;
-using FacadeAccountCreation.Core.Models.Messaging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers
 {

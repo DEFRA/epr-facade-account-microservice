@@ -1,12 +1,11 @@
-﻿using FacadeAccountCreation.Core.Extensions;
-using FacadeAccountCreation.Core.Models.CreateAccount;
+﻿using FacadeAccountCreation.Core.Constants;
+using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.Enrolments;
-using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Notify.Interfaces;
-using FacadeAccountCreation.Core.Constants;
+using Notify.Models;
 using System.Text.RegularExpressions;
 
 namespace FacadeAccountCreation.Core.Services.Messaging
@@ -17,6 +16,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
         private readonly MessagingConfig _messagingConfig;
         private readonly RegulatorEmailConfig _regulatorEmailConfig;
         private readonly ILogger<MessagingService> _logger;
+        private const int timeoutInSeconds = 60;
         private const string ExceptionLogMessage = "GOV UK NOTIFY ERROR. Method: SendEmail, Organisation ID: {OrganisationId}, User ID: {UserId}, Template: {TemplateId}";
 
         public MessagingService(INotificationClient notificationClient, IOptions<MessagingConfig> messagingConfig,
@@ -453,21 +453,31 @@ namespace FacadeAccountCreation.Core.Services.Messaging
 
         private string GetRegulatorEmail(string nation)
         {
-            nation = Regex.Replace(nation, @"\s", string.Empty);
-            switch (nation)
+            try
             {
-                case "England":
-                    return _regulatorEmailConfig.England.ToLower();
-                case "Scotland":
-                    return _regulatorEmailConfig.Scotland.ToLower();
-                case "Wales":
-                    return _regulatorEmailConfig.Wales.ToLower();
-                case "NorthernIreland":
-                    return _regulatorEmailConfig.NorthernIreland.ToLower();
-                default:
-                    throw new ArgumentException("Nation not valid");
+                var timeout = TimeSpan.FromSeconds(timeoutInSeconds);
+                nation = Regex.Replace(nation, @"\s", string.Empty, RegexOptions.None, timeout);
+                switch (nation)
+                {
+                    case "England":
+                        return _regulatorEmailConfig.England.ToLower();
+                    case "Scotland":
+                        return _regulatorEmailConfig.Scotland.ToLower();
+                    case "Wales":
+                        return _regulatorEmailConfig.Wales.ToLower();
+                    case "NorthernIreland":
+                        return _regulatorEmailConfig.NorthernIreland.ToLower();
+                    default:
+                        throw new ArgumentException("Nation not valid");
+                }
             }
-        }      
+            catch (RegexMatchTimeoutException ex)
+            {
+                _logger.LogError(ex, "Regular Expression timeout out {Nation}", nation);
+                throw new ArgumentException("Nation not valid");
+            }
+        }
+
         public string? SendApprovedUserAccountCreationConfirmation(
             string companyName,
             string firstName,

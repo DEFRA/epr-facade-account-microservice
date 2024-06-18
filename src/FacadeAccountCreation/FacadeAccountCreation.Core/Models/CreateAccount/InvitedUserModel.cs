@@ -1,8 +1,9 @@
 using FacadeAccountCreation.Core.Attributes;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FacadeAccountCreation.Core.Models.CreateAccount;
-
+[ExcludeFromCodeCoverage]
 public class InvitedUserModel
 {
     [EmailAddress]

@@ -1,5 +1,6 @@
 ﻿using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Models.Connections;
+using FacadeAccountCreation.Core.Models.DelegatedPerson;
 using FacadeAccountCreation.Core.Models.Enrolments;
 using FacadeAccountCreation.Core.Services.Connection;
 using FacadeAccountCreation.UnitTests.TestHelpers;
@@ -11,7 +12,6 @@ using Moq;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using FacadeAccountCreation.Core.Models.DelegatedPerson;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers
 {

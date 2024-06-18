@@ -1,14 +1,14 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using FacadeAccountCreation.Core.Configs;
+﻿using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.Connections;
 using FacadeAccountCreation.Core.Models.DelegatedPerson;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace FacadeAccountCreation.Core.Services.Connection;
 

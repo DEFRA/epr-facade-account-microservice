@@ -1,15 +1,15 @@
 using AutoFixture;
 using AutoFixture.AutoMoq;
+using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Services.CreateAccount;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Text.Json;
-using FacadeAccountCreation.Core.Configs;
-using Microsoft.Extensions.Options;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

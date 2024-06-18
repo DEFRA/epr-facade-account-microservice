@@ -212,7 +212,7 @@ public class ConnectionsControllerTests
         _mockMessagingService.Verify(x => x.SendNominationCancelledNotification(It.IsAny<DelegatedRoleEmailInput>()),Times.Once());
 
     }
-    
+
     [TestMethod]
     public async Task UpdatePersonRole_WhenNotUpdatedFineForDelagatedPerson_ThenResultIsNullAndShouldThrowNotFoundError()
     {

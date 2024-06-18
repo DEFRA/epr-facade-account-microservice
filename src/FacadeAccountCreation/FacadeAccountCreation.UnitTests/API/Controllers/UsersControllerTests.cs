@@ -1,19 +1,19 @@
-using System.Net;
-using System.Security.Claims;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
+using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.User;
 using FacadeAccountCreation.UnitTests.TestHelpers;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using System.Text.Json;
-using FacadeAccountCreation.API.Extensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Identity.Web;
+using Moq;
+using System.Net;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

@@ -1,5 +1,7 @@
-﻿namespace FacadeAccountCreation.Core.Models.CompaniesHouse;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FacadeAccountCreation.Core.Models.CompaniesHouse;
+[ExcludeFromCodeCoverage]
 public class OrganisationDto
 {
     public string? Name { get; set; }

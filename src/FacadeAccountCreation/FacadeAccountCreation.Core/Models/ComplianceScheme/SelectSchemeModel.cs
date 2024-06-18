@@ -1,5 +1,7 @@
-﻿namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
+[ExcludeFromCodeCoverage]
 public class SelectSchemeModel
 {
     public Guid OrganisationId { get; set; }

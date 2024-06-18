@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using FacadeAccountCreation.Core.Attributes;
 
 namespace FacadeAccountCreation.Core.Models.CreateAccount;
-
+[ExcludeFromCodeCoverage]
 public class InvitingUserModel
 {
     public string FirstName { get; set; }

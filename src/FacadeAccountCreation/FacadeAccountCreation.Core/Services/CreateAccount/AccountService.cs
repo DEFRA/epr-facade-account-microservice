@@ -1,12 +1,12 @@
+using FacadeAccountCreation.Core.Configs;
+using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.CreateAccount;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Http.Json;
-using FacadeAccountCreation.Core.Configs;
-using FacadeAccountCreation.Core.Exceptions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FacadeAccountCreation.Core.Services.CreateAccount;
 

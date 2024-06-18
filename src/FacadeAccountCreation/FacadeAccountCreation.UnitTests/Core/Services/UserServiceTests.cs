@@ -1,4 +1,3 @@
-using System.Net;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.Core.Services.User;
@@ -7,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Protected;
+using System.Net;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

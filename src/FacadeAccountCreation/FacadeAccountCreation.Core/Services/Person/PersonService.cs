@@ -1,10 +1,10 @@
-﻿using FacadeAccountCreation.Core.Extensions;
+﻿using FacadeAccountCreation.Core.Exceptions;
+using FacadeAccountCreation.Core.Extensions;
+using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Person;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http.Json;
-using FacadeAccountCreation.Core.Exceptions;
-using FacadeAccountCreation.Core.Models.Organisations;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FacadeAccountCreation.Core.Services.Person
 {

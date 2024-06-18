@@ -1,17 +1,17 @@
 ﻿using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.API.Shared;
+using FacadeAccountCreation.Core.Constants;
+using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.Connections;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Net;
+using FacadeAccountCreation.Core.Models.Messaging;
+using FacadeAccountCreation.Core.Models.Person;
 using FacadeAccountCreation.Core.Services.Connection;
 using FacadeAccountCreation.Core.Services.Messaging;
-using FacadeAccountCreation.Core.Models.Messaging;
-using Microsoft.Extensions.Options;
-using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Services.Person;
-using FacadeAccountCreation.Core.Constants;
-using FacadeAccountCreation.Core.Models.Person;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
+using System.Net;
 
 namespace FacadeAccountCreation.API.Controllers
 {

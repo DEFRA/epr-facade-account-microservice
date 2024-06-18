@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Web;
-using FacadeAccountCreation.API.Extensions;
+﻿using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Services.CreateAccount;
@@ -9,6 +7,8 @@ using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web.Resource;
+using System.Net;
+using System.Web;
 
 namespace FacadeAccountCreation.API.Controllers
 {

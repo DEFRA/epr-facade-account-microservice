@@ -1,11 +1,11 @@
-﻿using FacadeAccountCreation.API.Shared;
+﻿using FacadeAccountCreation.API.Extensions;
+using FacadeAccountCreation.API.Shared;
 using FacadeAccountCreation.Core.Models.Connections;
-using FacadeAccountCreation.Core.Services.Connection;
-using FacadeAccountCreation.API.Extensions;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using FacadeAccountCreation.Core.Models.DelegatedPerson;
+using FacadeAccountCreation.Core.Services.Connection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Net;
 
 namespace FacadeAccountCreation.API.Controllers
 {

@@ -1,5 +1,7 @@
-namespace FacadeAccountCreation.Core.Models.User;
+using System.Diagnostics.CodeAnalysis;
 
+namespace FacadeAccountCreation.Core.Models.User;
+[ExcludeFromCodeCoverage]
 public class OrganisationDetailModel
 {
     public Guid Id { get; set; }
