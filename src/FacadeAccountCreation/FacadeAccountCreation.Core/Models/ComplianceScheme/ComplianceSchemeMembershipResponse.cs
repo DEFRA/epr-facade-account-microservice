@@ -1,8 +1,10 @@
 ﻿using FacadeAccountCreation.Core.Services;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FacadeAccountCreation.Core.Models.ComplianceScheme
 {
+    [ExcludeFromCodeCoverage]
     public class ComplianceSchemeMembershipResponse
     {
         public PaginatedResponse<ComplianceSchemeMemberDto> PagedResult { get; set; }
