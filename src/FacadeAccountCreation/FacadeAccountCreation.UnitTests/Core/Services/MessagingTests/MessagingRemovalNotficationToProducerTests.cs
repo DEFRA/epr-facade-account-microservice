@@ -15,12 +15,12 @@ public class MessagingRemovalNotficationToProducerTests : BaseMessagingTest
         var emailNotificationId = "N123456";
         var recipient = "dummyEmail";
         var templateId = "dummytemplate";
-        _notificationClientMock.Setup(nc => nc.SendEmail(
+        _ = _notificationClientMock.Setup(nc => nc.SendEmail(
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
 
         _sut = GetServiceUnderTest();
 
@@ -29,6 +29,7 @@ public class MessagingRemovalNotficationToProducerTests : BaseMessagingTest
 
         // Assert
         _notificationClientMock.Verify(n => n.SendEmail(recipient, templateId, It.IsAny<Dictionary<string, dynamic>>(),
+            null,
             null,
             null), Times.Once);
         result.Count.Should().Be(1);

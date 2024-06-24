@@ -14,12 +14,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Azure.Identity" Version="1.10.4" />
-        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+        <PackageReference Include="Azure.Identity" Version="1.12.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Identity.Web" Version="2.7.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="2.19.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -30,6 +30,11 @@
       <SonarQubeSetting Include="sonar.coverage.exclusions">
         <Value>**/Program.cs,Extensions/HttpClientServiceCollectionExtension.cs,Extensions/ServiceCollectionExtension.cs</Value>
       </SonarQubeSetting>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Update="Microsoft.CodeAnalysis.CSharp" Version="4.10.0" />
+      <PackageReference Update="SonarAnalyzer.CSharp" Version="9.27.0.93347" />
     </ItemGroup>
 
 </Project>
