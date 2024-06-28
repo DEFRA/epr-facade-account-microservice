@@ -1,8 +1,8 @@
-﻿FROM defradigital/dotnetcore:dotnet6.0 AS base
+﻿FROM defradigital/dotnetcore:dotnet8.0 AS base
 ENV ASPNETCORE_URLS=http://*:8080
 EXPOSE 8080
 
-FROM defradigital/dotnetcore-development:dotnet6.0 AS build
+FROM defradigital/dotnetcore-development:dotnet8.0 AS build
 COPY --chown=dotnet:dotnet ["FacadeAccountCreation.API/FacadeAccountCreation.API.csproj", "FacadeAccountCreation.API/"]
 COPY --chown=dotnet:dotnet ["FacadeAccountCreation.Core/FacadeAccountCreation.Core.csproj", "FacadeAccountCreation.Core/"]
 COPY --chown=dotnet:dotnet ["NuGet.Config", ""]
