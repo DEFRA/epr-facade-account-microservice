@@ -38,7 +38,7 @@ public class UsersController : ControllerBase
             if (response.IsSuccessStatusCode)
             {
                 _logger.LogInformation("Fetched the organisations list successfully for the user {userId}", userId);
-                return Ok(response.Content.ReadFromJsonAsync<UserOrganisationsListModel>().Result);
+                return Ok(await response.Content.ReadFromJsonAsync<UserOrganisationsListModel>());
             }
             else
             {

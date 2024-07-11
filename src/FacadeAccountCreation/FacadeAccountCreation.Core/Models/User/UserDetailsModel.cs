@@ -24,5 +24,7 @@ public class UserDetailsModel
 
     public string? Telephone { get; set; }
 
+    public string? JobTitle { get; set; }
+
     public List<OrganisationDetailModel> Organisations { get; set; }
 }
