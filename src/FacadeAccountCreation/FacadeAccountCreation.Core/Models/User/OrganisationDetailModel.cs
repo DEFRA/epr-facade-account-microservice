@@ -33,9 +33,6 @@ public class OrganisationDetailModel
     public string? Country { get; set; }
 
     public string? Postcode { get; set; }
-
-    public string OrgAddress { get; set; }
-    public string? OrgAddress { get; set; }
     public string? OrganisationAddress { get; set; }
 
     public string? JobTitle { get; set; }
