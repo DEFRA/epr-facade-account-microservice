@@ -222,4 +222,75 @@ public class OrganisationsControllerTests
         // Assert
         result.Should().BeOfType<OkObjectResult>();
     }
+
+    [TestMethod]
+    public async Task UpdateNationIdByOrganisationId_WithValidParameters_ReturnsOkResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var nationId = 3;
+
+        // Act
+        var result = await _sut.UpdateNationIdByOrganisationId(
+            organisationId,
+            nationId) as OkResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        _mockOrganisationService.Verify(s =>
+            s.UpdateNationIdByOrganisationId(
+                It.IsAny<Guid>(),
+                organisationId,
+                nationId),
+            Times.Once);
+    }
+
+    [TestMethod]
+    public async Task UpdateNationIdByOrganisationId_WithNoNationId_ReturnsBadRequestResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+
+        // Act
+        var result = await _sut.UpdateNationIdByOrganisationId(
+            organisationId,
+            null) as BadRequestResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        _mockOrganisationService.Verify(s =>
+            s.UpdateNationIdByOrganisationId(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<int>()),
+            Times.Never);
+    }
+
+    [TestMethod]
+    public async Task UpdateNationIdByOrganisationId_ThrowsException_InternalServerError()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var nationId = 3;
+        _mockOrganisationService.Setup(s => s.UpdateNationIdByOrganisationId(
+            It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<int>()
+            )).Throws(new Exception());
+
+        // Act
+        var result = await _sut.UpdateNationIdByOrganisationId(
+            organisationId,
+            nationId) as StatusCodeResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual((int)HttpStatusCode.InternalServerError, result.StatusCode);
+        _mockOrganisationService.Verify(s =>
+            s.UpdateNationIdByOrganisationId(
+                It.IsAny<Guid>(),
+                organisationId,
+                nationId),
+            Times.Once);
+    }
 }
