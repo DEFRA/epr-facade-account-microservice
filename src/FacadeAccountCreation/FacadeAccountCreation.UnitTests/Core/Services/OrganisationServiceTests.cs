@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Protected;
 using System.Net;
+using System.Net.Http;
 using System.Text.Json;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
@@ -21,8 +22,8 @@ public class OrganisationServiceTests
     private const string GetOrganisationUsersListEndpoint = "api/organisations/users";
     private const string GetNationIdByOrganisationIdEndpoint = "api/regulator-organisation/organisation-nation";
     private const string GetOrganisationIdFromNationEndpoint = "api/regulator-organisation?nation=";
+    private const string UpdateNationIdByOrganisationIdEndPoint = "api/organisations/organisation-nation?organisationId=";
     private const string BaseAddress = "http://localhost";
-    private const string GetOrganisationByExternalIdEndpoint = "api/organisations/organisation-by-externalId";
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -41,7 +42,8 @@ public class OrganisationServiceTests
             {"ApiConfig:AccountServiceBaseUrl", BaseAddress},
             {"ComplianceSchemeEndpoints:GetOrganisationUsers", GetOrganisationUsersListEndpoint},
             {"RegulatorOrganisationEndpoints:GetNationIdFromOrganisationId", GetNationIdByOrganisationIdEndpoint},
-            {"RegulatorOrganisationEndpoints:GetOrganisationIdFromNation", GetOrganisationIdFromNationEndpoint}
+            {"RegulatorOrganisationEndpoints:GetOrganisationIdFromNation", GetOrganisationIdFromNationEndpoint},
+            {"OrganisationEndpoints:UpdateNation", UpdateNationIdByOrganisationIdEndPoint }
         };
 
         var configuration = new ConfigurationBuilder()
@@ -350,5 +352,48 @@ public class OrganisationServiceTests
 
         // Assert
         await act.Should().ThrowAsync<ProblemResponseException>();
+    }
+
+    [TestMethod]
+    public async Task UpdateNationIdByOrganisationId_ShouldReturnSuccesfulResponse()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        int nationId = 2;
+
+        var expectedUrl =
+            $"{BaseAddress}/{UpdateNationIdByOrganisationIdEndPoint}{organisationId}";
+
+        var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(expectedResponse).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+        var sut = new OrganisationService(
+            httpClient,
+            _logger,
+            _configuration);
+
+        // Act
+        await sut.UpdateNationIdByOrganisationId(
+            userId,
+            organisationId,
+            nationId);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync",
+            Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Put),
+            ItExpr.IsAny<CancellationToken>()
+        );
     }
 }

@@ -9,6 +9,17 @@ public interface IOrganisationService
     
     Task<HttpResponseMessage> GetNationIdByOrganisationId(Guid organisationId);
 
+    /// <summary>
+    /// Updates the nation id for an organisation
+    /// </summary>
+    /// <param name="organisationId">The id of the organisation</param>
+    /// <param name="nationId">The id of the nation</param>
+    /// <returns>Async task indicating success</returns>
+    Task UpdateNationIdByOrganisationId(
+        Guid userId,
+        Guid organisationId,
+        int nationId);
+
     Task<RemovedUserOrganisationModel?> GetOrganisationByExternalId(Guid organisationExternalId);
 
     Task<ApprovedPersonOrganisationModel> GetOrganisationNameByInviteToken(string token);

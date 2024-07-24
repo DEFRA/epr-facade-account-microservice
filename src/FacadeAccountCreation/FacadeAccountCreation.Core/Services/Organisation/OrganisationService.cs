@@ -122,4 +122,24 @@ public class OrganisationService : IOrganisationService
 
         return response.Content.ReadFromJsonAsync<CheckRegulatorOrganisationExistResponseModel>().Result;
     }
+
+    /// <summary>
+    /// Updates the nation id for an organisation
+    /// </summary>
+    /// <param name="organisationId">The id of the organisation</param>
+    /// <param name="nationId">The id of the nation</param>
+    /// <returns>Async task indicating success</returns>
+    public async Task UpdateNationIdByOrganisationId(
+        Guid userId,
+        Guid organisationId,
+        int nationId)
+    {
+        var url = $"{_config.GetSection("OrganisationEndpoints").GetSection("UpdateNation").Value}{organisationId}";
+
+        _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
+
+        var response = await _httpClient.PutAsJsonAsync(url, nationId);
+
+        response.EnsureSuccessStatusCode();
+    }
 }
