@@ -18,7 +18,9 @@ public class OrganisationService : IOrganisationService
     private readonly IConfiguration _config;
     private const string OrganisationUri = "api/organisations/organisation-by-externalId";
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
-    
+    private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
+    private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
+
     public OrganisationService(
         HttpClient httpClient,
         ILogger<OrganisationService> logger,
@@ -121,5 +123,48 @@ public class OrganisationService : IOrganisationService
         response.EnsureSuccessStatusCode();
 
         return response.Content.ReadFromJsonAsync<CheckRegulatorOrganisationExistResponseModel>().Result;
+    }
+
+    public async Task<string?> CreateAndAddSubsidiaryAsync(LinkOrganisationModel linkOrganisationModel)
+    {
+
+        var response = await _httpClient.PostAsJsonAsync(OrganisationCreateAddSubsidiaryUri, linkOrganisationModel);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadAsStringAsync();
+
+        return result;
+    }
+
+    public async Task<string?> AddSubsidiaryAsync(SubsidiaryAddModel subsidiaryAddModel)
+    {
+        var response = await _httpClient.PostAsJsonAsync(OrganisationAddSubsidiaryUri, subsidiaryAddModel);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadAsStringAsync();
+
+        return result;
     }
 }
