@@ -1,6 +1,7 @@
 ﻿using Azure;
 using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.API.Shared;
+using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
@@ -111,22 +112,22 @@ public class OrganisationsController : Controller
     }
 
     /// <summary>
-    /// Updates the nation id for a given organisation id
+    /// Updates the details of an organisation
     /// </summary>
     /// <param name="organisationId">Id of the organisation to update</param>
-    /// <param name="nationId">The nation id to update to</param>
+    /// <param name="organisationDetails">The updated details for the organisation</param>
     /// <returns>An async IActionResult</returns>
     [HttpPut]
-    [Route("organisation-nation")]
+    [Route("organisation/{id}")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateNationIdByOrganisationId(
-        Guid organisationId,
-        [FromBody]int? nationId)
+    public async Task<IActionResult> UpdateOrganisationDetails(
+        Guid id,
+        [FromBody] OrganisationUpdateDto? organisationDetails)
     {
-        if (nationId == null)
+        if (organisationDetails == null)
         {
             return HandleError.HandleErrorWithStatusCode(HttpStatusCode.BadRequest);
         }
@@ -135,16 +136,16 @@ public class OrganisationsController : Controller
         {
             var userId = User.UserId();
 
-            await _organisationService.UpdateNationIdByOrganisationId(
+            await _organisationService.UpdateOrganisationDetails(
                 userId,
-                organisationId,
-                nationId.Value);
+                id,
+                organisationDetails);
             
             return Ok();    
         }
         catch (Exception e)
         {
-            _logger.LogError($"Error updating the nation Id for organisation {organisationId}");
+            _logger.LogError($"Error updating the nation Id for organisation {id}");
             return HandleError.Handle(e);
         }
     }

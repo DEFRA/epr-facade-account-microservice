@@ -10,15 +10,15 @@ public interface IOrganisationService
     Task<HttpResponseMessage> GetNationIdByOrganisationId(Guid organisationId);
 
     /// <summary>
-    /// Updates the nation id for an organisation
+    /// Updates the details of an organisation
     /// </summary>
     /// <param name="organisationId">The id of the organisation</param>
-    /// <param name="nationId">The id of the nation</param>
+    /// <param name="organisationDetails">The new organisation details for the organisation</param>
     /// <returns>Async task indicating success</returns>
-    Task UpdateNationIdByOrganisationId(
+    Task UpdateOrganisationDetails(
         Guid userId,
         Guid organisationId,
-        int nationId);
+        OrganisationUpdateDto organisationDetails);
 
     Task<RemovedUserOrganisationModel?> GetOrganisationByExternalId(Guid organisationExternalId);
 
