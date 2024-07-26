@@ -365,7 +365,7 @@ public class OrganisationServiceTests
         };
 
         var expectedUrl =
-            $"{BaseAddress}/{UpdateOrganisationEndPoint}{organisationId}";
+            $"{BaseAddress}/{UpdateOrganisationEndPoint}/{organisationId}";
 
         var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
