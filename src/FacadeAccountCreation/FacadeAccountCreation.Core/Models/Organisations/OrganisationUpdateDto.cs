@@ -6,7 +6,7 @@ namespace FacadeAccountCreation.Core.Models.Organisations;
 /// This dto is used for updating of an organisation details
 /// </summary>
 [ExcludeFromCodeCoverage]
-public class OrganisationUpdateDto
+public record OrganisationUpdateDto
 {
     /// <summary>
     /// Gets or sets the name of the organisation
