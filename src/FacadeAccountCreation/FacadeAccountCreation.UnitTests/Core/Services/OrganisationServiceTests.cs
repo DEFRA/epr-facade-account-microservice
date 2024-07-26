@@ -22,7 +22,7 @@ public class OrganisationServiceTests
     private const string GetOrganisationUsersListEndpoint = "api/organisations/users";
     private const string GetNationIdByOrganisationIdEndpoint = "api/regulator-organisation/organisation-nation";
     private const string GetOrganisationIdFromNationEndpoint = "api/regulator-organisation?nation=";
-    private const string UpdateNationIdByOrganisationIdEndPoint = "api/organisations/organisation-nation?organisationId=";
+    private const string UpdateOrganisationEndPoint = "api/organisations/organisation/";
     private const string BaseAddress = "http://localhost";
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
 
@@ -43,7 +43,7 @@ public class OrganisationServiceTests
             {"ComplianceSchemeEndpoints:GetOrganisationUsers", GetOrganisationUsersListEndpoint},
             {"RegulatorOrganisationEndpoints:GetNationIdFromOrganisationId", GetNationIdByOrganisationIdEndpoint},
             {"RegulatorOrganisationEndpoints:GetOrganisationIdFromNation", GetOrganisationIdFromNationEndpoint},
-            {"OrganisationEndpoints:UpdateNation", UpdateNationIdByOrganisationIdEndPoint }
+            {"OrganisationEndpoints:UpdateOrganisation", UpdateOrganisationEndPoint }
         };
 
         var configuration = new ConfigurationBuilder()
@@ -355,15 +355,17 @@ public class OrganisationServiceTests
     }
 
     [TestMethod]
-    public async Task UpdateNationIdByOrganisationId_ShouldReturnSuccesfulResponse()
+    public async Task UpdateOrganisationDetails_ShouldReturnSuccesfulResponse()
     {
         // Arrange
         var userId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
-        int nationId = 2;
+        var organisation = new OrganisationUpdateDto
+        {
+        };
 
         var expectedUrl =
-            $"{BaseAddress}/{UpdateNationIdByOrganisationIdEndPoint}{organisationId}";
+            $"{BaseAddress}/{UpdateOrganisationEndPoint}{organisationId}";
 
         var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -383,10 +385,10 @@ public class OrganisationServiceTests
             _configuration);
 
         // Act
-        await sut.UpdateNationIdByOrganisationId(
+        await sut.UpdateOrganisationDetails(
             userId,
             organisationId,
-            nationId);
+            organisation);
 
         // Assert
         _httpMessageHandlerMock.Protected().Verify(

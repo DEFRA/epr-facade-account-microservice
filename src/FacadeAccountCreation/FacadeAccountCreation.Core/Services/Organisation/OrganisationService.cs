@@ -124,21 +124,23 @@ public class OrganisationService : IOrganisationService
     }
 
     /// <summary>
-    /// Updates the nation id for an organisation
+    /// Updates the details of an organisation
     /// </summary>
     /// <param name="organisationId">The id of the organisation</param>
-    /// <param name="nationId">The id of the nation</param>
+    /// <param name="organisationDetails">The new organisation details for the organisation</param>
     /// <returns>Async task indicating success</returns>
-    public async Task UpdateNationIdByOrganisationId(
+    public async Task UpdateOrganisationDetails(
         Guid userId,
         Guid organisationId,
-        int nationId)
+        OrganisationUpdateDto organisationDetails)
     {
-        var url = $"{_config.GetSection("OrganisationEndpoints").GetSection("UpdateNation").Value}{organisationId}";
+        var url = $"{_config.GetSection("OrganisationEndpoints").GetSection("UpdateOrganisation").Value}{organisationId}";
 
         _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
 
-        var response = await _httpClient.PutAsJsonAsync(url, nationId);
+        var response = await _httpClient.PutAsJsonAsync(
+            url,
+            organisationDetails);
 
         response.EnsureSuccessStatusCode();
     }

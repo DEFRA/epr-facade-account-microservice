@@ -2,6 +2,7 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
+using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 using FacadeAccountCreation.Core.Services.Organisation;
@@ -224,21 +225,21 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
-    public async Task UpdateNationIdByOrganisationId_WithValidParameters_ReturnsOkResult()
+    public async Task UpdateOrganisationDetails_WithValidParameters_ReturnsOkResult()
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var nationId = 3;
+        var nationId = new OrganisationUpdateDto();
 
         // Act
-        var result = await _sut.UpdateNationIdByOrganisationId(
+        var result = await _sut.UpdateOrganisationDetails(
             organisationId,
             nationId) as OkResult;
 
         // Assert
         Assert.IsNotNull(result);
         _mockOrganisationService.Verify(s =>
-            s.UpdateNationIdByOrganisationId(
+            s.UpdateOrganisationDetails(
                 It.IsAny<Guid>(),
                 organisationId,
                 nationId),
@@ -246,51 +247,51 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
-    public async Task UpdateNationIdByOrganisationId_WithNoNationId_ReturnsBadRequestResult()
+    public async Task UpdateOrganisationDetails_WithNoNationId_ReturnsBadRequestResult()
     {
         // Arrange
         var organisationId = Guid.NewGuid();
 
         // Act
-        var result = await _sut.UpdateNationIdByOrganisationId(
+        var result = await _sut.UpdateOrganisationDetails(
             organisationId,
             null) as BadRequestResult;
 
         // Assert
         Assert.IsNotNull(result);
         _mockOrganisationService.Verify(s =>
-            s.UpdateNationIdByOrganisationId(
+            s.UpdateOrganisationDetails(
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
-                It.IsAny<int>()),
+                It.IsAny<OrganisationUpdateDto>()),
             Times.Never);
     }
 
     [TestMethod]
-    public async Task UpdateNationIdByOrganisationId_ThrowsException_InternalServerError()
+    public async Task UpdateOrganisationDetails_ThrowsException_InternalServerError()
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var nationId = 3;
-        _mockOrganisationService.Setup(s => s.UpdateNationIdByOrganisationId(
+        var organisation = new OrganisationUpdateDto();
+        _mockOrganisationService.Setup(s => s.UpdateOrganisationDetails(
             It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
-                It.IsAny<int>()
+                It.IsAny<OrganisationUpdateDto>()
             )).Throws(new Exception());
 
         // Act
-        var result = await _sut.UpdateNationIdByOrganisationId(
+        var result = await _sut.UpdateOrganisationDetails(
             organisationId,
-            nationId) as StatusCodeResult;
+            organisation) as StatusCodeResult;
 
         // Assert
         Assert.IsNotNull(result);
         Assert.AreEqual((int)HttpStatusCode.InternalServerError, result.StatusCode);
         _mockOrganisationService.Verify(s =>
-            s.UpdateNationIdByOrganisationId(
+            s.UpdateOrganisationDetails(
                 It.IsAny<Guid>(),
                 organisationId,
-                nationId),
+                organisation),
             Times.Once);
     }
 }
