@@ -134,7 +134,7 @@ public class OrganisationService : IOrganisationService
         Guid organisationId,
         OrganisationUpdateDto organisationDetails)
     {
-        var url = $"{_config.GetSection("OrganisationEndpoints").GetSection("UpdateOrganisation").Value}{organisationId}";
+        var url = $"{_config.GetSection("OrganisationEndpoints").GetSection("UpdateOrganisation").Value}/{organisationId}";
 
         _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
 
