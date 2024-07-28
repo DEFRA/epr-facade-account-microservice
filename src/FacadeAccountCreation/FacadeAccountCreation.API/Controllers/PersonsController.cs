@@ -92,6 +92,7 @@ public class PersonsController : ControllerBase
     {
         if (userId == null)
         {
+            _logger.LogError($"UserId was null in the API call");
             return HandleError.HandleErrorWithStatusCode(HttpStatusCode.BadRequest);
         }
 
