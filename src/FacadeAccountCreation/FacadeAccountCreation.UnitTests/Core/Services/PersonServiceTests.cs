@@ -10,6 +10,7 @@ using Moq.Protected;
 using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
+using FacadeAccountCreation.Core.Models.User;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -287,5 +288,21 @@ public class PersonServiceTests
             ItExpr.IsAny<CancellationToken>());
 
         result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task UpdateUserDetailsByUserId_Throw_Exception_When_No_Response_Returned()
+    {
+        // Arrange
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+            
+        var sut = new PersonService(httpClient,  _configuration);
+
+        // Act
+        Func<Task> act = () => sut.UpdateUserDetailsByUserId(Guid.NewGuid(), new UserDetailsDto());
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 }
