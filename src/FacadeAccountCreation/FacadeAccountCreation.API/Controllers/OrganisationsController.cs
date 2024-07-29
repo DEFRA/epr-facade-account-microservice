@@ -140,7 +140,7 @@ public class OrganisationsController : Controller
 
         if (response == null)
         {
-            return Problem("Failed to create and add organisation", statusCode: StatusCodes.Status500InternalServerError);
+            return Problem("Failed to add subsidiary", statusCode: StatusCodes.Status500InternalServerError);
         }
 
         return Ok(response);
