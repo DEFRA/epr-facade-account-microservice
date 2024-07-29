@@ -33,12 +33,12 @@ public class PersonsController : ControllerBase
     public async Task<IActionResult> GetCurrent()
     {
         var personResponse = await _personService.GetPersonByUserIdAsync(User.UserId());
-        
+
         if (personResponse == null)
         {
             return NoContent();
         }
-    
+
         return Ok(personResponse);
     }
 
@@ -53,7 +53,7 @@ public class PersonsController : ControllerBase
 
         return personResponse == null ? NotFound() : Ok(personResponse);
     }
-    
+
     [HttpGet]
     [Route("person-by-externalId")]
     [Produces("application/json")]
@@ -66,7 +66,7 @@ public class PersonsController : ControllerBase
 
         return personResponse == null ? NotFound() : Ok(personResponse);
     }
-    
+
     [HttpGet]
     [Route("person-by-invite-token")]
     [Produces("application/json")]
@@ -81,14 +81,14 @@ public class PersonsController : ControllerBase
     }
 
     [HttpPut]
-    [Route("update-user-details")]
+    [Route("update-user-details/{userId}")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PutUserDetailsByUserId(
-        Guid userId,    
-        [FromBody] UserDetailsDto userDetailsDto)
+        Guid userId,
+        [FromBody] UserDetailsDto? userDetailsDto)
     {
         if (userId == null)
         {
