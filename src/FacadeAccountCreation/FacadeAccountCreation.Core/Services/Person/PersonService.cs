@@ -96,7 +96,7 @@ namespace FacadeAccountCreation.Core.Services.Person
             Guid userId,
             UserDetailsDto userDetailsDto)
         {
-            var url = $"{_config.GetSection("UserDetailsEndpoints").GetSection("UpdateUserDetails").Value}{userId}";
+            var url = $"{_config.GetSection("UserDetailsEndpoints").GetSection("UpdateUserDetails").Value}/{userId}";
 
             _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
 
