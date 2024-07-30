@@ -6,10 +6,12 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Models.Person;
+using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.Person;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using Moq;
 using System.Net;
@@ -20,6 +22,7 @@ public class PersonsControllerTests
 {
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly Mock<IPersonService> _mockPersonService = new();
+    private readonly ILogger<PersonsController> _logger = null;
     private PersonsController _sut = null!;
     private Guid _userId;
     private Guid _externalId;
@@ -28,7 +31,7 @@ public class PersonsControllerTests
     public void Setup()
     {
         var httpContextMock = new Mock<HttpContext>();
-        _sut = new PersonsController(_mockPersonService.Object);
+        _sut = new PersonsController(_mockPersonService.Object, _logger);
         _sut.ControllerContext.HttpContext = httpContextMock.Object;
         _userId = _fixture.Create<Guid>();
         _externalId = _fixture.Create<Guid>();
@@ -116,7 +119,7 @@ public class PersonsControllerTests
         notFoundResult.Should().NotBeNull();
         notFoundResult?.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
     }
-    
+
     [TestMethod]
     public async Task GetPersonFromExternalId_WhenExistingUser_ShouldReturnOK()
     {
@@ -136,7 +139,7 @@ public class PersonsControllerTests
         okResult?.Value.Should().BeEquivalentTo(handlerResponse);
         okResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
     }
-    
+
     [TestMethod]
     public async Task GetPersonFromExternalId_WhenNotExistingUser_ShouldReturnNoContent()
     {
@@ -146,7 +149,7 @@ public class PersonsControllerTests
         _mockPersonService
             .Setup(x => x.GetPersonByExternalIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync(handlerResponse);
-        
+
         // act
         var result = await _sut.GetPersonFromExternalId(_externalId);
 
@@ -156,7 +159,7 @@ public class PersonsControllerTests
         notFoundResult.Should().NotBeNull();
         notFoundResult?.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
     }
-    
+
     [TestMethod]
     public async Task GetPersonFromInviteToken_ShouldReturnOK()
     {
@@ -176,5 +179,23 @@ public class PersonsControllerTests
         okResult.Should().NotBeNull();
         okResult?.Value.Should().BeEquivalentTo(handlerResponse);
         okResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
+    }
+
+    [TestMethod]
+    public async Task PutUserDetailsByUserId_WhenPassedValidData_ShouldReturnOK()
+    {
+        // arrange  
+        var requestData = _fixture.Create<UserDetailsDto>();
+        var userDetailsDto = new UserDetailsDto { FirstName = "First", LastName = "Last", JobTitle = "Director", TelePhone = "079" };
+
+        _mockPersonService
+            .Setup(x => x.UpdateUserDetailsByUserId(It.IsAny<Guid>(), requestData));
+
+        // act
+        var result = await _sut.PutUserDetailsByUserId(_userId, userDetailsDto);
+
+        // assert
+        result.Should().NotBeNull();
+        ((StatusCodeResult)result).StatusCode.Should().Be((int)HttpStatusCode.OK);
     }
 }
