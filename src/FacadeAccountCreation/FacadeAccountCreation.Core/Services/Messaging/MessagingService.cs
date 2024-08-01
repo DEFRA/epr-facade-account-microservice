@@ -49,8 +49,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             }
             catch (Exception ex)
             {
-                string exceptionMessage = "GOV UK NOTIFY ERROR. Method: SendEmail, Nation ID: {NationId}, Organisation Number: {OrganisationNumber}, Template: {TemplateId}";
-                _logger.LogError(ex, exceptionMessage, input.NationId, input.OrganisationNumber, templateId);
+                _logger.LogError(ex, "GOV UK NOTIFY ERROR. Method: SendEmail, Nation ID: {NationId}, Organisation Number: {OrganisationNumber}, Template: {templateId}", input.NationId, input.OrganisationNumber, templateId);
             }
 
             return notificationId;
@@ -206,12 +205,12 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                 argumentExceptionMessage += "TemplateId cannot be empty string. ";
             }
 
-            if(input.UserId == null || input.UserId == Guid.Empty)
+            if (input.UserId == Guid.Empty)
             {
                 argumentExceptionMessage += "UserId is required. ";
             }
 
-            if (input.OrganisationId == null || input.OrganisationId == Guid.Empty)
+            if (input.OrganisationId == Guid.Empty)
             {
                 argumentExceptionMessage += "OrganisationId is required. ";
             }
@@ -220,7 +219,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             {
                 throw new ArgumentException(argumentExceptionMessage.TrimEnd(), nameof(input));
             }
-            
+
             var parameters = new Dictionary<string, object>
                 {
                     { "firstName", input.FirstName },
@@ -291,7 +290,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                 argumentExceptionMessage += "TemplateId cannot be empty string. ";
             }
 
-            if(input.UserId == Guid.Empty)
+            if (input.UserId == Guid.Empty)
             {
                 argumentExceptionMessage += "UserId is required. ";
             }
@@ -305,8 +304,8 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             {
                 throw new ArgumentException(argumentExceptionMessage.TrimEnd(), nameof(input));
             }
-            
-          
+
+
             var parameters = new Dictionary<string, object>
             {
                 { "firstName", input.FirstName },
@@ -327,7 +326,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                 _logger.LogError(ex, ExceptionLogMessage, input.OrganisationId, input.UserId, _messagingConfig.RemovedUserNotificationTemplateId);
             }
 
-            return notificationId;  
+            return notificationId;
         }
 
         public string? SendDelegatedRoleNotification(DelegatedRoleEmailInput input)
@@ -396,7 +395,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                         {"complianceScheme", input.ComplianceScheme},
                         {"organisationName", input.OrganisationName}
                     };
-                   
+
                     var response = _notificationClient.SendEmail(recipient.Email, _messagingConfig.MemberDissociationProducersTemplateId, parameters);
                     notificationId.Add(response.id);
                 }
@@ -411,7 +410,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
         public List<string>? SendMemberDissociationRegulatorsNotification(MemberDissociationRegulatorsEmailInput input)
         {
             input.EnsureInitialised();
-            
+
             var parameters = new Dictionary<string, object>
             {
                 { "organisationName", input.OrganisationName },
@@ -429,23 +428,23 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             {
                 recipients.Add(complianceSchemeRegulatorEmail);
             }
-            
-            if (complianceSchemeRegulatorEmail != organisationRegulatorEmail 
+
+            if (complianceSchemeRegulatorEmail != organisationRegulatorEmail
                 && !string.IsNullOrEmpty(organisationRegulatorEmail))
-            { 
-                recipients.Add(organisationRegulatorEmail); 
+            {
+                recipients.Add(organisationRegulatorEmail);
             }
 
             foreach (var recipient in recipients)
             {
-                try 
-                { 
-                    var response = _notificationClient.SendEmail(recipient, _messagingConfig.MemberDissociationRegulatorsTemplateId, parameters); 
+                try
+                {
+                    var response = _notificationClient.SendEmail(recipient, _messagingConfig.MemberDissociationRegulatorsTemplateId, parameters);
                     notificationId.Add(response.id);
                 }
-                catch (Exception ex) 
-                { 
-                    _logger.LogError(ex, ExceptionLogMessage, input.OrganisationNumber, input.UserId, _messagingConfig.MemberDissociationRegulatorsTemplateId); 
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ExceptionLogMessage, input.OrganisationNumber, input.UserId, _messagingConfig.MemberDissociationRegulatorsTemplateId);
                 }
             }
             return notificationId;
@@ -482,14 +481,14 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             string companyName,
             string firstName,
             string lastName,
-            string organisationNumber,
+            string? organisationNumber,
             string recipient)
         {
             if (string.IsNullOrWhiteSpace(companyName))
             {
                 throw new ArgumentException("Cannot be empty string", nameof(firstName));
             }
-            
+
             if (string.IsNullOrWhiteSpace(firstName))
             {
                 throw new ArgumentException("Cannot be empty string", nameof(firstName));
@@ -499,7 +498,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             {
                 throw new ArgumentException("Cannot be empty string", nameof(lastName));
             }
-            
+
             var parameters = new Dictionary<string, object>();
             parameters.Add("companyName", companyName);
             parameters.Add("firstName", firstName);
@@ -516,7 +515,7 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ExceptionLogMessage, organisationNumber, $"{firstName} {lastName}",templateId);
+                _logger.LogError(ex, ExceptionLogMessage, organisationNumber, $"{firstName} {lastName}", templateId);
             }
 
             return notificationId;
