@@ -18,7 +18,7 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = expectedId });
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = expectedId });
 
         _sut = GetServiceUnderTest();
 
@@ -63,7 +63,7 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
            It.IsAny<string>(),
            It.IsAny<Dictionary<string, dynamic>>(),
            null,
-           null)).Throws(new NotifyClientException());
+           null, null)).Throws(new NotifyClientException());
 
        _sut = GetServiceUnderTest();
 

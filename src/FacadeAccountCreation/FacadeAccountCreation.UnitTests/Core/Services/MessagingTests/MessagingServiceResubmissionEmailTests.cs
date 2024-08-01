@@ -24,7 +24,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests
             _notificationClientMock.Setup(n => n.SendEmail(email,
             "ProducerResubmissionTemplateId", It.IsAny<Dictionary<string, object>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p12356" });
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p12356" });
 
             _sut = GetServiceUnderTest();
 
@@ -33,7 +33,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests
             result.Should().NotBeNull();
             _notificationClientMock.Verify(n => n.SendEmail("dummyemailengland", "ProducerResubmissionTemplateId", It.IsAny<Dictionary<string, object>>(),
                 null,
-                null), Times.Once);
+                null, null), Times.Once);
         }
 
         [TestMethod]
@@ -55,7 +55,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests
             _notificationClientMock.Setup(n => n.SendEmail(email,
             "ComplianceSchemeResubmissionTemplateId", It.IsAny<Dictionary<string, object>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p12356" });
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p12356" });
 
             _sut = GetServiceUnderTest();
 
@@ -64,7 +64,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests
             result.Should().NotBeNull();
             _notificationClientMock.Verify(n => n.SendEmail("dummyemailengland", "ComplianceSchemeResubmissionTemplateId", It.IsAny<Dictionary<string, object>>(),
                 null,
-                null), Times.Once);
+                null, null), Times.Once);
         }
     }
 }

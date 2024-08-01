@@ -21,7 +21,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = expected});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = expected});
 
         _sut = GetServiceUnderTest();
 
@@ -61,6 +61,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
+            null, 
             null)).Throws(new NotifyClientException());
 
         _sut = GetServiceUnderTest();
@@ -82,7 +83,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = expectedId });
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = expectedId });
 
         _sut = GetServiceUnderTest();
 
@@ -133,7 +134,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Throws(new NotifyClientException());
+            null, null)).Throws(new NotifyClientException());
 
         _sut = GetServiceUnderTest();
 
@@ -307,7 +308,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -317,7 +318,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().NotBeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Once);
+            null, null), Times.Once);
     }
     
     [TestMethod]
@@ -331,7 +332,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -341,7 +342,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Never);
+            null, null), Times.Never);
     }
     
     [TestMethod]
@@ -355,7 +356,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -365,7 +366,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Never);
+            null, null), Times.Never);
     }
     
     [TestMethod]
@@ -379,7 +380,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -389,7 +390,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Never);
+            null, null), Times.Never);
     }
     
     [TestMethod]
@@ -403,7 +404,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -413,7 +414,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Never);
+            null, null), Times.Never);
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException),
@@ -426,7 +427,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -436,7 +437,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Never);
+            null, null), Times.Never);
     }
     
     [TestMethod]
@@ -450,7 +451,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -460,7 +461,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Never);
+            null, null), Times.Never);
     }
     
     [TestMethod]
@@ -474,7 +475,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -484,7 +485,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Never);
+            null, null), Times.Never);
     }
     
     [TestMethod]
@@ -498,7 +499,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -508,7 +509,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Never);
+            null, null), Times.Never);
     }
     
     [TestMethod]
@@ -522,7 +523,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -532,7 +533,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Never);
+            null, null), Times.Never);
     }
     
     [TestMethod]
@@ -543,7 +544,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Throws(new Exception("Test exception"));
+            null, null)).Throws(new Exception("Test exception"));
         _sut = GetServiceUnderTest();
         
         //Act
@@ -553,7 +554,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Once);
+            null, null), Times.Once);
     }
 
     [TestMethod]
@@ -561,10 +562,10 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
     {
         //Arrange
         var delagateRoleEmailInput = EmailInput();
-        _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
+        _ = _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
            null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p12356" });
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p12356" });
         _sut = GetServiceUnderTest();
 
         //Act
@@ -574,7 +575,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().NotBeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Once);
+            null, null), Times.Once);
     }
 
 
@@ -587,7 +588,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
            null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p78655" });
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p78655" });
         _sut = GetServiceUnderTest();
 
         //Act
@@ -597,7 +598,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         result.Should().NotBeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Once);
+            null, null), Times.Once);
     }
 
 

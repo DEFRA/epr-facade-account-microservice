@@ -21,7 +21,7 @@ public class MessagingServiceSendApprovedUserAccountCreationTests : BaseMessagin
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "C123456"});
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "C123456"});
 
         _sut = GetServiceUnderTest();
 
@@ -59,7 +59,7 @@ public class MessagingServiceSendApprovedUserAccountCreationTests : BaseMessagin
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null)).Throws(new NotifyClientException());
+            null, null)).Throws(new NotifyClientException());
 
         _sut = GetServiceUnderTest();
 

@@ -14,11 +14,12 @@ public class MessagingServiceInviteUserTests : BaseMessagingTest
     {
         // Arrange
         var emailNotificationId = "C123456";
-        _notificationClientMock.Setup(nc => nc.SendEmail(
-            It.IsAny<string>(), 
-            It.IsAny<string>(), 
-            It.IsAny<Dictionary<string, dynamic>>(), 
-            null, 
+        _ = _notificationClientMock.Setup(nc => nc.SendEmail(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<Dictionary<string, dynamic>>(),
+            null,
+            null,
             null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
 
         _sut = GetServiceUnderTest();
@@ -81,6 +82,7 @@ public class MessagingServiceInviteUserTests : BaseMessagingTest
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
+            null,
             null,
             null)).Throws(new NotifyClientException());
 
