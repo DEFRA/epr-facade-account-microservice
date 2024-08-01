@@ -110,8 +110,12 @@ public class ComplianceSchemeServiceTests
             .Create();
 
         var endpoint = string.Format(GetComplianceSchemeMembersEndPoint, organisationId, selectedSchemeId, pageSize, page, query);
+        var uriBuilder = new UriBuilder()
+        {
+            Path = endpoint,
+        };
 
-        var expectedUrl = $"{BaseAddress}/{endpoint}";
+        var expectedUrl = $"{BaseAddress}/{uriBuilder.Path}";
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
