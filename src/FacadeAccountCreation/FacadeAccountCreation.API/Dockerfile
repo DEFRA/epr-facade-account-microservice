@@ -20,11 +20,11 @@ RUN dotnet restore "FacadeAccountCreation.API/FacadeAccountCreation.API.csproj" 
  
 COPY FacadeAccountCreation.API/. ./FacadeAccountCreation.API/.
 COPY FacadeAccountCreation.Core/. ./FacadeAccountCreation.Core/.
-WORKDIR "/home/dotnet/FacadeAccountCreation.API"
-RUN dotnet build "FacadeAccountCreation.API.csproj" -c Release -o /home/dotnet/build
+WORKDIR "/src/FacadeAccountCreation.API"
+RUN dotnet build "FacadeAccountCreation.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "FacadeAccountCreation.API.csproj" -c Release -o /home/dotnet/publish
+RUN dotnet publish "FacadeAccountCreation.API.csproj" -c Release -o /app/publish
 
  
 FROM base AS final
