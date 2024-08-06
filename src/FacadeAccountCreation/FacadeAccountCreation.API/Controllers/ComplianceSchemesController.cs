@@ -250,7 +250,7 @@ public class ComplianceSchemesController : ControllerBase
         {
             var oId = User.UserId();
 
-            if (oId == default)
+            if (oId == Guid.Empty)
             {
                 _logger.LogError("Unable to get the OId for the user when attempting to remove the selected scheme id {SelectedSchemeId}", request.SelectedSchemeId);
                 return Problem("UserId not  available", statusCode: StatusCodes.Status500InternalServerError);
@@ -287,7 +287,7 @@ public class ComplianceSchemesController : ControllerBase
         try
         {
             var oId = User.UserId();
-            if (oId == default)
+            if (oId == Guid.Empty)
             {
                 _logger.LogError(
                     "Unable to get the OId for the user when attempting to select the compliance scheme with id {ModelComplianceSchemeId}",
@@ -327,7 +327,7 @@ public class ComplianceSchemesController : ControllerBase
         try
         {
             var oId = User.UserId();
-            if (oId == default)
+            if (oId == Guid.Empty)
             {
                 _logger.LogError(
                     "Unable to get the OId for the user when attempting to update the selected scheme with id {ModelComplianceSchemeId} and selected compliance scheme with id {RequestedComplianceSchemeId}",
@@ -368,10 +368,10 @@ public class ComplianceSchemesController : ControllerBase
         try
         {
             var uId = User.UserId();
-            if (uId == default)
+            if (uId == Guid.Empty)
             {
                 _logger.LogError(
-                    $"Unable to get the OId for the user when attempting to member details for the organisation id '{organisationId}' and selected scheme id '{selectedSchemeId}'");
+                    "Unable to get the OId for the user when attempting to member details for the organisation id {OrganisationId} and selected scheme id {SelectedSchemeId}",organisationId, selectedSchemeId);
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
@@ -379,11 +379,11 @@ public class ComplianceSchemesController : ControllerBase
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation($"Members fetched successfully for the compliance scheme organisation id {organisationId} and selected scheme id {selectedSchemeId}");
+                _logger.LogInformation("Members fetched successfully for the compliance scheme organisation id {OrganisationId} and selected scheme id {SelectedSchemeId}", organisationId, selectedSchemeId);
                 return new OkObjectResult(response.Content.ReadFromJsonWithEnumsAsync<MemberDetailsModel>().Result);
             }
 
-            _logger.LogError($"Members fetched successfully for the compliance scheme organisation id {organisationId} and selected scheme id {selectedSchemeId}");
+            _logger.LogError("Members fetched successfully for the compliance scheme organisation id {OrganisationId} and selected scheme id {SelectedSchemeId}", organisationId, selectedSchemeId);
 
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
@@ -407,7 +407,7 @@ public class ComplianceSchemesController : ControllerBase
         try
         {
             var userId = User.UserId();
-            if (userId == default)
+            if (userId == Guid.Empty)
             {
                 _logger.LogError("Unable to get the OId for the user when attempting to remove selected scheme id {selectedSchemeId}", selectedSchemeId);
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);

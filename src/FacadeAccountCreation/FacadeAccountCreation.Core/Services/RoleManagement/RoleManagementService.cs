@@ -141,8 +141,12 @@ public class RoleManagementService : IRoleManagementService
         _httpClient.DefaultRequestHeaders.Clear();
         _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
         _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
+        var uriBuilder = new UriBuilder(_httpClient.BaseAddress)
+        {
+            Path = endPointUrl,
+        };
 
-        var response = await _httpClient.GetAsync(endPointUrl);
+        var response = await _httpClient.GetAsync(uriBuilder.Path);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {

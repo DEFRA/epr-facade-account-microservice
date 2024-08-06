@@ -601,7 +601,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
     }
 
 
-    private DelegatedRoleEmailInput EmailInput()
+    private static DelegatedRoleEmailInput EmailInput()
     {
         return new DelegatedRoleEmailInput
         {

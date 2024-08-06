@@ -41,7 +41,12 @@ public class ConnectionsServiceTests
         var serviceKey = "packaging";
 
         var endpoint = string.Format(connectionsEndpointsConfig.Value.Person, connectionId.ToString(), serviceKey);
-        var expectedUrl = $"{baseAddress}/{endpoint}";
+        var uriBuilder = new UriBuilder()
+        {
+            Path = endpoint,
+        };
+
+        var expectedUrl = $"{baseAddress}/{uriBuilder.Path}";
 
         var apiResponse = _fixture.Create<ConnectionPersonModel>();
 
@@ -83,7 +88,12 @@ public class ConnectionsServiceTests
         var serviceKey = "packaging";
 
         var endpoint = string.Format(connectionsEndpointsConfig.Value.Person, connectionId.ToString(), serviceKey);
-        var expectedUrl = $"{baseAddress}/{endpoint}";
+        var uriBuilder = new UriBuilder()
+        {
+            Path = endpoint,
+        };
+
+        var expectedUrl = $"{baseAddress}/{uriBuilder.Path}";
 
         _httpMessageHandlerMock.Protected()
              .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -123,7 +133,12 @@ public class ConnectionsServiceTests
         var serviceKey = "packaging";
 
         var endpoint = string.Format(connectionsEndpointsConfig.Value.Person, connectionId.ToString(), serviceKey);
-        var expectedUrl = $"{baseAddress}/{endpoint}";
+        var uriBuilder = new UriBuilder()
+        {
+            Path = endpoint,
+        };
+
+        var expectedUrl = $"{baseAddress}/{uriBuilder.Path}";
 
         _httpMessageHandlerMock.Protected()
              .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -153,7 +168,12 @@ public class ConnectionsServiceTests
         var serviceKey = "packaging";
 
         var endpoint = string.Format(connectionsEndpointsConfig.Value.Enrolments, connectionId.ToString(), serviceKey);
-        var expectedUrl = $"{baseAddress}/{endpoint}";
+        var uriBuilder = new UriBuilder()
+        {
+            Path = endpoint,
+        };
+
+        var expectedUrl = $"{baseAddress}/{uriBuilder.Path}";
 
         var apiResponse = _fixture.Create<ConnectionWithEnrolmentsModel>();
 
@@ -195,7 +215,13 @@ public class ConnectionsServiceTests
         var serviceKey = "packaging";
 
         var endpoint = string.Format(connectionsEndpointsConfig.Value.Enrolments, connectionId.ToString(), serviceKey);
-        var expectedUrl = $"{baseAddress}/{endpoint}";
+
+        var uriBuilder = new UriBuilder()
+        {
+            Path = endpoint,
+        };
+
+        var expectedUrl = $"{baseAddress}/{uriBuilder.Path}";
 
         _httpMessageHandlerMock.Protected()
              .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -235,7 +261,12 @@ public class ConnectionsServiceTests
         var serviceKey = "packaging";
 
         var endpoint = string.Format(connectionsEndpointsConfig.Value.Enrolments, connectionId.ToString(), serviceKey);
-        var expectedUrl = $"{baseAddress}/{endpoint}";
+        var uriBuilder = new UriBuilder()
+        {
+            Path = endpoint,
+        };
+
+        var expectedUrl = $"{baseAddress}/{uriBuilder.Path}";
 
         _httpMessageHandlerMock.Protected()
              .Setup<Task<HttpResponseMessage>>("SendAsync",
