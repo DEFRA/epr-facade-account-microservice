@@ -1,9 +1,9 @@
-resources:
-  repositories:
-    - repository: AutomationTesting
-      name: RWD-CPR-EPR4P-ADO/epr-playwright-bdd
-      type: git
-      ref: automation-testing-sam
+#resources:
+#  repositories:
+#    - repository: AutomationTesting
+#      name: RWD-CPR-EPR4P-ADO/epr-playwright-bdd
+#      type: git
+#      ref: automation-testing-sam
       
 stages:
   - stage: DeployToDev4Regulators
@@ -21,10 +21,10 @@ stages:
               serviceName: 'devrwdwebwa4413'
               targetEnvironment: 'development'
               
-      - job: RunAutomationTest
-        displayName: DEV4 Automation Testing
-        dependsOn: DeployLatestMainDev4
-        pool: DEFRA-COMMON-ubuntu2004-SSV3
-        steps:
-          - checkout: AutomationTesting
-          - template: automation-testing.yaml@AutomationTesting
+     # - job: RunAutomationTest
+     #   displayName: DEV4 Automation Testing
+     #   dependsOn: DeployLatestMainDev4
+     #   pool: DEFRA-COMMON-ubuntu2004-SSV3
+     #   steps:
+     #     - checkout: AutomationTesting
+     #    - template: automation-testing.yaml@AutomationTesting
