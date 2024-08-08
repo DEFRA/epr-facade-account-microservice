@@ -146,7 +146,7 @@ public class RoleManagementService : IRoleManagementService
             Path = endPointUrl,
         };
 
-        var response = await _httpClient.GetAsync(uriBuilder.Path);
+        var response = await _httpClient.GetAsync(uriBuilder.Uri.LocalPath);
 
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
