@@ -76,12 +76,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
             _logger.LogInformation("Attempting to get the compliance schemes members for organisation id : '{organisationId}'", organisationId);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
-            var uriBuilder = new UriBuilder(_httpClient.BaseAddress)
-            {
-                Path = endpoint,
-            };
-
-            result = await _httpClient.GetAsync(uriBuilder.Path);
+            result = await _httpClient.GetAsync(endpoint);
         }
         catch (Exception e)
         {
