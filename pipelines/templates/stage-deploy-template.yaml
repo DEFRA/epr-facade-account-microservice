@@ -1,10 +1,4 @@
-#resources:
-#  repositories:
-#    - repository: AutomationTesting
-#      name: RWD-CPR-EPR4P-ADO/epr-playwright-bdd
-#      type: git
-#      ref: automation-testing-sam
-      
+   
 stages:
   - stage: DeployToDev4Regulators
     jobs:
