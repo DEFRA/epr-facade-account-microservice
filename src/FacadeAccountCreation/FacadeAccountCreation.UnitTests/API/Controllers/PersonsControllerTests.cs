@@ -181,21 +181,21 @@ public class PersonsControllerTests
         okResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
     }
 
-    //[TestMethod]
-    //public async Task PutUserDetailsByUserId_WhenPassedValidData_ShouldReturnOK()
-    //{
-    //    // arrange  
-    //    var requestData = _fixture.Create<UserDetailsUpdateModel>();
-    //    var userDetailsDto = new UserDetailsUpdateModel { FirstName = "First", LastName = "Last", JobTitle = "Director", Telephone = "079" };
+    [TestMethod]
+    public async Task PutUserDetailsByUserId_WhenPassedValidData_ShouldReturnOK()
+    {
+        // arrange  
+        var requestData = _fixture.Create<UserDetailsDto>();
+        var userDetailsDto = new UserDetailsDto { FirstName = "First", LastName = "Last", JobTitle = "Director", TelePhone = "079" };
 
-    //    _mockPersonService
-    //        .Setup(x => x.UpdateUserDetailsByUserId(It.IsAny<Guid>(), requestData));
+        _mockPersonService
+            .Setup(x => x.UpdateUserDetailsByUserId(It.IsAny<Guid>(), requestData));
 
-    //    // act
-    //    var result = await _sut.PutUserDetailsByUserId(_userId, userDetailsDto);
+        // act
+        var result = await _sut.PutUserDetailsByUserId(_userId, userDetailsDto);
 
-    //    // assert
-    //    result.Should().NotBeNull();
-    //    ((StatusCodeResult)result).StatusCode.Should().Be((int)HttpStatusCode.OK);
-    //}
+        // assert
+        result.Should().NotBeNull();
+        ((StatusCodeResult)result).StatusCode.Should().Be((int)HttpStatusCode.OK);
+    }
 }

@@ -80,34 +80,34 @@ public class PersonsController : ControllerBase
         return personResponse == null ? NotFound() : Ok(personResponse);
     }
 
-    //[HttpPut]
-    //[Route("update-user-details/{userId}")]
-    //[Consumes("application/json")]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    //public async Task<IActionResult> PutUserDetailsByUserId(
-    //    Guid userId,
-    //    [FromBody] UserDetailsUpdateModel? userDetailsDto)
-    //{
-    //    if (userId == null)
-    //    {
-    //        _logger.LogError($"UserId was null in the API call");
-    //        return HandleError.HandleErrorWithStatusCode(HttpStatusCode.BadRequest);
-    //    }
+    [HttpPut]
+    [Route("update-user-details/{userId}")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> PutUserDetailsByUserId(
+        Guid userId,
+        [FromBody] UserDetailsDto? userDetailsDto)
+    {
+        if (userId == null)
+        {
+            _logger.LogError($"UserId was null in the API call");
+            return HandleError.HandleErrorWithStatusCode(HttpStatusCode.BadRequest);
+        }
 
-    //    try
-    //    {
-    //        await _personService.UpdateUserDetailsByUserId(
-    //            userId,
-    //            userDetailsDto);
+        try
+        {
+            await _personService.UpdateUserDetailsByUserId(
+                userId,
+                userDetailsDto);
 
-    //        return Ok();
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        _logger.LogError($"Error updating the user details for user {userId}");
-    //        return HandleError.Handle(e);
-    //    }
-    //}
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error updating the user details for user {userId}");
+            return HandleError.Handle(e);
+        }
+    }
 }
