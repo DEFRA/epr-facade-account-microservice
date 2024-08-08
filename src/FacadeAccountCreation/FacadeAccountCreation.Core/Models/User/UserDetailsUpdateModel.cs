@@ -6,7 +6,7 @@ namespace FacadeAccountCreation.Core.Models.User
     /// User details that can be updated
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record UserDetailsDto
+    public record UserDetailsUpdateModel
     {
         /// <summary>
         /// User Firstname
@@ -26,6 +26,6 @@ namespace FacadeAccountCreation.Core.Models.User
         /// <summary>
         /// User Telephone
         /// </summary>
-        public string TelePhone { get; init; }
+        public string Telephone { get; init; }
     }
 }

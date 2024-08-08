@@ -3,6 +3,7 @@ using FacadeAccountCreation.API.Shared;
 using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.User;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace FacadeAccountCreation.API.Controllers;
 
@@ -50,6 +51,39 @@ public class UsersController : ControllerBase
         {
             _logger.LogError(e, "Error fetching the organisations list for the user");
             return HandleError.Handle(e);
+        }
+    }
+
+    [HttpPut]
+    [Consumes("application/json")]
+    [Route("personal-details")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdatePersonalDetails(
+       [BindRequired, FromBody] UserDetailsUpdateModel updateUserDetailsRequest,
+       [BindRequired, FromQuery] string serviceKey,
+       [BindRequired, FromHeader(Name = "X-EPR-Organisation")] Guid organisationId)
+    {
+        var userId = User.UserId();
+        try
+        {
+            var response = await _userService.UpdatePersonalDetailsAsync(userId, organisationId, serviceKey, updateUserDetailsRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation("Update personal details successfully for the user {userId} from organisation {organisationId}", userId, organisationId);
+                return Ok(await response.Content.ReadFromJsonAsync<UpdateUserDetailsResponse>());
+            }
+            else
+            {
+                _logger.LogError("failed to update personal details for the user {userId} from organisation {organisationId}", userId, organisationId);
+                return HandleError.HandleErrorWithStatusCode(response.StatusCode);
+            }
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError("failed to update personal details for the user {userId} from organisation {organisationId} of service '{serviceKey}'.",
+                userId, organisationId, serviceKey);
+            return HandleError.Handle(exception);
         }
     }
 }

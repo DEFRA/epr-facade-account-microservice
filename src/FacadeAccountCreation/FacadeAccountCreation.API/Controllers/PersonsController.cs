@@ -88,7 +88,7 @@ public class PersonsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> PutUserDetailsByUserId(
         Guid userId,
-        [FromBody] UserDetailsDto? userDetailsDto)
+        [FromBody] UserDetailsUpdateModel? userDetailsDto)
     {
         if (userId == null)
         {
