@@ -22,9 +22,9 @@ stages:
               targetEnvironment: 'development'
               
       - job: RunAutomationTest
-      displayName: DEV4 Automation Testing
-      dependsOn: DeployLatestMainDev4
-      pool: DEFRA-COMMON-ubuntu2004-SSV3
-      steps:
-        - checkout: AutomationTesting
-        - template: automation-testing.yaml@AutomationTesting
+        displayName: DEV4 Automation Testing
+        dependsOn: DeployLatestMainDev4
+        pool: DEFRA-COMMON-ubuntu2004-SSV3
+        steps:
+          - checkout: AutomationTesting
+          - template: automation-testing.yaml@AutomationTesting
