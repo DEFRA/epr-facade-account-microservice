@@ -23,7 +23,7 @@ stages:
               
       - job: RunAutomationTest
         displayName: DEV4 Automation Testing
-        dependsOn: DeployLatestMainDev4
+        dependsOn: DeployToDev4Regulators
         pool: DEFRA-COMMON-ubuntu2004-SSV3
         steps:
           - checkout: AutomationTesting
