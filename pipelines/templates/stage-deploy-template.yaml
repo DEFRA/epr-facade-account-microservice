@@ -21,10 +21,10 @@ stages:
               serviceName: 'devrwdwebwa4413'
               targetEnvironment: 'development'
               
-     # - job: RunAutomationTest
-     #   displayName: DEV4 Automation Testing
-     #   dependsOn: DeployLatestMainDev4
-     #   pool: DEFRA-COMMON-ubuntu2004-SSV3
-     #   steps:
-     #     - checkout: AutomationTesting
-     #    - template: automation-testing.yaml@AutomationTesting
+      - job: RunAutomationTest
+      displayName: DEV4 Automation Testing
+      dependsOn: DeployLatestMainDev4
+      pool: DEFRA-COMMON-ubuntu2004-SSV3
+      steps:
+        - checkout: AutomationTesting
+        - template: automation-testing.yaml@AutomationTesting
