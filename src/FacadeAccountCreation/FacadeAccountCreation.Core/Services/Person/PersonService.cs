@@ -94,7 +94,7 @@ namespace FacadeAccountCreation.Core.Services.Person
         /// <returns>Async task indicating success</returns>
         public async Task UpdateUserDetailsByUserId(
             Guid userId,
-            UserDetailsDto userDetailsDto)
+            UserDetailsUpdateModel userDetailsDto)
         {
             var url = $"{_config.GetSection("UserDetailsEndpoints").GetSection("UpdateUserDetails").Value}/{userId}";
 

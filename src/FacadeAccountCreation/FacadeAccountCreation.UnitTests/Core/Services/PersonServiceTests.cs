@@ -300,7 +300,7 @@ public class PersonServiceTests
         var sut = new PersonService(httpClient,  _configuration);
 
         // Act
-        Func<Task> act = () => sut.UpdateUserDetailsByUserId(Guid.NewGuid(), new UserDetailsDto());
+        Func<Task> act = () => sut.UpdateUserDetailsByUserId(Guid.NewGuid(), new UserDetailsUpdateModel());
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
