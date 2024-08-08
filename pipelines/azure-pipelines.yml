@@ -44,9 +44,9 @@ resources:
       ref: feature/automation-testing-facade
 
     - repository: AutomationTesting
-    - name: RWD-CPR-EPR4P-ADO/epr-playwright-bdd
+      name: RWD-CPR-EPR4P-ADO/epr-playwright-bdd
       type: git
-       ref: automation-testing-sam
+      ref: automation-testing-sam
 
 stages:
 - template: epr-build-pipeline.yaml@CommonTemplates
