@@ -60,4 +60,4 @@ stages:
     serviceName: $(serviceName)
     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
 
-#- template: templates/stage-deploy-template.yaml
+- template: templates/stage-deploy-template.yaml
