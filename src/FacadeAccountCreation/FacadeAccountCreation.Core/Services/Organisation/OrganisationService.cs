@@ -6,6 +6,7 @@ using FacadeAccountCreation.Core.Models.Organisations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -20,6 +21,7 @@ public class OrganisationService : IOrganisationService
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
     private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
+    private const string OrganisationGetSubsidiaryUri = "api/organisations";
 
     public OrganisationService(
         HttpClient httpClient,
@@ -166,5 +168,28 @@ public class OrganisationService : IOrganisationService
         var result = await response.Content.ReadAsStringAsync();
 
         return result;
+    }
+
+    public async Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId, int pageSize, int page)
+    {
+        HttpResponseMessage result = null;
+        var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/organisationRelationships?pageSize={pageSize}&currentPage={page}";
+        var response = await _httpClient.GetAsync(endpoint);
+        try
+        {
+            _logger.LogInformation("Attempting to get the organisation relationships for organisation id : '{organisationId}'", organisationExternalId);
+            result = await _httpClient.GetAsync(endpoint);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to get organisation relationships for organisation id: '{organisationId}'", organisationExternalId);
+            throw;
+        }
+        finally
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
+        }
+
+        return await response.Content.ReadFromJsonWithEnumsAsync<OrganisationRelationshipModel>();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using FacadeAccountCreation.Core.Models.Organisations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FacadeAccountCreation.Core.Models.ComplianceScheme
 {
@@ -8,5 +9,6 @@ namespace FacadeAccountCreation.Core.Models.ComplianceScheme
         public Guid SelectedSchemeId { get; set; }
         public string OrganisationNumber { get; set; }
         public string OrganisationName { get; set; }
+    //    public List<RelationshipResponseModel> Relationships { get; set; } = null!;
     }
 }

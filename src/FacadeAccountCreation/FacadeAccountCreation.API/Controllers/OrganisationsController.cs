@@ -145,4 +145,28 @@ public class OrganisationsController : Controller
 
         return Ok(response);
     }
+
+    [HttpGet]
+    [Route("{organisationId:guid}/organisationRelationships")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetOrganisationRelationshipsByOrganisationIdAsync(Guid organisationId, int pageSize, int currentPage)
+    {
+        if (currentPage < 1 || pageSize < 1)
+        {
+            return Problem(statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        var organisationRelationships = await _organisationService.GetOrganisationRelationshipsByOrganisationId(organisationId, pageSize, currentPage);
+
+        if (organisationRelationships != null)
+        {
+            return Ok(organisationRelationships);
+        }
+        else
+        {
+            return NoContent();
+        }
+    }
 }

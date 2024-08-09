@@ -18,4 +18,6 @@ public interface IOrganisationService
     Task<string?> CreateAndAddSubsidiaryAsync(LinkOrganisationModel linkOrganisationModel);
 
     Task<string?> AddSubsidiaryAsync(SubsidiaryAddModel subsidiaryAddModel);
+
+    Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId, int pageSize, int page);
 }

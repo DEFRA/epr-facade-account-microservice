@@ -5,12 +5,14 @@ using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
+using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
 using FacadeAccountCreation.UnitTests.TestHelpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Identity.Web;
 using Moq;
@@ -290,5 +292,64 @@ public class OrganisationsControllerTests
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         resultValue.Detail.Should().Be("Failed to add subsidiary");
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationRelationshipsByOrganisationIdAsync_ValidInputWithData_ReturnsOkResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var pageSize = 10;
+        var currentPage = 1;
+        var mockResponse = new OrganisationRelationshipModel() { Organisation = new OrganisationDetailModel() { OrganisationNumber = "12345", OrganisationType = "Producer" }, Relationships = new List<RelationshipResponseModel> { new RelationshipResponseModel() { OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent" } } };
+
+        _mockOrganisationService
+            .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId, pageSize, currentPage))
+            .ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId, pageSize, currentPage);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(mockResponse, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationRelationshipsByOrganisationIdAsync_ValidInputWithNoData_ReturnsNoContentResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var pageSize = 10;
+        var currentPage = 1;
+
+        _mockOrganisationService
+            .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId, pageSize, currentPage))
+            .ReturnsAsync((OrganisationRelationshipModel)null);
+
+        // Act
+        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId, pageSize, currentPage);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(NoContentResult));
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationRelationshipsByOrganisationIdAsync_InvalidPageSizeOrCurrentPage_ReturnsBadRequest()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var pageSize = 0; // Invalid page size
+        var currentPage = 1;
+
+        // Act
+        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId, pageSize, currentPage);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(ObjectResult));
+        var objectResult = result as ObjectResult;
+        Assert.AreEqual(StatusCodes.Status400BadRequest, objectResult.StatusCode);
     }
 }
