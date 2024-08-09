@@ -26,5 +26,7 @@ public class UserDetailsModel
 
     public string? JobTitle { get; set; }
 
+    public bool IsChangeRequestPending { get; set; }
+
     public List<OrganisationDetailModel> Organisations { get; set; }
 }

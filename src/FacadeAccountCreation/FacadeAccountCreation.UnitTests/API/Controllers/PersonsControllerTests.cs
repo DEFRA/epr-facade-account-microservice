@@ -185,8 +185,8 @@ public class PersonsControllerTests
     public async Task PutUserDetailsByUserId_WhenPassedValidData_ShouldReturnOK()
     {
         // arrange  
-        var requestData = _fixture.Create<UserDetailsDto>();
-        var userDetailsDto = new UserDetailsDto { FirstName = "First", LastName = "Last", JobTitle = "Director", TelePhone = "079" };
+        var requestData = _fixture.Create<UserDetailsUpdateModel>();
+        var userDetailsDto = new UserDetailsUpdateModel { FirstName = "First", LastName = "Last", JobTitle = "Director", Telephone = "079" };
 
         _mockPersonService
             .Setup(x => x.UpdateUserDetailsByUserId(It.IsAny<Guid>(), requestData));

@@ -19,6 +19,6 @@ namespace FacadeAccountCreation.Core.Services.Person
         /// <returns>Async task indicating success</returns>
         Task UpdateUserDetailsByUserId(
             Guid userId,
-            UserDetailsDto userDetailsDto);
+            UserDetailsUpdateModel userDetailsDto);
     }
 }
