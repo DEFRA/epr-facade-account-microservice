@@ -10,15 +10,5 @@ namespace FacadeAccountCreation.Core.Services.Person
         
         Task<PersonResponseModel?> GetPersonByExternalIdAsync(Guid externalId);
         Task<InviteApprovedUserModel> GetPersonByInviteToken(string token);
-
-        /// <summary>
-        /// Updates the user details
-        /// </summary>
-        /// <param name="userId">The id of the user</param>
-        /// <param name="userDetailsDto">The details that will be updated of the user</param>
-        /// <returns>Async task indicating success</returns>
-        Task UpdateUserDetailsByUserId(
-            Guid userId,
-            UserDetailsUpdateModel userDetailsDto);
     }
 }

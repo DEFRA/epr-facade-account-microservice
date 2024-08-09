@@ -60,7 +60,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdatePersonalDetails(
-       [BindRequired, FromBody] UserDetailsUpdateModel updateUserDetailsRequest,
+       [BindRequired, FromBody] UpdateUserDetailsRequest updateUserDetailsRequest,
        [BindRequired, FromQuery] string serviceKey,
        [BindRequired, FromHeader(Name = "X-EPR-Organisation")] Guid organisationId)
     {

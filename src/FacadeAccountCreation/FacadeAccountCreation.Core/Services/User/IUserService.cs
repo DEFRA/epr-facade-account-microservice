@@ -9,5 +9,5 @@ public interface IUserService
         Guid userId, 
         Guid organisationId, 
         string serviceKey, 
-        UserDetailsUpdateModel userDetailsUpdateModelRequest);
+        UpdateUserDetailsRequest userDetailsUpdateModelRequest);
 }

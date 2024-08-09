@@ -34,7 +34,7 @@ public class UserService : IUserService
     }
 
     public async Task<HttpResponseMessage> UpdatePersonalDetailsAsync(
-    Guid userId, Guid organisationId, string serviceKey, UserDetailsUpdateModel userDetailsUpdateModelRequest)
+    Guid userId, Guid organisationId, string serviceKey, UpdateUserDetailsRequest userDetailsUpdateModelRequest)
     {
         _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
         _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
