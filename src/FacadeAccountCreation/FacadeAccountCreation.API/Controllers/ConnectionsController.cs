@@ -123,7 +123,7 @@ namespace FacadeAccountCreation.API.Controllers
             {
                 var result = await _roleManagementService.UpdatePersonRole(connectionId, userId, organisationId, serviceKey, updateRequest);
 
-                if (result.RemovedServiceRoles?.Any(role => role.ServiceRoleKey == ServiceRoles.Packaging.DelegatedPerson) == true)
+                if (result.RemovedServiceRoles?.Exists(role => role.ServiceRoleKey == ServiceRoles.Packaging.DelegatedPerson) == true)
                 {
                     var delegatedPerson = await _roleManagementService.GetPerson(connectionId, serviceKey, userId, organisationId);
                     if (delegatedPerson == null)
@@ -141,7 +141,7 @@ namespace FacadeAccountCreation.API.Controllers
                         _logger.LogError("Unable to send email notification of removal of Delegated Person role. Approved User {UserId} not found", userId);
                         return HandleError.HandleErrorWithStatusCode(HttpStatusCode.NotFound);
                     }
-                    await SendNotificationEmail(result.RemovedServiceRoles, connectionId, userId, organisationId, serviceKey, updateRequest.PersonRole, delegatedPerson, approvedPerson);
+                    await SendNotificationEmail(result.RemovedServiceRoles, userId, organisationId, updateRequest.PersonRole, delegatedPerson, approvedPerson);
                 }
 
                 _logger.LogInformation(
@@ -255,11 +255,11 @@ namespace FacadeAccountCreation.API.Controllers
             }
         }
 
-        private async Task SendNotificationEmail(List<RemovedServiceRole> removedServiceRoles, Guid connectionId, Guid userId, Guid organisationId, string serviceKey, PersonRole personRole, ConnectionPersonModel delegatedPerson, PersonResponseModel approvedPerson)
+        private async Task SendNotificationEmail(List<RemovedServiceRole> removedServiceRoles, Guid userId, Guid organisationId, PersonRole personRole, ConnectionPersonModel delegatedPerson, PersonResponseModel approvedPerson)
         {
-            var removedServiceRole = removedServiceRoles.FirstOrDefault(role => role.ServiceRoleKey == ServiceRoles.Packaging.DelegatedPerson && role.EnrolmentStatus == EnrolmentStatus.Approved);
+            var removedServiceRole = removedServiceRoles.Find(role => role.ServiceRoleKey == ServiceRoles.Packaging.DelegatedPerson && role.EnrolmentStatus == EnrolmentStatus.Approved);
 
-            removedServiceRole ??= removedServiceRoles.FirstOrDefault(role => role.ServiceRoleKey == ServiceRoles.Packaging.DelegatedPerson);
+            removedServiceRole ??= removedServiceRoles.Find(role => role.ServiceRoleKey == ServiceRoles.Packaging.DelegatedPerson);
 
             if (removedServiceRole == null)
             {
