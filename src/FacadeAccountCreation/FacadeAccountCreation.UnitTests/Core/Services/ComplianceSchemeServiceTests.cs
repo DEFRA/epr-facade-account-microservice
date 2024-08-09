@@ -110,9 +110,7 @@ public class ComplianceSchemeServiceTests
             .Create();
 
         var endpoint = string.Format(GetComplianceSchemeMembersEndPoint, organisationId, selectedSchemeId, pageSize, page, query);
-
         var expectedUrl = $"{BaseAddress}/{endpoint}";
-
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
                 ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),

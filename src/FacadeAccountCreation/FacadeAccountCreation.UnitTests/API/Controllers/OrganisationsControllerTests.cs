@@ -225,6 +225,74 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
+    public async Task CreateAndAddSubsidiary_Should_return_Success()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.CreateAndAddSubsidiaryAsync(It.IsAny<LinkOrganisationModel>())).ReturnsAsync("Ref123456");
+
+        // Act
+        var result = await _sut.CreateAndAddSubsidiary(new LinkOrganisationModel()) as OkObjectResult;
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        result.StatusCode.Should().Be((int)HttpStatusCode.OK);
+        result.Value.Should().Be("Ref123456");
+    }
+
+    [TestMethod]
+    public async Task CreateAndAddSubsidiary_WhenResult_Null_Should_return_500()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.CreateAndAddSubsidiaryAsync(It.IsAny<LinkOrganisationModel>())).ReturnsAsync((string)null);
+
+        // Act
+        var result = await _sut.CreateAndAddSubsidiary(new LinkOrganisationModel()) as ObjectResult;
+
+        var resultValue = result.Value as ProblemDetails;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+        resultValue.Detail.Should().Be("Failed to create and add organisation");
+    }
+
+    [TestMethod]
+    public async Task AddSubsidiary_Should_return_Success()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.AddSubsidiaryAsync(It.IsAny<SubsidiaryAddModel>())).ReturnsAsync("Ref123456");
+
+        // Act
+        var result = await _sut.AddSubsidiary(new SubsidiaryAddModel()) as OkObjectResult;
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        result.StatusCode.Should().Be((int)HttpStatusCode.OK);
+        result.Value.Should().Be("Ref123456");
+    }
+
+    [TestMethod]
+    public async Task AddSubsidiary_WhenResult_Null_Should_return_500()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.AddSubsidiaryAsync(It.IsAny<SubsidiaryAddModel>())).ReturnsAsync((string)null);
+
+        // Act
+        var result = await _sut.AddSubsidiary(new SubsidiaryAddModel()) as ObjectResult;
+
+        var resultValue = result.Value as ProblemDetails;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+        resultValue.Detail.Should().Be("Failed to add subsidiary");
+    }
+
+    [TestMethod]
     public async Task UpdateOrganisationDetails_WithValidParameters_ReturnsOkResult()
     {
         // Arrange
