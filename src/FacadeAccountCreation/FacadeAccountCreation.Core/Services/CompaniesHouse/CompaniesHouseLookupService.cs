@@ -23,6 +23,7 @@ public class CompaniesHouseLookupService : ICompaniesHouseLookupService
         };
 
         var response = await _httpClient.GetAsync(uriBuilder.Uri.LocalPath);
+
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {        
             var errorResponse = await response.Content.ReadFromJsonAsync<CompaniesHouseErrorResponse>();
