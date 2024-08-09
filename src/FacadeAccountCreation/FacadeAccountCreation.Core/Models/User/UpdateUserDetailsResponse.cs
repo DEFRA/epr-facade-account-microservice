@@ -1,5 +1,7 @@
-﻿namespace FacadeAccountCreation.Core.Models.User;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FacadeAccountCreation.Core.Models.User;
+[ExcludeFromCodeCoverage]
 public class UpdateUserDetailsResponse
 {
     public bool HasTelephoneOnlyUpdated { get; set; } = false;

@@ -1,4 +1,7 @@
-﻿namespace FacadeAccountCreation.Core.Models.User;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FacadeAccountCreation.Core.Models.User;
+[ExcludeFromCodeCoverage]
 public class ChangeHistoryModel
 {
     public int Id { get; set; }
