@@ -22,9 +22,9 @@ public class EnrolmentsController : Controller
     private readonly IMessagingService _messagingService;
     private readonly MessagingConfig _messagingConfig;
     private readonly IServiceRolesLookupService _serviceRolesLookup;
-    
+
     public EnrolmentsController(
-        IEnrolmentService enrolmentService, 
+        IEnrolmentService enrolmentService,
         ILogger<EnrolmentsController> logger,
         IPersonService personService,
         IOrganisationService organisationService,
@@ -40,21 +40,21 @@ public class EnrolmentsController : Controller
         _messagingConfig = messagingConfig.Value;
         _serviceRolesLookup = serviceRolesLookup;
     }
-    
+
     [HttpDelete]
     [Route("{personExternalId}")]
-    public async Task<IActionResult> Delete([FromRoute]Guid personExternalId, Guid organisationId, int serviceRoleId)
+    public async Task<IActionResult> Delete([FromRoute] Guid personExternalId, Guid organisationId, int serviceRoleId)
     {
-        if (personExternalId == default || organisationId == default || serviceRoleId == default)
+        if (personExternalId == Guid.Empty || organisationId == Guid.Empty || serviceRoleId == default)
         {
             var errorMessage = $"Invalid request to delete user {personExternalId} with service role {serviceRoleId}";
-            _logger.LogError(errorMessage);
+            _logger.LogError("Invalid request to delete user {PersonExternalId} with service role {ServiceRoleId}", personExternalId, serviceRoleId);
             return Problem(errorMessage);
         }
-        var deletedPersonToSendEmail =  _serviceRolesLookup.IsProducer(serviceRoleId)
-                                                                        ?  GetPersonDetailsToSendEmail(personExternalId, organisationId)
+        var deletedPersonToSendEmail = _serviceRolesLookup.IsProducer(serviceRoleId)
+                                                                        ? GetPersonDetailsToSendEmail(personExternalId, organisationId)
                                                                         : null;
-        
+
         var response = await _enrolmentService.DeleteUser(new DeleteUserModel
         {
             PersonExternalIdToDelete = personExternalId,
@@ -63,7 +63,7 @@ public class EnrolmentsController : Controller
             ServiceRoleId = serviceRoleId
         });
 
-       if (response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             _logger.LogInformation("Deleted user {PersonExternalId} with service role {ServiceRoleId} successfully", personExternalId, serviceRoleId);
 
@@ -72,29 +72,27 @@ public class EnrolmentsController : Controller
                 bool emailSent = SendNotificationEmailToDeletedPerson(deletedPersonToSendEmail.Result);
                 if (emailSent)
                 {
-                    var errorMessage = $"Error sending the delete notification to user {deletedPersonToSendEmail.Result.FirstName } {deletedPersonToSendEmail.Result.LastName} " +
-                                       $" for company {deletedPersonToSendEmail.Result.CompanyName}";
-                    _logger.LogError(errorMessage);
+                    _logger.LogError("Error sending the delete notification to user {FirstName} {LastName} for company {CompanyName}", deletedPersonToSendEmail.Result.FirstName, deletedPersonToSendEmail.Result.LastName, deletedPersonToSendEmail.Result.CompanyName);
                 }
             }
-            
+
             return NoContent();
         }
         else
         {
             var errorMessage = $"Error deleting user {personExternalId} with service role {serviceRoleId}";
-            _logger.LogError(errorMessage);
+            _logger.LogError("Error deleting user {PersonExternalId} with service role {ServiceRoleId}",personExternalId, serviceRoleId);
             return Problem(errorMessage);
         }
     }
-    
+
     private async Task<RemovedUserNotificationEmailModel> GetPersonDetailsToSendEmail(Guid personExternalId, Guid organisationId)
     {
         var personResponse = await _personService.GetPersonByExternalIdAsync(personExternalId);
         var organisationResponse = await _organisationService.GetOrganisationByExternalId(organisationId);
 
-        RemovedUserNotificationEmailModel personToBeDeleted = null; 
-        
+        RemovedUserNotificationEmailModel personToBeDeleted = null;
+
         if (personResponse != null && organisationResponse != null)
         {
             personToBeDeleted = new RemovedUserNotificationEmailModel
@@ -109,10 +107,10 @@ public class EnrolmentsController : Controller
             };
             return personToBeDeleted;
         }
-        
+
         return personToBeDeleted;
     }
-    
+
     private bool SendNotificationEmailToDeletedPerson(RemovedUserNotificationEmailModel deletedPersonToSendEmail)
     {
         return _messagingService.SendRemovedUserNotification(deletedPersonToSendEmail) != null;

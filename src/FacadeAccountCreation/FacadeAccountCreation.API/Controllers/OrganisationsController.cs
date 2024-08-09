@@ -37,7 +37,7 @@ public class OrganisationsController : Controller
         try
         {
             var userId = User.UserId();
-            if (userId == default)
+            if (userId == Guid.Empty)
             {
                 _logger.LogError("UserId not available");
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
@@ -109,6 +109,43 @@ public class OrganisationsController : Controller
         var response = await _organisationService.GetOrganisationNameByInviteToken(token);
 
         return response == null ? NotFound() : Ok(response);
+    }
+
+    [HttpPost]
+    [Route("create-and-add-subsidiary")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> CreateAndAddSubsidiary(LinkOrganisationModel linkOrganisationModel)
+    {
+        linkOrganisationModel.UserId = User.UserId();
+        var response = await _organisationService.CreateAndAddSubsidiaryAsync(linkOrganisationModel);
+
+        if (response == null)
+        {
+            return Problem("Failed to create and add organisation", statusCode: StatusCodes.Status500InternalServerError);
+        }
+
+        return Ok(response);
+    }
+
+    [HttpPost]
+    [Route("add-subsidiary")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> AddSubsidiary(SubsidiaryAddModel subsidiaryAddModel)
+    {
+        subsidiaryAddModel.UserId = User.UserId();
+
+        var response = await _organisationService.AddSubsidiaryAsync(subsidiaryAddModel);
+
+        if (response == null)
+        {
+            return Problem("Failed to add subsidiary", statusCode: StatusCodes.Status500InternalServerError);
+        }
+
+        return Ok(response);
     }
 
     /// <summary>
