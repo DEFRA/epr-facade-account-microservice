@@ -180,22 +180,4 @@ public class PersonsControllerTests
         okResult?.Value.Should().BeEquivalentTo(handlerResponse);
         okResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
     }
-
-    //[TestMethod]
-    //public async Task PutUserDetailsByUserId_WhenPassedValidData_ShouldReturnOK()
-    //{
-    //    // arrange  
-    //    var requestData = _fixture.Create<UserDetailsUpdateModel>();
-    //    var userDetailsDto = new UserDetailsUpdateModel { FirstName = "First", LastName = "Last", JobTitle = "Director", Telephone = "079" };
-
-    //    _mockPersonService
-    //        .Setup(x => x.UpdateUserDetailsByUserId(It.IsAny<Guid>(), requestData));
-
-    //    // act
-    //    var result = await _sut.PutUserDetailsByUserId(_userId, userDetailsDto);
-
-    //    // assert
-    //    result.Should().NotBeNull();
-    //    ((StatusCodeResult)result).StatusCode.Should().Be((int)HttpStatusCode.OK);
-    //}
 }
