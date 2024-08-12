@@ -6,26 +6,26 @@ namespace FacadeAccountCreation.Core.Models.User
     /// User details that can be updated
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record UserDetailsUpdateModel
+    public class UpdateUserDetailsRequest
     {
         /// <summary>
         /// User Firstname
         /// </summary>
-        public string FirstName { get; init; }
+        public string FirstName { get; set; }
 
         /// <summary>
         /// User Lastname
         /// </summary>
-        public string LastName { get; init; }
+        public string LastName { get; set; }
 
         /// <summary>
         /// User Jobtitle in an organisation
         /// </summary>
-        public string JobTitle { get; init; }
+        public string? JobTitle { get; set; }
 
         /// <summary>
         /// User Telephone
         /// </summary>
-        public string Telephone { get; init; }
+        public string? Telephone { get; set; }
     }
 }

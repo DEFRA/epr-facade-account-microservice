@@ -14,7 +14,7 @@ public class ChangeHistoryModel
 
     public string? NewValues { get; set; }
 
-    public bool IsActive { get; set; }
+    public bool IsActive { get; set; } = false;
 
     public string? ApproverComments { get; set; }
 
@@ -22,13 +22,13 @@ public class ChangeHistoryModel
 
     public DateTimeOffset? DecisionDate { get; set; }
 
-    public DateTimeOffset DeclarationDate { get; set; }
+    public DateTimeOffset? DeclarationDate { get; set; }
 
     public Guid ExternalId { get; set; }
 
-    public DateTimeOffset CreatedOn { get; set; }
+    public DateTimeOffset? CreatedOn { get; set; }
 
-    public DateTimeOffset LastUpdatedOn { get; set; }
+    public DateTimeOffset? LastUpdatedOn { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; set; } = false;
 }
