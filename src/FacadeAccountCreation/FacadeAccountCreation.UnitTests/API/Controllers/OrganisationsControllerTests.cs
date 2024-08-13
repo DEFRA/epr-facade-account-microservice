@@ -12,7 +12,6 @@ using FacadeAccountCreation.UnitTests.TestHelpers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Identity.Web;
 using Moq;

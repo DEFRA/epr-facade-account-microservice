@@ -10,6 +10,7 @@ using FacadeAccountCreation.Core.Services.Organisation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Protected;
@@ -472,7 +473,7 @@ public class OrganisationServiceTests
     }
 
     [TestMethod]
-    public async Task GetOrganisationRelationshipsByOrganisationId_LogsError_AndThrowsException_OnFailure()
+    public async Task GetOrganisationRelationshipsByOrganisationId_ThrowsException_OnFailure()
     {
         // Arrange
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);

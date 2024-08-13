@@ -172,24 +172,24 @@ public class OrganisationService : IOrganisationService
 
     public async Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId)
     {
-        HttpResponseMessage result = null;
         var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/organisationRelationships";
-        var response = await _httpClient.GetAsync(endpoint);
+
         try
         {
-            _logger.LogInformation("Attempting to get the organisation relationships for organisation id : '{organisationId}'", organisationExternalId);
-            result = await _httpClient.GetAsync(endpoint);
+            _logger.LogInformation("Attempting to get the Organisation Relationships for Organisation Id : '{organisationId}'", organisationExternalId);
+
+            var response = await _httpClient.GetAsync(endpoint);
+
+            return await response.Content.ReadFromJsonWithEnumsAsync<OrganisationRelationshipModel>();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get organisation relationships for organisation id: '{organisationId}'", organisationExternalId);
+            _logger.LogError(e, "Failed to get Organisation Relationships for Organisation Id: '{organisationId}'", organisationExternalId);
             throw;
         }
         finally
         {
             _httpClient.DefaultRequestHeaders.Clear();
         }
-
-        return await response.Content.ReadFromJsonWithEnumsAsync<OrganisationRelationshipModel>();
     }
 }
