@@ -1,10 +1,7 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
-using Azure;
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
-using FacadeAccountCreation.Core.Models.ComplianceScheme;
-using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FluentAssertions;
@@ -16,8 +13,8 @@ using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -486,5 +483,32 @@ public class OrganisationServiceTests
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [TestMethod]
+
+    public async Task GetOrganisationRelationshipsByOrganisationId_LogsError_AndThrowsException_OnFailure()
+    {
+        // Arrange
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var loggerMock = new Mock<ILogger<OrganisationService>>();
+
+        var sut = new OrganisationService(httpClient, loggerMock.Object, _configuration);
+
+        // Act
+
+        Func<Task> act = async () => await sut.GetOrganisationRelationshipsByOrganisationId(_organisationId);
+
+        // Assert
+
+        await act.Should().ThrowAsync<InvalidOperationException>();
+
+        Assert.IsNotNull(act);
+
+        loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get Organisation Relationships for Organisation Id: '{organisationId}'", _organisationId));
     }
 }
