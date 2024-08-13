@@ -299,16 +299,14 @@ public class OrganisationsControllerTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var pageSize = 10;
-        var currentPage = 1;
         var mockResponse = new OrganisationRelationshipModel() { Organisation = new OrganisationDetailModel() { OrganisationNumber = "12345", OrganisationType = "Producer" }, Relationships = new List<RelationshipResponseModel> { new RelationshipResponseModel() { OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent" } } };
 
         _mockOrganisationService
-            .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId, pageSize, currentPage))
+            .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId))
             .ReturnsAsync(mockResponse);
 
         // Act
-        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId, pageSize, currentPage);
+        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -322,34 +320,15 @@ public class OrganisationsControllerTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var pageSize = 10;
-        var currentPage = 1;
 
         _mockOrganisationService
-            .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId, pageSize, currentPage))
+            .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId))
             .ReturnsAsync((OrganisationRelationshipModel)null);
 
         // Act
-        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId, pageSize, currentPage);
+        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId);
 
         // Assert
         Assert.IsInstanceOfType(result, typeof(NoContentResult));
-    }
-
-    [TestMethod]
-    public async Task GetOrganisationRelationshipsByOrganisationIdAsync_InvalidPageSizeOrCurrentPage_ReturnsBadRequest()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        var pageSize = 0; // Invalid page size
-        var currentPage = 1;
-
-        // Act
-        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId, pageSize, currentPage);
-
-        // Assert
-        Assert.IsInstanceOfType(result, typeof(ObjectResult));
-        var objectResult = result as ObjectResult;
-        Assert.AreEqual(StatusCodes.Status400BadRequest, objectResult.StatusCode);
     }
 }

@@ -151,14 +151,9 @@ public class OrganisationsController : Controller
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetOrganisationRelationshipsByOrganisationIdAsync(Guid organisationId, int pageSize, int currentPage)
+    public async Task<IActionResult> GetOrganisationRelationshipsByOrganisationIdAsync(Guid organisationId)
     {
-        if (currentPage < 1 || pageSize < 1)
-        {
-            return Problem(statusCode: StatusCodes.Status400BadRequest);
-        }
-
-        var organisationRelationships = await _organisationService.GetOrganisationRelationshipsByOrganisationId(organisationId, pageSize, currentPage);
+        var organisationRelationships = await _organisationService.GetOrganisationRelationshipsByOrganisationId(organisationId);
 
         if (organisationRelationships != null)
         {

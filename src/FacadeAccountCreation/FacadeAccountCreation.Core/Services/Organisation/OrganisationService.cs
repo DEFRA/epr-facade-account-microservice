@@ -170,10 +170,10 @@ public class OrganisationService : IOrganisationService
         return result;
     }
 
-    public async Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId, int pageSize, int page)
+    public async Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId)
     {
         HttpResponseMessage result = null;
-        var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/organisationRelationships?pageSize={pageSize}&currentPage={page}";
+        var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/organisationRelationships";
         var response = await _httpClient.GetAsync(endpoint);
         try
         {
