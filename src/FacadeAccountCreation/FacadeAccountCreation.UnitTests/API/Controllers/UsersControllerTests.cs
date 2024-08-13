@@ -3,6 +3,7 @@ using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.Core.Models.User;
+using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.Core.Services.User;
 using FacadeAccountCreation.UnitTests.TestHelpers;
 using FluentAssertions;
@@ -23,6 +24,7 @@ public class UsersControllerTests
     private readonly Guid _oid = Guid.NewGuid();
     private readonly Guid _userId = Guid.NewGuid();
     private readonly Mock<IUserService> _mockUserService = new();
+    private readonly Mock<IMessagingService> _mockMessagingService = new();
     private readonly NullLogger<UsersController> _nullLogger = new();
     private UsersController _sut = null!;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -32,7 +34,9 @@ public class UsersControllerTests
     public void Setup()
     {
         _httpContextMock = new Mock<HttpContext>();
-        _sut = new UsersController(_nullLogger, _mockUserService.Object);
+        _sut = new UsersController(
+            _nullLogger, _mockUserService.Object, 
+            _mockMessagingService.Object);
         _sut.AddDefaultContextWithOid(_oid, "TestAuth");
     }
     
