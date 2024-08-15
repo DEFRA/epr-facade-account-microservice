@@ -5,6 +5,7 @@ using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
+using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
 using FacadeAccountCreation.UnitTests.TestHelpers;
@@ -290,5 +291,43 @@ public class OrganisationsControllerTests
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         resultValue.Detail.Should().Be("Failed to add subsidiary");
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationRelationshipsByOrganisationIdAsync_ValidInputWithData_ReturnsOkResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var mockResponse = new OrganisationRelationshipModel() { Organisation = new OrganisationDetailModel() { OrganisationNumber = "12345", OrganisationType = "Producer" }, Relationships = new List<RelationshipResponseModel> { new RelationshipResponseModel() { OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent" } } };
+
+        _mockOrganisationService
+            .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId))
+            .ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(mockResponse, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationRelationshipsByOrganisationIdAsync_ValidInputWithNoData_ReturnsNoContentResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+
+        _mockOrganisationService
+            .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId))
+            .ReturnsAsync((OrganisationRelationshipModel)null);
+
+        // Act
+        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(NoContentResult));
     }
 }

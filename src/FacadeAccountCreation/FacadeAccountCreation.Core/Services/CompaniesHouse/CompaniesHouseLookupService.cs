@@ -1,6 +1,6 @@
-﻿using System.Net;
+﻿using FacadeAccountCreation.Core.Models.CompaniesHouse;
+using System.Net;
 using System.Net.Http.Json;
-using FacadeAccountCreation.Core.Models.CompaniesHouse;
 
 namespace FacadeAccountCreation.Core.Services.CompaniesHouse;
 

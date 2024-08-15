@@ -15,7 +15,7 @@ namespace FacadeAccountCreation.API.Controllers
         private readonly IOrganisationService _organisationService;
         private readonly IMessagingService _messagingService;
 
-        public RegulatorController(ILogger<RegulatorController> logger,IOrganisationService organisationService, IMessagingService messagingService)
+        public RegulatorController(ILogger<RegulatorController> logger, IOrganisationService organisationService, IMessagingService messagingService)
         {
             _logger = logger;
             _organisationService = organisationService;
@@ -29,7 +29,7 @@ namespace FacadeAccountCreation.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> SendNotificationOfResubmissionToUser(ResubmissionNotificationEmailModel request)
         {
-            _logger.LogDebug(JsonConvert.SerializeObject(request));
+            _logger.LogDebug("{Request}", JsonConvert.SerializeObject(request));
             var regulatorOrganisation = _organisationService.GetRegulatorOrganisationByNationId(request.NationId).Result;
 
             var resubmissionInput = new ResubmissionNotificationEmailInput
@@ -42,7 +42,7 @@ namespace FacadeAccountCreation.API.Controllers
                 IsComplianceScheme = request.IsComplianceScheme
             };
 
-            if(request.IsComplianceScheme)
+            if (request.IsComplianceScheme)
             {
                 resubmissionInput.ComplianceSchemeName = request.ComplianceSchemeName;
                 resubmissionInput.ComplianceSchemePersonName = request.ComplianceSchemePersonName;
