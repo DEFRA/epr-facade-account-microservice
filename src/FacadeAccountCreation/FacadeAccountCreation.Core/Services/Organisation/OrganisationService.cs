@@ -201,12 +201,12 @@ public class OrganisationService : IOrganisationService
         var response = await _httpClient.GetAsync(endpoint);
         try
         {
-            _logger.LogInformation("Attempting to get the Organisation Relationships for Organisation Id : '{organisationId}'", organisationExternalId);
+            _logger.LogInformation("Attempting to Export the Organisation Relationships for Organisation Id : '{organisationId}'", organisationExternalId);
             result = await _httpClient.GetAsync(endpoint);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get Organisation Relationships for Organisation Id: '{organisationId}'", organisationExternalId);
+            _logger.LogError(e, "Failed to Export Organisation Relationships for Organisation Id: '{organisationId}'", organisationExternalId);
             throw;
         }
         finally

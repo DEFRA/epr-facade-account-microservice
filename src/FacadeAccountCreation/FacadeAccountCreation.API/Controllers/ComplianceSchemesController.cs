@@ -452,4 +452,26 @@ public class ComplianceSchemesController : ControllerBase
             return HandleError.Handle(e);
         }
     }
+
+    [HttpGet]
+    [Route("{organisationId:guid}/schemes/{complianceSchemeId:guid}/ExportComplianceSchemeSubsidiaries")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ExportComplianceSchemeSubsidiaries(
+        Guid organisationId,
+        Guid complianceSchemeId
+        )
+    {
+        var complianceSchemeSubsidiaries = await _complianceSchemeService.ExportComplianceSchemeSubsidiaries(organisationId, complianceSchemeId);
+
+        if (complianceSchemeSubsidiaries != null)
+        {
+            return Ok(complianceSchemeSubsidiaries);
+        }
+        else
+        {
+            return NoContent();
+        }
+    }
 }
