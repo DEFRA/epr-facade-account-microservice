@@ -17,5 +17,5 @@ public interface IComplianceSchemeService
     Task<HttpResponseMessage> GetAllReasonsForRemovalsAsync();
     Task<InfoForSelectedSchemeRemovalResponse> GetInfoForSelectedSchemeRemoval(Guid organisationId, Guid selectedSchemeId, Guid userId);
     Task<RemoveComplianceSchemeMemberResponse> RemoveComplianceSchemeMember(Guid organisationId, Guid selectedSchemeId, Guid userId, RemoveComplianceSchemeMemberModel model);
-    Task<List<OrganisationSubsidiariesResponseModel>> ExportComplianceSchemeSubsidiaries(Guid userId, Guid organisationId, Guid complianceSchemeId);
+    Task<HttpResponseMessage> ExportComplianceSchemeSubsidiaries(Guid userId, Guid organisationId, Guid complianceSchemeId);
 }
