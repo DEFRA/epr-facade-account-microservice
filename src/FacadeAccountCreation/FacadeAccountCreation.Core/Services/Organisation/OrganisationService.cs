@@ -22,6 +22,7 @@ public class OrganisationService : IOrganisationService
     private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
+    private const string ExportOrganisationSubsidiariesUri = "api/organisations";
 
     public OrganisationService(
         HttpClient httpClient,
@@ -191,5 +192,28 @@ public class OrganisationService : IOrganisationService
         {
             _httpClient.DefaultRequestHeaders.Clear();
         }
+    }
+
+    public async Task<List<OrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId)
+    {
+        HttpResponseMessage result = null;
+        var endpoint = $"{ExportOrganisationSubsidiariesUri}/{organisationExternalId}/ExportOrganisationSubsidiaries";
+        var response = await _httpClient.GetAsync(endpoint);
+        try
+        {
+            _logger.LogInformation("Attempting to Export the organisation subsidiaries for organisation id : '{organisationId}'", organisationExternalId);
+            result = await _httpClient.GetAsync(endpoint);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to Export the organisation subsidiaries for organisation id: '{organisationId}'", organisationExternalId);
+            throw;
+        }
+        finally
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
+        }
+
+        return await response.Content.ReadFromJsonWithEnumsAsync<List<OrganisationSubsidiariesResponseModel>>();
     }
 }

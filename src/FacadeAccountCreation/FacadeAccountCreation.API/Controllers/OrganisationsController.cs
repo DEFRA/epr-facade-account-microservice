@@ -164,4 +164,23 @@ public class OrganisationsController : Controller
             return NoContent();
         }
     }
+
+    [HttpGet]
+    [Route("{organisationId:guid}/ExportOrganisationSubsidiaries")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetExportOrganisationSubsidiariesAsync(Guid organisationId)
+    {
+        var organisationSubsidiaries = await _organisationService.ExportOrganisationSubsidiaries(organisationId);
+
+        if (organisationSubsidiaries != null)
+        {
+            return Ok(organisationSubsidiaries);
+        }
+        else
+        {
+            return NoContent();
+        }
+    }
 }
