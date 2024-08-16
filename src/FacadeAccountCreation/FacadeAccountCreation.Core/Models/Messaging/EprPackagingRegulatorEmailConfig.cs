@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace FacadeAccountCreation.Core.Models.Messaging;
 
+[ExcludeFromCodeCoverage]
 public class EprPackagingRegulatorEmailConfig
 {
     public const string SectionName = "EprPackagingRegulatorEmailConfig";

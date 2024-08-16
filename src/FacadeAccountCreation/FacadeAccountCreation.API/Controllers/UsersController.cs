@@ -99,7 +99,9 @@ public class UsersController : ControllerBase
                               OldJobTitle = ch.OldValues.JobTitle
                         };
 
-                        _messagingService.SendUserDetailChangeRequestEmailToRegulator(notifyEmailInput);
+                     var notificationId =   _messagingService.SendUserDetailChangeRequestEmailToRegulator(notifyEmailInput);
+
+                        _logger.LogInformation("UserDetailChangeRequest Notification email {notificationId} to regulator sent successfully for the user {userId} from organisation {organisationId}", notificationId, userId, organisationId);
                     }
                     catch (Exception ex)
                     {

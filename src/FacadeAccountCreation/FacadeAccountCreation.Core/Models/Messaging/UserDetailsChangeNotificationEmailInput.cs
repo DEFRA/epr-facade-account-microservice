@@ -1,5 +1,8 @@
-﻿namespace FacadeAccountCreation.Core.Models.Messaging;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FacadeAccountCreation.Core.Models.Messaging;
+
+[ExcludeFromCodeCoverage]
 public class UserDetailsChangeNotificationEmailInput
 {
     public string? Nation { get; set; } = default!;
