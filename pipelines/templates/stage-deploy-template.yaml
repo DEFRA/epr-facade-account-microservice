@@ -26,6 +26,6 @@ stages:
           dependsOn: DeployToDev4Regulators
           steps:
             - checkout: AutomationTesting
-            - template: automation-testing-withfail.yaml@AutomationTesting
+            - template: automation-testing-regulators.yaml@AutomationTesting
               parameters:
                 env: 'dev4'
