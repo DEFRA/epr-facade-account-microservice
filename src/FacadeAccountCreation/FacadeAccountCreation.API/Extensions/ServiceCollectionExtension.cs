@@ -29,6 +29,7 @@ public static class ServiceCollectionExtension
         services.Configure<ServiceRolesConfig>(configuration.GetSection(ServiceRolesConfig.SectionName));
         services.Configure<ConnectionsEndpointsConfig>(configuration.GetSection(ConnectionsEndpointsConfig.SectionName));
         services.Configure<RegulatorEmailConfig>(configuration.GetSection(RegulatorEmailConfig.SectionName));
+        services.Configure<EprPackagingRegulatorEmailConfig>(configuration.GetSection(EprPackagingRegulatorEmailConfig.SectionName));
     }
 
     private static void RegisterServices(this IServiceCollection services, IConfiguration configuration)

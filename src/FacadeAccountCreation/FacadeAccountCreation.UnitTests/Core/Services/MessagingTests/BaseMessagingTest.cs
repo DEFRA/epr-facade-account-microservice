@@ -13,6 +13,7 @@ public class BaseMessagingTest
     protected Mock<INotificationClient> _notificationClientMock;
     protected IOptions<MessagingConfig> _messagingConfigOptions;
     protected IOptions<RegulatorEmailConfig> _regulatorEmailConfig;
+    protected IOptions<EprPackagingRegulatorEmailConfig> _eprPackagingRegulatorEmailConfig;
     protected readonly NullLogger<MessagingService> _nullLogger = new();
     protected MessagingService _sut = default!;
     
@@ -38,10 +39,17 @@ public class BaseMessagingTest
             Wales = "dummyEmailWales",
             NorthernIreland = "dummyEmailNI"
         });
+        _eprPackagingRegulatorEmailConfig = Options.Create(new EprPackagingRegulatorEmailConfig()
+        {
+            England = "dummyEmailEngland",
+            Scotland = "dummyEmailScotland",
+            Wales = "dummyEmailWales",
+            NorthernIreland = "dummyEmailNI"
+        });
     }
     
     protected MessagingService GetServiceUnderTest()
     {
-        return new MessagingService(_notificationClientMock.Object, _messagingConfigOptions, _regulatorEmailConfig, _nullLogger);
+        return new MessagingService(_notificationClientMock.Object, _messagingConfigOptions, _regulatorEmailConfig, _eprPackagingRegulatorEmailConfig, _nullLogger);
     }
 }

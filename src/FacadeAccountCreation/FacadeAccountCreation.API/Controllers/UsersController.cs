@@ -1,6 +1,8 @@
 using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.API.Shared;
+using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.User;
+using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.Core.Services.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -13,11 +15,16 @@ public class UsersController : ControllerBase
 {
     private readonly ILogger<UsersController> _logger;
     private readonly IUserService _userService;
+    private readonly IMessagingService _messagingService;
 
-    public UsersController(ILogger<UsersController> logger, IUserService userService)
+    public UsersController(
+        ILogger<UsersController> logger,
+        IUserService userService,
+        IMessagingService messagingService)
     {
         _logger = logger;
         _userService = userService;
+        _messagingService = messagingService;
     }
 
     [HttpGet]
@@ -70,8 +77,41 @@ public class UsersController : ControllerBase
             var response = await _userService.UpdatePersonalDetailsAsync(userId, organisationId, serviceKey, updateUserDetailsRequest);
             if (response.IsSuccessStatusCode)
             {
+                var responseContent = await response.Content.ReadFromJsonAsync<UpdateUserDetailsResponse>();
+                if (responseContent.HasApprovedOrDelegatedUserDetailsSentForApproval && responseContent.ChangeHistory != null)
+                {
+                    try
+                    {
+                        var ch = responseContent.ChangeHistory;
+                        var notifyEmailInput = new UserDetailsChangeNotificationEmailInput()
+                        {
+                              Nation = ch.Nation,
+                              ExternalIdReference = ch.ExternalId,
+                              ContactEmailAddress = ch.EmailAddress,
+                              ContactTelephone = ch.Telephone,
+                              OrganisationName = ch.OrganisationName,
+                              OrganisationNumber = ch.OrganisationNumber,
+                              NewFirstName = ch.NewValues.FirstName,
+                              NewLastName = ch.NewValues.LastName,
+                              NewJobTitle = ch.NewValues.JobTitle,
+                              OldFirstName = ch.OldValues.FirstName,
+                              OldLastName = ch.OldValues.LastName,
+                              OldJobTitle = ch.OldValues.JobTitle
+                        };
+
+                     var notificationId =   _messagingService.SendUserDetailChangeRequestEmailToRegulator(notifyEmailInput);
+
+                        _logger.LogInformation("UserDetailChangeRequest Notification email {notificationId} to regulator sent successfully for the user {userId} from organisation {organisationId}", notificationId, userId, organisationId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "failed to send update user details request email notification to regulator for user {userId} from organisation {organisationId} of service '{serviceKey}'.", userId, organisationId, serviceKey);
+                    }
+                }
+
                 _logger.LogInformation("Update personal details successfully for the user {userId} from organisation {organisationId}", userId, organisationId);
-                return Ok(await response.Content.ReadFromJsonAsync<UpdateUserDetailsResponse>());
+
+                return Ok(responseContent);
             }
             else
             {

@@ -10,9 +10,15 @@ public class ChangeHistoryModel
 
     public int OrganisationId { get; set; }
 
-    public string? OldValues { get; set; }
+    public string? OrganisationName { get; set; }
 
-    public string? NewValues { get; set; }
+    public string? Nation { get; set; }
+
+    public string? OrganisationNumber { get; set; }
+
+    public UserDetailsChangeModel? OldValues { get; set; }
+
+    public UserDetailsChangeModel? NewValues { get; set; }
 
     public bool IsActive { get; set; } = false;
 
@@ -30,5 +36,7 @@ public class ChangeHistoryModel
 
     public DateTimeOffset? LastUpdatedOn { get; set; }
 
-    public bool IsDeleted { get; set; } = false;
+    public string? Telephone { get; set; }
+
+    public string? EmailAddress { get; set; }
 }
