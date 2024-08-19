@@ -20,12 +20,12 @@ stages:
               serviceName: 'devrwdwebwa4413'
               targetEnvironment: 'development'
    
-      - ${{ if eq(parameters.runAutomationTests, true) }}:       
-         - job: RunAutomationTest
-           displayName: DEV4 Automation Testing
-           dependsOn: DeployToDev4Regulators
-           steps:
-             - checkout: AutomationTesting
-             - template: automation-testing-withfail.yaml@AutomationTesting
-                parameters:
-                   env: 'dev4'
+    - ${{ if eq(parameters.runAutomationTests, true) }}:       
+      - job: RunAutomationTest
+        displayName: DEV4 Automation Testing
+        dependsOn: DeployToDev4Regulators
+        steps:
+          - checkout: AutomationTesting
+          - template: automation-testing-withfail.yaml@AutomationTesting
+            parameters:
+              env: 'dev4'
