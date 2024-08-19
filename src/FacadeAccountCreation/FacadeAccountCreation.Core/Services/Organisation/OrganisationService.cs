@@ -194,7 +194,7 @@ public class OrganisationService : IOrganisationService
         }
     }
 
-    public async Task<List<OrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId)
+    public async Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId)
     {
         HttpResponseMessage result = null;
         var endpoint = $"{ExportOrganisationSubsidiariesUri}/{organisationExternalId}/ExportOrganisationSubsidiaries";
@@ -214,6 +214,6 @@ public class OrganisationService : IOrganisationService
             _httpClient.DefaultRequestHeaders.Clear();
         }
 
-        return await response.Content.ReadFromJsonWithEnumsAsync<List<OrganisationSubsidiariesResponseModel>>();
+        return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
     }
 }

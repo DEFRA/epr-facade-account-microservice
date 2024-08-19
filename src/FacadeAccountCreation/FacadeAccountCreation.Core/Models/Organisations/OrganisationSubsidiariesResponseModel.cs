@@ -1,15 +1,13 @@
 ﻿namespace FacadeAccountCreation.Core.Models.Organisations
 {
-    public class OrganisationSubsidiariesResponseModel
+    public class ExportOrganisationSubsidiariesResponseModel
     {
-        public int org_id { get; set; }
+        public int OrganisationId { get; set; }
 
-        public string org_name { get; set; }
+        public int? SubsidiaryId { get; set; }
 
-        public string subsidiary_id { get; set; }
+        public string OrganisationName { get; set; }
 
-        public string subsidiary_name { get; set; }
-
-        public string companies_house { get; set; }
+        public string CompaniesHouseNumber { get; set; }
     }
 }
