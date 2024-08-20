@@ -19,12 +19,15 @@ public class RoleManagementService : IRoleManagementService
     private readonly ILogger<RoleManagementService> _logger;
     private const string XEprOrganisationHeader = "X-EPR-Organisation";
     private const string XEprUserHeader = "X-EPR-User";
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public RoleManagementService(HttpClient httpClient, ILogger<RoleManagementService> logger, IOptions<ConnectionsEndpointsConfig> connectionsEndpointsConfig)
     {
         _httpClient = httpClient;
         _logger = logger;
         _connectionsEndpoints= connectionsEndpointsConfig.Value;
+        _jsonSerializerOptions = new JsonSerializerOptions();
+        _jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     }
 
     public async Task<ConnectionPersonModel> GetPerson(Guid connectionId, string serviceKey, Guid userId, Guid organisationId)
@@ -65,11 +68,7 @@ public class RoleManagementService : IRoleManagementService
 
         string requestUri = $"api/connections/{connectionId}/delegated-person-nomination?serviceKey={serviceKey}";
 
-        var jsonSerializerOptions = new JsonSerializerOptions();
-
-        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
-        var requestContent = new StringContent(JsonSerializer.Serialize(nominationRequest, jsonSerializerOptions), Encoding.UTF8, "application/json");
+        var requestContent = new StringContent(JsonSerializer.Serialize(nominationRequest, _jsonSerializerOptions), Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PutAsync(requestUri, requestContent);
 
@@ -85,11 +84,7 @@ public class RoleManagementService : IRoleManagementService
 
         string requestUri = $"api/enrolments/{enrolmentId}/delegated-person-acceptance?serviceKey={serviceKey}";
 
-        var jsonSerializerOptions = new JsonSerializerOptions();
-
-        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
-        var requestContent = new StringContent(JsonSerializer.Serialize(acceptNominationRequest, jsonSerializerOptions), Encoding.UTF8, "application/json");
+        var requestContent = new StringContent(JsonSerializer.Serialize(acceptNominationRequest, _jsonSerializerOptions), Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PutAsync(requestUri, requestContent);
 
@@ -106,11 +101,7 @@ public class RoleManagementService : IRoleManagementService
 
         string requestUri = $"api/enrolments/{enrolmentId}/approved-person-acceptance?serviceKey={serviceKey}";
 
-        var jsonSerializerOptions = new JsonSerializerOptions();
-
-        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
-        var requestContent = new StringContent(JsonSerializer.Serialize(acceptNominationRequest, jsonSerializerOptions), Encoding.UTF8, "application/json");
+        var requestContent = new StringContent(JsonSerializer.Serialize(acceptNominationRequest, _jsonSerializerOptions), Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PutAsync(requestUri, requestContent);
 
