@@ -68,7 +68,7 @@
                 errors.Add("OrganisationId is required.");
             }
 
-            if (errors.Count != 0)
+            if (errors.Count > 0)
             {
                 throw new ArgumentException(string.Join(' ', errors));
             }
