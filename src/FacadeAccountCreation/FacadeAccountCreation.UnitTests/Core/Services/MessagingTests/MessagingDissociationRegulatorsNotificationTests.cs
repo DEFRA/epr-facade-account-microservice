@@ -21,7 +21,7 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(), 
             null, 
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
 
         _sut = GetServiceUnderTest();
         
@@ -31,7 +31,7 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
         // Assert
         _notificationClientMock.Verify(n => n.SendEmail(recipient, templateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Once);
+            null, null), Times.Once);
         result.Count.Should().Be(1);
     }
     
@@ -49,7 +49,7 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
             It.IsAny<string>(), 
             It.IsAny<Dictionary<string, dynamic>>(), 
             null, 
-            null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
+            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
 
         _sut = GetServiceUnderTest();
         
@@ -59,10 +59,10 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
         // Assert
         _notificationClientMock.Verify(n => n.SendEmail(recipientOne, templateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Once);
+            null, null), Times.Once);
         _notificationClientMock.Verify(n => n.SendEmail(recipientTwo, templateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null), Times.Once);
+            null, null), Times.Once);
         result.Count.Should().Be(2);
     }
     

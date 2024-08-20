@@ -7,12 +7,14 @@ using FacadeAccountCreation.Core.Services.Organisation;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Moq.Protected;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -27,6 +29,7 @@ public class OrganisationServiceTests
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
     private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
+    private const string OrganisationGetRelationshipUri = "api/organisations";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<OrganisationService> _logger = new();
@@ -36,7 +39,6 @@ public class OrganisationServiceTests
     private readonly Guid _organisationId = Guid.NewGuid();
     private readonly Guid _organisationExternalId = Guid.NewGuid();
     private readonly int _serviceRoleId = 1;
-    
     private static IConfiguration GetConfig()
     {
         var config = new Dictionary<string, string?>
@@ -431,5 +433,82 @@ public class OrganisationServiceTests
                        req.RequestUri != null &&
                        req.RequestUri.ToString() == expectedUrl),
             ItExpr.IsAny<CancellationToken>());
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationRelationshipsByOrganisationId_Returns_OrganisationRelationshipModel_OnSuccess()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+
+        var expectedModel = _fixture.Create<OrganisationRelationshipModel>();
+
+        var expectedUrl =
+            $"{BaseAddress}/{OrganisationGetRelationshipUri}/{organisationId}/organisationRelationships";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(expectedModel))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        var result = await sut.GetOrganisationRelationshipsByOrganisationId(organisationId);
+
+        // Assert
+        Assert.IsNotNull(result);
+        result.Should().BeEquivalentTo(expectedModel);
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationRelationshipsByOrganisationId_ThrowsException_OnFailure()
+    {
+        // Arrange
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        Func<Task> act = () => sut.GetOrganisationRelationshipsByOrganisationId(_organisationId);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [TestMethod]
+
+    public async Task GetOrganisationRelationshipsByOrganisationId_LogsError_AndThrowsException_OnFailure()
+    {
+        // Arrange
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var loggerMock = new Mock<ILogger<OrganisationService>>();
+
+        var sut = new OrganisationService(httpClient, loggerMock.Object, _configuration);
+
+        // Act
+
+        Func<Task> act = async () => await sut.GetOrganisationRelationshipsByOrganisationId(_organisationId);
+
+        // Assert
+
+        await act.Should().ThrowAsync<InvalidOperationException>();
+
+        Assert.IsNotNull(act);
+
+        loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get Organisation Relationships for Organisation Id: '{organisationId}'", _organisationId));
     }
 }
