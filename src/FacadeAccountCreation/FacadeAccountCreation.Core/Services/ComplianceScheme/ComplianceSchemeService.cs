@@ -81,7 +81,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
                 Path = endpoint,
             };
 
-            result = await _httpClient.GetAsync(uriBuilder.Uri.LocalPath);
+            result = await _httpClient.GetAsync(uriBuilder.Uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped));
         }
         catch (Exception e)
         {

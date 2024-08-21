@@ -22,7 +22,7 @@ public class CompaniesHouseLookupService : ICompaniesHouseLookupService
             Path = $"{CompaniesHouseEndpoint}/{id}",
         };
 
-        var response = await _httpClient.GetAsync(uriBuilder.Uri.LocalPath);
+        var response = await _httpClient.GetAsync(uriBuilder.Uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped));
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {        
