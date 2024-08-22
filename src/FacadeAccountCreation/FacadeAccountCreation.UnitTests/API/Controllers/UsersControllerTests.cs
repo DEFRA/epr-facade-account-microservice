@@ -219,7 +219,7 @@ public class UsersControllerTests
                 OrganisationId = organisationId.GetHashCode(),
                 OrganisationName = "Test Org",
                 Nation = "UK",
-                OrganisationNumber = "12345",
+                CompaniesHouseNumber = "12345",
                 OldValues = new UserDetailsChangeModel
                 {
                     FirstName = "OldFirstName",

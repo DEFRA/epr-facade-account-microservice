@@ -15,7 +15,7 @@ public class ChangeHistoryModel
 
     public string? Nation { get; set; }
 
-    public string? OrganisationNumber { get; set; }
+    public string? CompaniesHouseNumber { get; set; }
 
     public UserDetailsChangeModel? OldValues { get; set; }
 
