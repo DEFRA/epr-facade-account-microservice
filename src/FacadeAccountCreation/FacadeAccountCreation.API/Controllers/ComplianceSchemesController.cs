@@ -4,6 +4,7 @@ using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
 using FacadeAccountCreation.Core.Models.Messaging;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
 using FacadeAccountCreation.Core.Services.Messaging;
 using Microsoft.AspNetCore.Mvc;
@@ -450,6 +451,28 @@ public class ComplianceSchemesController : ControllerBase
         {
             _logger.LogError(e, "Removing selected scheme id {selectedSchemeId} failed", selectedSchemeId);
             return HandleError.Handle(e);
+        }
+    }
+
+    [HttpGet]
+    [Route("{organisationId:guid}/schemes/{complianceSchemeId:guid}/ExportComplianceSchemeSubsidiaries")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ExportComplianceSchemeSubsidiaries(
+        Guid organisationId,
+        Guid complianceSchemeId
+        )
+    {
+        var complianceSchemeSubsidiaries = await _complianceSchemeService.ExportComplianceSchemeSubsidiaries(User.UserId(), organisationId, complianceSchemeId);
+
+        if (complianceSchemeSubsidiaries != null)
+        {
+            return Ok(complianceSchemeSubsidiaries);
+        }
+        else
+        {
+            return NoContent();
         }
     }
 }

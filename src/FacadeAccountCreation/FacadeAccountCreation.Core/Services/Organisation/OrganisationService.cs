@@ -3,6 +3,7 @@ using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -191,5 +192,28 @@ public class OrganisationService : IOrganisationService
         {
             _httpClient.DefaultRequestHeaders.Clear();
         }
+    }
+
+    public async Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId)
+    {
+        HttpResponseMessage result = null;
+        var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/ExportOrganisationSubsidiaries";
+        var response = await _httpClient.GetAsync(endpoint);
+        try
+        {
+            _logger.LogInformation("Attempting to Export the Organisation Relationships for Organisation Id : '{organisationId}'", organisationExternalId);
+            result = await _httpClient.GetAsync(endpoint);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to Export Organisation Relationships for Organisation Id: '{organisationId}'", organisationExternalId);
+            throw;
+        }
+        finally
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
+        }
+
+        return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
     }
 }
