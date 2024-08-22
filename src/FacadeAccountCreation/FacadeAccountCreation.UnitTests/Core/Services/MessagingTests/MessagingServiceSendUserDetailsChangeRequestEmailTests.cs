@@ -24,7 +24,6 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
             NewJobTitle = "Senior Manager",
             ContactEmailAddress = "john.doe@example.com",
             ContactTelephone = "123456789",
-            ExternalIdReference = Guid.NewGuid(),
             Nation = "England"
         };
 
@@ -62,7 +61,6 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
             NewJobTitle = "Senior Manager",
             ContactEmailAddress = "john.doe@example.com",
             ContactTelephone = "123456789",
-            ExternalIdReference = Guid.NewGuid(),
             Nation = "England"
         };
 
