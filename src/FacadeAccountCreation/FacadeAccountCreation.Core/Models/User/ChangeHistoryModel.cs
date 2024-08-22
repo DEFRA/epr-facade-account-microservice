@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using FacadeAccountCreation.Core.Models.CreateAccount;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FacadeAccountCreation.Core.Models.User;
 [ExcludeFromCodeCoverage]
@@ -39,4 +40,12 @@ public class ChangeHistoryModel
     public string? Telephone { get; set; }
 
     public string? EmailAddress { get; set; }
+
+    public string OrganisationType { get; set; }
+
+    public string OrganisationReferenceNumber { get; set; }
+
+    public AddressModel BusinessAddress { get; set; }
+
+    public string? ServiceRole { get; set; }
 }

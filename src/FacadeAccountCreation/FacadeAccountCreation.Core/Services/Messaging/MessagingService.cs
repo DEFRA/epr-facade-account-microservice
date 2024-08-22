@@ -563,7 +563,6 @@ namespace FacadeAccountCreation.Core.Services.Messaging
             parameters.Add("updatedjobTitle", input.NewJobTitle);
             parameters.Add("email", input.ContactEmailAddress);
             parameters.Add("telephoneNumber", input.ContactTelephone);
-            parameters.Add("externalId", input.ExternalIdReference);
             var templateId = _messagingConfig.UserDetailChangeRequestTemplateId;
             var recipient = GetEprPackagingRegulatorEmail(input.Nation);
             string? notificationId = null;

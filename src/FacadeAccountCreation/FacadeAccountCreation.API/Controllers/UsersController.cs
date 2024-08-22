@@ -86,11 +86,10 @@ public class UsersController : ControllerBase
                         var notifyEmailInput = new UserDetailsChangeNotificationEmailInput()
                         {
                               Nation = ch.Nation,
-                              ExternalIdReference = ch.ExternalId,
                               ContactEmailAddress = ch.EmailAddress,
                               ContactTelephone = ch.Telephone,
                               OrganisationName = ch.OrganisationName,
-                              OrganisationNumber = ch.OrganisationNumber,
+                              OrganisationNumber = ch.OrganisationReferenceNumber,
                               NewFirstName = ch.NewValues.FirstName,
                               NewLastName = ch.NewValues.LastName,
                               NewJobTitle = ch.NewValues.JobTitle,
