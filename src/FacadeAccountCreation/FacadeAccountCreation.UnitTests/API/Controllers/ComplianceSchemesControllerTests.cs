@@ -3,7 +3,7 @@ using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
 using FacadeAccountCreation.Core.Models.CreateAccount;
-using FacadeAccountCreation.Core.Models.Messaging;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
 using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.UnitTests.TestHelpers;
@@ -11,7 +11,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Microsoft.Identity.Web;
 using Moq;
@@ -898,5 +897,53 @@ public class ComplianceSchemesControllerTests
         // Assert
         result.Should().BeOfType<StatusCodeResult>();
         result?.StatusCode.Should().Be(500);
+    }
+
+    [TestMethod]
+    public async Task ExportComplianceSchemeSubsidiaries_ValidInputWithNoData_ReturnsNoContentResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+
+        List<ExportOrganisationSubsidiariesResponseModel> mockResponse = null;
+
+        _mockComplianceSchemeServiceMock
+            .Setup(service => service.ExportComplianceSchemeSubsidiaries(userId, organisationId, complianceSchemeId))
+            .ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.ExportComplianceSchemeSubsidiaries(organisationId, complianceSchemeId);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(NoContentResult));
+    }
+
+    [TestMethod]
+    public async Task GetExportOrganisationSubsidiariesAsync_ValidInputWithData_ReturnsOkResult()
+    {
+        // Arrange
+        var handlerResponse =
+            _fixture
+                .Build<HttpResponseMessage>()
+                .With(x => x.StatusCode, HttpStatusCode.OK)
+                .With(x => x.Content, new StringContent(_fixture.Create<string>()))
+                .Create();
+
+        var expectedModel = _fixture.Create<List<ExportOrganisationSubsidiariesResponseModel>>();
+
+        _mockComplianceSchemeServiceMock
+            .Setup(x => x.ExportComplianceSchemeSubsidiaries(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ReturnsAsync(expectedModel);
+
+        // Act
+        var result = await _sut.ExportComplianceSchemeSubsidiaries(Guid.NewGuid(), Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(expectedModel, okResult.Value);
     }
 }

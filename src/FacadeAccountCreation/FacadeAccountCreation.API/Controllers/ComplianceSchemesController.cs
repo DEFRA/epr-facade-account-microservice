@@ -464,7 +464,9 @@ public class ComplianceSchemesController : ControllerBase
         Guid complianceSchemeId
         )
     {
-        var complianceSchemeSubsidiaries = await _complianceSchemeService.ExportComplianceSchemeSubsidiaries(User.UserId(), organisationId, complianceSchemeId);
+        var userId = User.UserId();
+
+        var complianceSchemeSubsidiaries = await _complianceSchemeService.ExportComplianceSchemeSubsidiaries(userId, organisationId, complianceSchemeId);
 
         if (complianceSchemeSubsidiaries != null)
         {
