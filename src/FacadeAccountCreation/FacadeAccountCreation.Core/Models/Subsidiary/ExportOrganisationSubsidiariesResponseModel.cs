@@ -6,9 +6,9 @@ using FacadeAccountCreation.Core.Models.Subsidiary;
 namespace FacadeAccountCreation.Core.Models.Subsidiary;
 public class ExportOrganisationSubsidiariesResponseModel
 {
-    public int OrganisationId { get; set; }
+    public string OrganisationId { get; set; }
 
-    public int? SubsidiaryId { get; set; }
+    public string SubsidiaryId { get; set; }
 
     public string OrganisationName { get; set; }
 
