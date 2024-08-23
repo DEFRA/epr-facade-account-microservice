@@ -305,7 +305,6 @@ public class ComplianceSchemeService : IComplianceSchemeService
         try
         {
             _logger.LogInformation("Attempting to Export the Compliance Scheme Subsidiaries for Organisation Id : '{OrganisationId}'", organisationId);
-            _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
 
             var response = await _httpClient.GetAsync(endpoint); 
