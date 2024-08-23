@@ -455,7 +455,7 @@ public class ComplianceSchemesController : ControllerBase
     }
 
     [HttpGet]
-    [Route("{organisationId:guid}/schemes/{complianceSchemeId:guid}/ExportComplianceSchemeSubsidiaries")]
+    [Route("{organisationId:guid}/schemes/{complianceSchemeId:guid}/export-subsidiaries")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

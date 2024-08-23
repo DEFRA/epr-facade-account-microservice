@@ -361,14 +361,14 @@ public class OrganisationsControllerTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var mockResponse = new List<ExportOrganisationSubsidiariesResponseModel> {};
+        List<ExportOrganisationSubsidiariesResponseModel> mockResponse = null;
 
         _mockOrganisationService
             .Setup(service => service.ExportOrganisationSubsidiaries(organisationId))
             .ReturnsAsync(mockResponse);
 
         // Act
-        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId);
+        var result = await _sut.GetExportOrganisationSubsidiariesAsync(organisationId);
 
         // Assert
         Assert.IsInstanceOfType(result, typeof(NoContentResult));

@@ -1,7 +1,6 @@
 ﻿using FacadeAccountCreation;
 using FacadeAccountCreation.Core;
 using FacadeAccountCreation.Core.Models;
-using FacadeAccountCreation.Core.Models.Subsidiary;
 
 namespace FacadeAccountCreation.Core.Models.Subsidiary;
 public class ExportOrganisationSubsidiariesResponseModel
