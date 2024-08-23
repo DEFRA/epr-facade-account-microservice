@@ -299,27 +299,27 @@ public class ComplianceSchemeService : IComplianceSchemeService
 
     public async Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportComplianceSchemeSubsidiaries(Guid userId, Guid organisationId, Guid complianceSchemeId)
     {
-        HttpResponseMessage result = null;
         var endpointConfigValue = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("ExportComplianceSchemeSubsidiaries").Value}";
         var endpoint = string.Format(endpointConfigValue, organisationId, complianceSchemeId);
-        var response = await _httpClient.GetAsync(endpoint);
+
         try
         {
-            _logger.LogInformation("Attempting to Export the Compliance Scheme Subsidiaries for Organisation Id : '{organisationId}'", organisationId);
+            _logger.LogInformation("Attempting to Export the Compliance Scheme Subsidiaries for Organisation Id : '{OrganisationId}'", organisationId);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
-            result = await _httpClient.GetAsync(endpoint);
+
+            var response = await _httpClient.GetAsync(endpoint); 
+
+            return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to Export the Compliance Scheme Subsidiaries for Organisation Id : '{organisationId}'", organisationId);
+            _logger.LogError(e, "Failed to Export the Compliance Scheme Subsidiaries for Organisation Id : '{OrganisationId}'", organisationId);
             throw;
         }
         finally
         {
             _httpClient.DefaultRequestHeaders.Clear();
         }
-
-        return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
     }
 }

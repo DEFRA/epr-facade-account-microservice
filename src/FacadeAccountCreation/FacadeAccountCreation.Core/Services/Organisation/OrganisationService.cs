@@ -196,24 +196,24 @@ public class OrganisationService : IOrganisationService
 
     public async Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId)
     {
-        HttpResponseMessage result = null;
-        var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/ExportOrganisationSubsidiaries";
-        var response = await _httpClient.GetAsync(endpoint);
+        var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/export-subsidiaries";
+        
         try
         {
-            _logger.LogInformation("Attempting to Export the Organisation Relationships for Organisation Id : '{organisationId}'", organisationExternalId);
-            result = await _httpClient.GetAsync(endpoint);
+            _logger.LogInformation("Attempting to Export the Organisation Relationships for Organisation Id : '{OrganisationId}'", organisationExternalId);
+
+            var response = await _httpClient.GetAsync(endpoint);
+
+            return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to Export Organisation Relationships for Organisation Id: '{organisationId}'", organisationExternalId);
+            _logger.LogError(e, "Failed to Export Organisation Relationships for Organisation Id: '{OrganisationId}'", organisationExternalId);
             throw;
         }
         finally
         {
             _httpClient.DefaultRequestHeaders.Clear();
         }
-
-        return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
     }
 }
