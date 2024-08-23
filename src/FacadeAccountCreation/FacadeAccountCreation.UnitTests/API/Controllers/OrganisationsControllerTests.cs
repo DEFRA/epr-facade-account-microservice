@@ -298,7 +298,7 @@ public class OrganisationsControllerTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var mockResponse = new OrganisationRelationshipModel() { Organisation = new OrganisationDetailModel() { OrganisationNumber = "12345", OrganisationType = "Producer" }, Relationships = new List<RelationshipResponseModel> { new RelationshipResponseModel() { OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent", CompaniesHouseNumber = "CH123455", SubsidiaryId = "Subsidiary One" } } };
+        var mockResponse = new OrganisationRelationshipModel() { Organisation = new OrganisationDetailModel() { OrganisationNumber = "12345", OrganisationType = "Producer" }, Relationships = new List<RelationshipResponseModel> { new RelationshipResponseModel() { OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent", CompaniesHouseNumber = "CH123455", OldSubsidiaryId = "Subsidiary One" } } };
 
         _mockOrganisationService
             .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId))
