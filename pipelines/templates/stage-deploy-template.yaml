@@ -1,3 +1,8 @@
+parameters:
+- name: runAutomationTests #will let us toggle automation tests on or off
+  type: boolean
+  default: true
+
    
 stages:
   - stage: DeployToDev4Regulators
@@ -14,11 +19,13 @@ stages:
               registryName: 'facadeaccountcreationrepository'
               serviceName: 'devrwdwebwa4413'
               targetEnvironment: 'development'
-              
-      - job: RunAutomationTest
-        displayName: DEV4 Automation Testing
-        dependsOn: DeployToDev4Regulators
-        pool: DEFRA-COMMON-ubuntu2004-SSV3
-        steps:
-          - checkout: AutomationTesting
-          - template: automation-testing.yaml@AutomationTesting
+
+      - ${{ if eq(parameters.runAutomationTests, true) }}:
+        - job: RunAutomationTest
+          displayName: DEV4 Automation Testing
+          dependsOn: DeployToDev4Regulators
+          steps:
+            - checkout: AutomationTesting
+            - template: automation-testing-regulators.yaml@AutomationTesting
+              parameters:
+                env: 'dev4'

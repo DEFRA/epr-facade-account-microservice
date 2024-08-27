@@ -5,6 +5,7 @@ using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
@@ -298,7 +299,7 @@ public class OrganisationsControllerTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var mockResponse = new OrganisationRelationshipModel() { Organisation = new OrganisationDetailModel() { OrganisationNumber = "12345", OrganisationType = "Producer" }, Relationships = new List<RelationshipResponseModel> { new RelationshipResponseModel() { OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent" } } };
+        var mockResponse = new OrganisationRelationshipModel() { Organisation = new OrganisationDetailModel() { OrganisationNumber = "12345", OrganisationType = "Producer" }, Relationships = new List<RelationshipResponseModel> { new RelationshipResponseModel() { OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent", CompaniesHouseNumber = "CH123455", SubsidiaryId = "Subsidiary One" } } };
 
         _mockOrganisationService
             .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId))
@@ -326,6 +327,48 @@ public class OrganisationsControllerTests
 
         // Act
         var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(NoContentResult));
+    }
+
+    [TestMethod]
+    public async Task GetExportOrganisationSubsidiariesAsync_ValidInputWithData_ReturnsOkResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var mockResponse = new List<ExportOrganisationSubsidiariesResponseModel> {
+        new ExportOrganisationSubsidiariesResponseModel(){ OrganisationId = "1", SubsidiaryId = null, OrganisationName = "ABC", CompaniesHouseNumber = "CH1"},
+        new ExportOrganisationSubsidiariesResponseModel(){ OrganisationId = "1", SubsidiaryId = "2", OrganisationName = "ABC", CompaniesHouseNumber = "CH2"}
+        };
+
+        _mockOrganisationService
+            .Setup(service => service.ExportOrganisationSubsidiaries(organisationId))
+            .ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.GetExportOrganisationSubsidiariesAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(mockResponse, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task GetExportOrganisationSubsidiariesAsync_ValidInputWithNoData_ReturnsNoContentResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        List<ExportOrganisationSubsidiariesResponseModel> mockResponse = null;
+
+        _mockOrganisationService
+            .Setup(service => service.ExportOrganisationSubsidiaries(organisationId))
+            .ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.GetExportOrganisationSubsidiariesAsync(organisationId);
 
         // Assert
         Assert.IsInstanceOfType(result, typeof(NoContentResult));

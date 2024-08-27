@@ -1,11 +1,14 @@
 using EPR.Common.Logging.Constants;
 using EPR.Common.Logging.Models;
 using EPR.Common.Logging.Services;
+using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
+using FacadeAccountCreation.Core.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 
 namespace FacadeAccountCreation.Core.Services.ComplianceScheme;
 
@@ -292,6 +295,31 @@ public class ComplianceSchemeService : IComplianceSchemeService
         {
             _logger.LogError(e, $"Failed to call {nameof(GetAllReasonsForRemovalsAsync)}");
             throw;
+        }
+    }
+
+    public async Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportComplianceSchemeSubsidiaries(Guid userId, Guid organisationId, Guid complianceSchemeId)
+    {
+        var endpointConfigValue = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("ExportComplianceSchemeSubsidiaries").Value}";
+        var endpoint = string.Format(endpointConfigValue, organisationId, complianceSchemeId);
+
+        try
+        {
+            _logger.LogInformation("Attempting to Export the Compliance Scheme Subsidiaries for Organisation Id : '{OrganisationId}'", organisationId);
+            _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
+
+            var response = await _httpClient.GetAsync(endpoint); 
+
+            return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to Export the Compliance Scheme Subsidiaries for Organisation Id : '{OrganisationId}'", organisationId);
+            throw;
+        }
+        finally
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
         }
     }
 }
