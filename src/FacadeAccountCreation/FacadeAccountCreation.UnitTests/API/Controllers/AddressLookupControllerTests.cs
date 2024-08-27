@@ -13,16 +13,16 @@ namespace FacadeAccountCreation.UnitTests.API.Controllers;
 public class AddressLookupControllerTests
 {
     private const string ValidPostcode = "BT30 9EG";
-    
+
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly Mock<IAddressLookupService> _addressLookupServiceMock = new();
     private AddressLookupController _sut = null!;
-    
-    
+
+
     [TestInitialize]
     public void Setup()
     {
-        _sut = 
+        _sut =
             new AddressLookupController(_addressLookupServiceMock.Object);
     }
 
@@ -31,39 +31,39 @@ public class AddressLookupControllerTests
     {
         // Arrange
         var handlerResponse = _fixture.Create<AddressLookupResponseDto>();
-        
+
         _addressLookupServiceMock
             .Setup(x => x.GetAddressLookupResponseAsync(It.Is<string>(pc => pc == ValidPostcode)))
             .ReturnsAsync(handlerResponse);
-        
+
         // Act
         var result = await _sut.Get("BT30 9EG");
-        
+
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var obj = result.Result as OkObjectResult;
         obj?.Value.Should().BeEquivalentTo(handlerResponse);
     }
-    
+
     [TestMethod]
     public async Task Should_return_address_lookup_response_when_postcode_is_valid_lower_case()
     {
         // Arrange
         var handlerResponse = _fixture.Create<AddressLookupResponseDto>();
-        
+
         _addressLookupServiceMock
-            .Setup(x => x.GetAddressLookupResponseAsync(It.Is<string>(pc => pc == ValidPostcode.ToLower())))
+            .Setup(x => x.GetAddressLookupResponseAsync(It.Is<string>(pc => string.Equals(pc, ValidPostcode, StringComparison.OrdinalIgnoreCase))))
             .ReturnsAsync(handlerResponse);
-        
+
         // Act
         var result = await _sut.Get(ValidPostcode.ToLower());
-        
+
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
         var obj = result.Result as OkObjectResult;
         obj?.Value.Should().BeEquivalentTo(handlerResponse);
     }
-    
+
     [TestMethod]
     public async Task Should_return_NoContent_when_no_address()
     {
@@ -72,11 +72,11 @@ public class AddressLookupControllerTests
 
         _addressLookupServiceMock
             .Setup(x => x.GetAddressLookupResponseAsync(It.Is<string>(pc => pc == ValidPostcode)));
-           
-        
+
+
         // Act
         var result = await _sut.Get("BT30 9EG");
-        
+
         // Assert
         result.Result.Should().BeOfType<NoContentResult>();
     }

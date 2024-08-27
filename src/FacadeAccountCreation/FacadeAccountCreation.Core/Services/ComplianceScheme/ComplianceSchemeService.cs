@@ -80,6 +80,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
             result = await _httpClient.GetAsync(endpoint);
+
         }
         catch (Exception e)
         {
