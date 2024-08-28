@@ -11,5 +11,5 @@ public class RelationshipResponseModel
 
     public string RelationshipType { get; set; }
     public string CompaniesHouseNumber { get; set; }
-    public string SubsidiaryId { get; set; }
+    public string OldSubsidiaryId { get; set; }
 }
