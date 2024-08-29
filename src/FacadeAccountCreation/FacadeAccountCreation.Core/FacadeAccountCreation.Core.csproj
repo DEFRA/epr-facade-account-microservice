@@ -15,7 +15,7 @@
 
     <ItemGroup>
       <PackageReference Include="Enums.NET" Version="5.0.0" />
-      <PackageReference Include="EPR.Common.Logging" Version="1.0.6" />
+      <PackageReference Include="EPR.Common.Logging" Version="1.0.6-rc.662803" />
       <PackageReference Include="GovukNotify" Version="7.1.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
