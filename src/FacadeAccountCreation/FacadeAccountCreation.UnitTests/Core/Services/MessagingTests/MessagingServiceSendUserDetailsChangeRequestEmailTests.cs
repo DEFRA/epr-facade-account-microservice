@@ -31,9 +31,9 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
         var emailResponse = new Notify.Models.Responses.EmailNotificationResponse { id = emailNotificationId };
 
         _notificationClientMock.Setup(nc => nc.SendEmail(
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<Dictionary<string, object>>(), null, null))
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, object>>(), null, null, null))
             .Returns(emailResponse);
 
         _sut = GetServiceUnderTest();
@@ -67,7 +67,7 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
         _notificationClientMock.Setup(nc => nc.SendEmail(
             It.IsAny<string>(),
             It.IsAny<string>(),
-            It.IsAny<Dictionary<string, object>>(), null, null))
+            It.IsAny<Dictionary<string, object>>(), null, null, null))
             .Throws(new NotifyClientException());
 
         _sut = GetServiceUnderTest();

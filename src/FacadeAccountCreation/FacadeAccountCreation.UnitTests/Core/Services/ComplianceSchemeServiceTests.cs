@@ -6,6 +6,7 @@ using EPR.Common.Logging.Services;
 using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
 using FacadeAccountCreation.Core.Models.CreateAccount;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
 using FluentAssertions;
@@ -36,6 +37,7 @@ public class ComplianceSchemeServiceTests
     private const string GetAllReasonsForRemovalsEndPoint = "member-removal-reasons";
     private const string RemoveComplianceSchemeMemberEndPoint = "{0}/scheme-members/{1}/removed";
     private const string GetInfoForSelectedSchemeRemoval = "{0}/scheme-members/{1}/removal";
+    private const string ExportComplianceSchemeSubsidiaries = "api/compliance-schemes/{0}/scheme-members/{1}/export-subsidiaries";
     private const string BaseAddress = "http://localhost";
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<ComplianceSchemeService> _logger = new();
@@ -69,6 +71,7 @@ public class ComplianceSchemeServiceTests
             { "ComplianceSchemeEndpoints:GetAllReasonsForRemovals", GetAllReasonsForRemovalsEndPoint },
             { "ComplianceSchemeEndpoints:RemoveComplianceSchemeMember", RemoveComplianceSchemeMemberEndPoint },
             { "ComplianceSchemeEndpoints:GetInfoForSelectedSchemeRemoval", GetInfoForSelectedSchemeRemoval },
+            { "ComplianceSchemeEndpoints:ExportComplianceSchemeSubsidiaries", ExportComplianceSchemeSubsidiaries },
         };
 
         var configuration = new ConfigurationBuilder()
@@ -818,4 +821,60 @@ public class ComplianceSchemeServiceTests
         // Assert
         result.Should().BeEquivalentTo(infoForSelectedSchemeRemovalResponse);
     }
+
+    [TestMethod]
+    public async Task ExportComplianceSchemeSubsidiaries_Returns_List_ExportOrganisationSubsidiariesResponseModel_OnSuccess()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+
+        var expectedModel = _fixture.Create<List<ExportOrganisationSubsidiariesResponseModel>>();
+        var endpoint = string.Format(ExportComplianceSchemeSubsidiaries, organisationId, complianceSchemeId);
+        var expectedUrl = $"{BaseAddress}/{endpoint}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(expectedModel))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
+
+        // Act
+        var result = await sut.ExportComplianceSchemeSubsidiaries(userId, organisationId, complianceSchemeId);
+
+        // Assert
+        Assert.IsNotNull(result);
+       result.Should().BeEquivalentTo(expectedModel);
+    }
+
+    [TestMethod]
+    public async Task ExportComplianceSchemeSubsidiaries_ThrowsException_OnFailure()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
+
+        // Act
+        Func<Task> act = () => sut.ExportComplianceSchemeSubsidiaries(userId, organisationId, complianceSchemeId);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
 }

@@ -3,9 +3,11 @@ using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -20,6 +22,7 @@ public class OrganisationService : IOrganisationService
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
     private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
+    private const string OrganisationGetSubsidiaryUri = "api/organisations";
 
     public OrganisationService(
         HttpClient httpClient,
@@ -166,6 +169,52 @@ public class OrganisationService : IOrganisationService
         var result = await response.Content.ReadAsStringAsync();
 
         return result;
+    }
+
+    public async Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId)
+    {
+        var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/organisationRelationships";
+
+        try
+        {
+            _logger.LogInformation("Attempting to get the Organisation Relationships for Organisation Id : '{organisationId}'", organisationExternalId);
+
+            var response = await _httpClient.GetAsync(endpoint);
+
+            return await response.Content.ReadFromJsonWithEnumsAsync<OrganisationRelationshipModel>();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to get Organisation Relationships for Organisation Id: '{organisationId}'", organisationExternalId);
+            throw;
+        }
+        finally
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
+        }
+    }
+
+    public async Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId)
+    {
+        var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/export-subsidiaries";
+        
+        try
+        {
+            _logger.LogInformation("Attempting to Export the Organisation Relationships for Organisation Id : '{OrganisationId}'", organisationExternalId);
+
+            var response = await _httpClient.GetAsync(endpoint);
+
+            return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to Export Organisation Relationships for Organisation Id: '{OrganisationId}'", organisationExternalId);
+            throw;
+        }
+        finally
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
+        }
     }
 
     /// <summary>
