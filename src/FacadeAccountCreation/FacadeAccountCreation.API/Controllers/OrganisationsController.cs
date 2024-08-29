@@ -3,6 +3,7 @@ using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.API.Shared;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
 using Microsoft.AspNetCore.Mvc;
@@ -184,6 +185,44 @@ public class OrganisationsController : Controller
         {
             _logger.LogError($"Error updating the nation Id for organisation {id}");
             return HandleError.Handle(e);
+        }
+    }
+
+    [HttpGet]
+    [Route("{organisationId:guid}/organisationRelationships")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetOrganisationRelationshipsByOrganisationIdAsync(Guid organisationId)
+    {
+        var organisationRelationships = await _organisationService.GetOrganisationRelationshipsByOrganisationId(organisationId);
+
+        if (organisationRelationships != null)
+        {
+            return Ok(organisationRelationships);
+        }
+        else
+        {
+            return NoContent();
+        }
+    }
+
+    [HttpGet]
+    [Route("{organisationId:guid}/export-subsidiaries")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetExportOrganisationSubsidiariesAsync(Guid organisationId)
+    {
+        var organisationSubsidiaries = await _organisationService.ExportOrganisationSubsidiaries(organisationId);
+
+        if (organisationSubsidiaries != null)
+        {
+            return Ok(organisationSubsidiaries);
+        }
+        else
+        {
+            return NoContent();
         }
     }
 }

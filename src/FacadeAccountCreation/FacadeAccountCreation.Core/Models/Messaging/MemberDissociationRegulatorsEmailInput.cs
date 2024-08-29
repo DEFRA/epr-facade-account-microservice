@@ -47,7 +47,7 @@ namespace FacadeAccountCreation.Core.Models.Messaging
                 errors.Add("OrganisationNumber cannot be empty string. ");
             }
 
-            if (errors.Any())
+            if (errors.Count > 0)
             {
                 throw new ArgumentException(string.Join(' ', errors));
             }
