@@ -1,5 +1,6 @@
 using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.API.Shared;
+using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.Messaging;
@@ -88,14 +89,14 @@ public class UsersController : ControllerBase
                               Nation = ch.Nation,
                               ContactEmailAddress = ch.EmailAddress,
                               ContactTelephone = ch.Telephone,
-                              OrganisationName = ch.OrganisationName,
-                              OrganisationNumber = ch.OrganisationReferenceNumber,
+                              OrganisationName = ch.OrganisationName ?? "",
+                              OrganisationNumber = ch.OrganisationReferenceNumber?.ToReferenceNumberFormat(),
                               NewFirstName = ch.NewValues.FirstName,
                               NewLastName = ch.NewValues.LastName,
-                              NewJobTitle = ch.NewValues.JobTitle,
+                              NewJobTitle = ch.NewValues.JobTitle ?? "",
                               OldFirstName = ch.OldValues.FirstName,
                               OldLastName = ch.OldValues.LastName,
-                              OldJobTitle = ch.OldValues.JobTitle
+                              OldJobTitle = ch.OldValues.JobTitle ?? "",
                         };
 
                      var notificationId =   _messagingService.SendUserDetailChangeRequestEmailToRegulator(notifyEmailInput);
