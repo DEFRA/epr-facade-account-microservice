@@ -147,6 +147,23 @@ public class OrganisationsController : Controller
         return Ok(response);
     }
 
+    [HttpPost]
+    [Route("add-subsidiary-id")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> AddSubsidiaryId(SubsidiaryOrganisationModel subsidiaryOrganisationModel)
+    {
+        var response = await _organisationService.AddSubsidiaryIdAsync(subsidiaryOrganisationModel);
+
+        if (response == null)
+        {
+            return Problem("Failed to add subsidiary id", statusCode: StatusCodes.Status500InternalServerError);
+        }
+
+        return Ok(response);
+    }
+
     [HttpGet]
     [Route("{organisationId:guid}/organisationRelationships")]
     [ProducesResponseType(StatusCodes.Status200OK)]

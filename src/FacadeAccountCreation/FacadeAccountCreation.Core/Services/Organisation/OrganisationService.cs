@@ -22,6 +22,7 @@ public class OrganisationService : IOrganisationService
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
     private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
+    private const string OrganisationAddSubsidiaryIdUri = "api/organisations/add-subsidiary-id";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
 
     public OrganisationService(
@@ -153,6 +154,27 @@ public class OrganisationService : IOrganisationService
     public async Task<string?> AddSubsidiaryAsync(SubsidiaryAddModel subsidiaryAddModel)
     {
         var response = await _httpClient.PostAsJsonAsync(OrganisationAddSubsidiaryUri, subsidiaryAddModel);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadAsStringAsync();
+
+        return result;
+    }
+
+    public async Task<string?> AddSubsidiaryIdAsync(SubsidiaryOrganisationModel subsidiaryOrganisationModel)
+    {
+        var response = await _httpClient.PostAsJsonAsync(OrganisationAddSubsidiaryIdUri, subsidiaryOrganisationModel);
 
         if (!response.IsSuccessStatusCode)
         {
