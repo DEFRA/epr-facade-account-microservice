@@ -14,4 +14,6 @@ public class SubsidiaryOrganisationModel
     public DateTimeOffset CreatedOn { get; set; }
 
     public DateTimeOffset LastUpdatedOn { get; set; }
+
+    public Guid UserId { get; set; }
 }
