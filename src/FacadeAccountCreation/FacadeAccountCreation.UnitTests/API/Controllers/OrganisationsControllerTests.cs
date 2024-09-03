@@ -373,7 +373,6 @@ public class OrganisationsControllerTests
         // Assert
         Assert.IsInstanceOfType(result, typeof(NoContentResult));
     }
-
     [TestMethod]
     public async Task UpdateOrganisationDetails_WithValidParameters_ReturnsOkResult()
     {
