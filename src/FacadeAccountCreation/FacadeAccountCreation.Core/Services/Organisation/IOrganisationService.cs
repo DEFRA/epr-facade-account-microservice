@@ -20,6 +20,8 @@ public interface IOrganisationService
 
     Task<string?> AddSubsidiaryAsync(SubsidiaryAddModel subsidiaryAddModel);
 
+    Task<string?> AddSubsidiaryIdAsync(SubsidiaryOrganisationModel subsidiaryOrganisationModel);
+
     Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId);
 
     Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId);

@@ -373,4 +373,42 @@ public class OrganisationsControllerTests
         // Assert
         Assert.IsInstanceOfType(result, typeof(NoContentResult));
     }
+
+    [TestMethod]
+    public async Task AddSubsidiaryId_ReturnsOkResult_WithSubsidiaryId()
+    {
+        // Arrange
+        var subsidiaryOrganisationModel = _fixture.Create<SubsidiaryOrganisationModel>();
+
+        var expectedSubsidiaryId = "1";
+
+        _mockOrganisationService
+            .Setup(service => service.AddSubsidiaryIdAsync(It.IsAny<SubsidiaryOrganisationModel>()))
+            .ReturnsAsync(expectedSubsidiaryId);
+
+        // Act
+        var result = await _sut.AddSubsidiaryId(subsidiaryOrganisationModel) as OkObjectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        Assert.AreEqual(expectedSubsidiaryId, result.Value);
+    }
+
+    [TestMethod]
+    public async Task AddSubsidiaryId_ServiceReturnsNull_BadRequestResult()
+    {
+        // Arrange
+        var subsidiaryOrganisationModel = _fixture.Create<SubsidiaryOrganisationModel>();
+
+        _mockOrganisationService
+            .Setup(service => service.AddSubsidiaryIdAsync(It.IsAny<SubsidiaryOrganisationModel>()))
+            .ReturnsAsync((string)null);
+
+        // Act
+        var result = await _sut.AddSubsidiaryId(subsidiaryOrganisationModel) as NoContentResult;
+
+        // Assert
+        result.Should().BeNull();
+        result?.StatusCode.Should().Be((int)HttpStatusCode.NoContent);
+    }
 }
