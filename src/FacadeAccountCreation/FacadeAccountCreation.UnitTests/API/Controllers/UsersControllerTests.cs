@@ -1,8 +1,11 @@
 using AutoFixture;
 using AutoFixture.AutoMoq;
+using Azure;
 using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.API.Extensions;
+using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.User;
+using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.Core.Services.User;
 using FacadeAccountCreation.UnitTests.TestHelpers;
 using FluentAssertions;
@@ -23,6 +26,7 @@ public class UsersControllerTests
     private readonly Guid _oid = Guid.NewGuid();
     private readonly Guid _userId = Guid.NewGuid();
     private readonly Mock<IUserService> _mockUserService = new();
+    private readonly Mock<IMessagingService> _mockMessagingService = new();
     private readonly NullLogger<UsersController> _nullLogger = new();
     private UsersController _sut = null!;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -32,7 +36,9 @@ public class UsersControllerTests
     public void Setup()
     {
         _httpContextMock = new Mock<HttpContext>();
-        _sut = new UsersController(_nullLogger, _mockUserService.Object);
+        _sut = new UsersController(
+            _nullLogger, _mockUserService.Object, 
+            _mockMessagingService.Object);
         _sut.AddDefaultContextWithOid(_oid, "TestAuth");
     }
     
@@ -193,5 +199,174 @@ public class UsersControllerTests
         statusCodeResult?.StatusCode.Should().Be(404);
     }
 
+    [TestMethod]
+    public async Task UpdatePersonalDetails_ReturnsOk_WhenUpdateIsSuccessfulAndEmailIsSent()
+    {
+        // Arrange
+        var updateUserDetailsRequest = new UpdateUserDetailsRequest();
+        var serviceKey = "test-service-key";
+        var organisationId = Guid.NewGuid();
 
+        var responseContent = new UpdateUserDetailsResponse
+        {
+            HasTelephoneOnlyUpdated = false,
+            HasBasicUserDetailsUpdated = true,
+            HasApprovedOrDelegatedUserDetailsSentForApproval = true,
+            ChangeHistory = new ChangeHistoryModel
+            {
+                Id = 1,
+                PersonId = 123,
+                OrganisationId = organisationId.GetHashCode(),
+                OrganisationName = "Test Org",
+                Nation = "UK",
+                CompaniesHouseNumber = "12345",
+                OldValues = new UserDetailsChangeModel
+                {
+                    FirstName = "OldFirstName",
+                    LastName = "OldLastName",
+                    JobTitle = "OldJobTitle"
+                },
+                NewValues = new UserDetailsChangeModel
+                {
+                    FirstName = "NewFirstName",
+                    LastName = "NewLastName",
+                    JobTitle = "NewJobTitle"
+                },
+                IsActive = true,
+                ApproverComments = "Approved",
+                ApprovedById = 456,
+                DecisionDate = DateTimeOffset.UtcNow,
+                DeclarationDate = DateTimeOffset.UtcNow.AddDays(-1),
+                ExternalId = Guid.NewGuid(),
+                CreatedOn = DateTimeOffset.UtcNow.AddMonths(-1),
+                LastUpdatedOn = DateTimeOffset.UtcNow,
+                Telephone = "1234567890",
+                EmailAddress = "test@example.com"
+            }
+        };
+
+        var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(responseContent))
+        };
+
+        _mockUserService.Setup(s => s.UpdatePersonalDetailsAsync(It.IsAny<Guid>(), organisationId, serviceKey, updateUserDetailsRequest))
+            .ReturnsAsync(httpResponse);
+
+        _mockMessagingService.Setup(m => m.SendUserDetailChangeRequestEmailToRegulator(It.IsAny<UserDetailsChangeNotificationEmailInput>()))
+            .Returns("notificationId");
+
+        // Act
+        var result = await _sut.UpdatePersonalDetails(updateUserDetailsRequest, serviceKey, organisationId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdatePersonalDetails_ReturnsOk_WhenUpdateIsSuccessfulAndNoEmailIsSent()
+    {
+        // Arrange
+        var updateUserDetailsRequest = new UpdateUserDetailsRequest();
+        var serviceKey = "test-service-key";
+        var organisationId = Guid.NewGuid();
+
+        var responseContent = new UpdateUserDetailsResponse
+        {
+            HasTelephoneOnlyUpdated = false,
+            HasBasicUserDetailsUpdated = true,
+            HasApprovedOrDelegatedUserDetailsSentForApproval = false,
+            ChangeHistory = null
+        };
+
+        var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(responseContent))
+        };
+
+        _mockUserService.Setup(s => s.UpdatePersonalDetailsAsync(It.IsAny<Guid>(), organisationId, serviceKey, updateUserDetailsRequest))
+            .ReturnsAsync(httpResponse);
+
+        // Act
+        var result = await _sut.UpdatePersonalDetails(updateUserDetailsRequest, serviceKey, organisationId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdatePersonalDetails_ReturnsBadRequest_WhenUserServiceFails()
+    {
+        // Arrange
+        var updateUserDetailsRequest = new UpdateUserDetailsRequest();
+        var serviceKey = "test-service-key";
+        var organisationId = Guid.NewGuid();
+
+        var httpResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
+
+        _mockUserService.Setup(s => s.UpdatePersonalDetailsAsync(It.IsAny<Guid>(), organisationId, serviceKey, updateUserDetailsRequest))
+            .ReturnsAsync(httpResponse);
+
+        // Act
+        var result = await _sut.UpdatePersonalDetails(updateUserDetailsRequest, serviceKey, organisationId);
+
+        // Assert
+        var badRequestResult = result as StatusCodeResult;
+        Assert.IsNotNull(badRequestResult);
+        Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdatePersonalDetails_HandlesExceptionDuringUpdate()
+    {
+        // Arrange
+        var updateUserDetailsRequest = new UpdateUserDetailsRequest();
+        var serviceKey = "test-service-key";
+        var organisationId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+
+        _mockUserService.Setup(s => s.UpdatePersonalDetailsAsync(It.IsAny<Guid>(), organisationId, serviceKey, updateUserDetailsRequest))
+            .ThrowsAsync(new Exception("Test exception"));
+
+        // Act
+        var result = await _sut.UpdatePersonalDetails(updateUserDetailsRequest, serviceKey, organisationId);
+
+        // Assert
+        var statusResult = result as StatusCodeResult;
+        Assert.IsNotNull(statusResult);
+        Assert.AreEqual(StatusCodes.Status500InternalServerError, statusResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task UpdatePersonalDetails_HandlesExceptionDuringEmailNotification()
+    {
+        // Arrange
+        var updateUserDetailsRequest = new UpdateUserDetailsRequest();
+        var serviceKey = "test-service-key";
+        var organisationId = Guid.NewGuid();
+        var responseContent = _fixture.Create<UpdateUserDetailsResponse>();
+        
+        var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(responseContent))
+        };
+
+        _mockUserService.Setup(s => s.UpdatePersonalDetailsAsync(It.IsAny<Guid>(), organisationId, serviceKey, updateUserDetailsRequest))
+            .ReturnsAsync(httpResponse);
+
+        _mockMessagingService.Setup(m => m.SendUserDetailChangeRequestEmailToRegulator(It.IsAny<UserDetailsChangeNotificationEmailInput>()))
+            .Throws(new Exception("Email sending failed"));
+
+        // Act
+        var result = await _sut.UpdatePersonalDetails(updateUserDetailsRequest, serviceKey, organisationId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+    }
 }

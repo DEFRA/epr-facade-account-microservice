@@ -1,5 +1,6 @@
 ﻿using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Person;
+using FacadeAccountCreation.Core.Models.User;
 
 namespace FacadeAccountCreation.Core.Services.Person
 {

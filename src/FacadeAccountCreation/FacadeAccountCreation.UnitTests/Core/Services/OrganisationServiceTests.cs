@@ -25,8 +25,8 @@ public class OrganisationServiceTests
     private const string GetOrganisationUsersListEndpoint = "api/organisations/users";
     private const string GetNationIdByOrganisationIdEndpoint = "api/regulator-organisation/organisation-nation";
     private const string GetOrganisationIdFromNationEndpoint = "api/regulator-organisation?nation=";
+    private const string UpdateOrganisationEndPoint = "api/organisations/organisation/";
     private const string BaseAddress = "http://localhost";
-    private const string GetOrganisationByExternalIdEndpoint = "api/organisations/organisation-by-externalId";
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
     private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
@@ -47,7 +47,8 @@ public class OrganisationServiceTests
             {"ApiConfig:AccountServiceBaseUrl", BaseAddress},
             {"ComplianceSchemeEndpoints:GetOrganisationUsers", GetOrganisationUsersListEndpoint},
             {"RegulatorOrganisationEndpoints:GetNationIdFromOrganisationId", GetNationIdByOrganisationIdEndpoint},
-            {"RegulatorOrganisationEndpoints:GetOrganisationIdFromNation", GetOrganisationIdFromNationEndpoint}
+            {"RegulatorOrganisationEndpoints:GetOrganisationIdFromNation", GetOrganisationIdFromNationEndpoint},
+            {"OrganisationEndpoints:UpdateOrganisation", UpdateOrganisationEndPoint }
         };
 
         var configuration = new ConfigurationBuilder()
@@ -587,5 +588,49 @@ public class OrganisationServiceTests
         Assert.IsNotNull(act);
 
         loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to Export Organisation Relationships for Organisation Id: '{OrganisationId}'", _organisationId));
+    }
+    [TestMethod]
+    public async Task UpdateOrganisationDetails_ShouldReturnSuccesfulResponse()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        var organisation = new OrganisationUpdateDto
+        {
+        };
+
+        var expectedUrl =
+            $"{BaseAddress}/{UpdateOrganisationEndPoint}/{organisationId}";
+
+        var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(expectedResponse).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+        var sut = new OrganisationService(
+            httpClient,
+            _logger,
+            _configuration);
+
+        // Act
+        await sut.UpdateOrganisationDetails(
+            userId,
+            organisationId,
+            organisation);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync",
+            Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Put),
+            ItExpr.IsAny<CancellationToken>()
+        );
     }
 }

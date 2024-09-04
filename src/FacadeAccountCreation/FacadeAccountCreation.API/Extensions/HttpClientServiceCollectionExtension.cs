@@ -39,8 +39,6 @@ public static class HttpClientServiceCollectionExtension
         })
         .ConfigurePrimaryHttpMessageHandler(GetClientCertificateHandler);
 
-        services.AddTransient<AccountServiceAuthorisationHandler>();
-
         services.AddHttpClient<IComplianceSchemeService, ComplianceSchemeService>((sp, client) =>
         {
             var config = sp.GetRequiredService<IOptions<ApiConfig>>().Value;
@@ -66,7 +64,7 @@ public static class HttpClientServiceCollectionExtension
                 client.BaseAddress = new Uri(config.AccountServiceBaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(config.Timeout);
             })
-            .AddHttpMessageHandler<AccountServiceAuthorisationHandler>();
+        .AddHttpMessageHandler<AccountServiceAuthorisationHandler>();
 
         services.AddHttpClient<IAccountService, AccountService>((sp, client) =>
         {

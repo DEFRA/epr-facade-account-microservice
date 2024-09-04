@@ -3,11 +3,12 @@ namespace FacadeAccountCreation.API.Controllers;
 using Core.Models.Person;
 using Core.Services.Person;
 using Extensions;
+using FacadeAccountCreation.API.Shared;
+using FacadeAccountCreation.Core.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
-
-
+using System.Net;
 
 [ApiController]
 [AllowAnonymous]
@@ -16,10 +17,14 @@ using Microsoft.Identity.Web.Resource;
 public class PersonsController : ControllerBase
 {
     private readonly IPersonService _personService;
+    private readonly ILogger<PersonsController> _logger;
 
-    public PersonsController(IPersonService personService)
+    public PersonsController(
+        IPersonService personService,
+        ILogger<PersonsController> logger)
     {
         _personService = personService;
+        _logger = logger;
     }
 
     [HttpGet("current", Name = "GetCurrent")]
@@ -28,12 +33,12 @@ public class PersonsController : ControllerBase
     public async Task<IActionResult> GetCurrent()
     {
         var personResponse = await _personService.GetPersonByUserIdAsync(User.UserId());
-        
+
         if (personResponse == null)
         {
             return NoContent();
         }
-    
+
         return Ok(personResponse);
     }
 
@@ -48,7 +53,7 @@ public class PersonsController : ControllerBase
 
         return personResponse == null ? NotFound() : Ok(personResponse);
     }
-    
+
     [HttpGet]
     [Route("person-by-externalId")]
     [Produces("application/json")]
@@ -61,7 +66,7 @@ public class PersonsController : ControllerBase
 
         return personResponse == null ? NotFound() : Ok(personResponse);
     }
-    
+
     [HttpGet]
     [Route("person-by-invite-token")]
     [Produces("application/json")]

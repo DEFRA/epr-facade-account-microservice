@@ -161,7 +161,6 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
     [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidOrganisationId_ItShouldThrowException()
     {
-        string expectedId = "P123456";
         _sut = GetServiceUnderTest();
 
         var emailInput = new NominateUserEmailInput
@@ -178,14 +177,12 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             UserId = Guid.NewGuid()
         };
         _ = _sut.SendDelegatedUserNomination(emailInput);
-
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidUserId_ItShouldThrowException()
     {
-        string expectedId = "P123456";
         _sut = GetServiceUnderTest();
 
         var emailInput = new NominateUserEmailInput
@@ -202,14 +199,12 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             UserId = Guid.Empty
         };
         _ = _sut.SendDelegatedUserNomination(emailInput);
-
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidTemplateId_ItShouldThrowException()
     {
-        string expectedId = "P123456";
         _sut = GetServiceUnderTest();
 
         var emailInput = new NominateUserEmailInput
@@ -226,14 +221,12 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             UserId = Guid.NewGuid()
         };
         _ = _sut.SendDelegatedUserNomination(emailInput);
-
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidNominatorFirstName_ItShouldThrowException()
     {
-        string expectedId = "P123456";
         _sut = GetServiceUnderTest();
 
         var emailInput = new NominateUserEmailInput
@@ -250,14 +243,12 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             UserId = Guid.NewGuid()
         };
         _ = _sut.SendDelegatedUserNomination(emailInput);
-
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidOrganisationName_ItShouldThrowException()
     {
-        string expectedId = "P123456";
         _sut = GetServiceUnderTest();
 
         var emailInput = new NominateUserEmailInput
@@ -274,7 +265,6 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             UserId = Guid.NewGuid()
         };
         _ = _sut.SendDelegatedUserNomination(emailInput);
-
     }
     
     [TestMethod]

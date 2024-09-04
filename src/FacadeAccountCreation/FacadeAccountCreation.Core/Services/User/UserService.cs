@@ -1,5 +1,8 @@
+using FacadeAccountCreation.Core.Models.User;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Text;
+using System.Text.Json;
 
 namespace FacadeAccountCreation.Core.Services.User;
 
@@ -8,6 +11,9 @@ public class UserService : IUserService
     private readonly HttpClient _httpClient;
     private readonly ILogger<UserService> _logger;
     private readonly IConfiguration _config;
+    private const string XEprOrganisationHeader = "X-EPR-Organisation";
+    private const string XEprUserHeader = "X-EPR-User";
+
 
     public UserService(
         HttpClient httpClient,
@@ -25,5 +31,22 @@ public class UserService : IUserService
         
         _logger.LogInformation("Attempting to fetch the organisations for user id '{userId}' from the backend", userId);
         return await _httpClient.GetAsync(url);
+    }
+
+    public async Task<HttpResponseMessage> UpdatePersonalDetailsAsync(
+    Guid userId, Guid organisationId, string serviceKey, UpdateUserDetailsRequest userDetailsUpdateModelRequest)
+    {
+        _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
+        _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
+
+        string requestUri = $"{_config.GetSection("UserDetailsEndpoints").GetSection("UpdateUserDetails").Value}?serviceKey={serviceKey}";
+
+        var requestContent = new StringContent(JsonSerializer.Serialize(userDetailsUpdateModelRequest), Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PutAsync(requestUri, requestContent);
+
+        response.EnsureSuccessStatusCode();
+
+        return response;
     }
 }

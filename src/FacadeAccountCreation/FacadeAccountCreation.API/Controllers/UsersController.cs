@@ -1,8 +1,12 @@
 using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.API.Shared;
+using FacadeAccountCreation.Core.Extensions;
+using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.User;
+using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.Core.Services.User;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace FacadeAccountCreation.API.Controllers;
 
@@ -12,11 +16,16 @@ public class UsersController : ControllerBase
 {
     private readonly ILogger<UsersController> _logger;
     private readonly IUserService _userService;
+    private readonly IMessagingService _messagingService;
 
-    public UsersController(ILogger<UsersController> logger, IUserService userService)
+    public UsersController(
+        ILogger<UsersController> logger,
+        IUserService userService,
+        IMessagingService messagingService)
     {
         _logger = logger;
         _userService = userService;
+        _messagingService = messagingService;
     }
 
     [HttpGet]
@@ -38,7 +47,7 @@ public class UsersController : ControllerBase
             if (response.IsSuccessStatusCode)
             {
                 _logger.LogInformation("Fetched the organisations list successfully for the user {userId}", userId);
-                return Ok(response.Content.ReadFromJsonAsync<UserOrganisationsListModel>().Result);
+                return Ok(await response.Content.ReadFromJsonAsync<UserOrganisationsListModel>());
             }
             else
             {
@@ -50,6 +59,71 @@ public class UsersController : ControllerBase
         {
             _logger.LogError(e, "Error fetching the organisations list for the user");
             return HandleError.Handle(e);
+        }
+    }
+
+    [HttpPut]
+    [Consumes("application/json")]
+    [Route("personal-details")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdatePersonalDetails(
+       [BindRequired, FromBody] UpdateUserDetailsRequest updateUserDetailsRequest,
+       [BindRequired, FromQuery] string serviceKey,
+       [BindRequired, FromHeader(Name = "X-EPR-Organisation")] Guid organisationId)
+    {
+        var userId = User.UserId();
+        try
+        {
+            var response = await _userService.UpdatePersonalDetailsAsync(userId, organisationId, serviceKey, updateUserDetailsRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadFromJsonAsync<UpdateUserDetailsResponse>();
+                if (responseContent.HasApprovedOrDelegatedUserDetailsSentForApproval && responseContent.ChangeHistory != null)
+                {
+                    try
+                    {
+                        var ch = responseContent.ChangeHistory;
+                        var notifyEmailInput = new UserDetailsChangeNotificationEmailInput()
+                        {
+                              Nation = ch.Nation,
+                              ContactEmailAddress = ch.EmailAddress,
+                              ContactTelephone = ch.Telephone,
+                              OrganisationName = ch.OrganisationName ?? "",
+                              OrganisationNumber = ch.OrganisationReferenceNumber?.ToReferenceNumberFormat(),
+                              NewFirstName = ch.NewValues.FirstName,
+                              NewLastName = ch.NewValues.LastName,
+                              NewJobTitle = ch.NewValues.JobTitle ?? "",
+                              OldFirstName = ch.OldValues.FirstName,
+                              OldLastName = ch.OldValues.LastName,
+                              OldJobTitle = ch.OldValues.JobTitle ?? "",
+                        };
+
+                     var notificationId =   _messagingService.SendUserDetailChangeRequestEmailToRegulator(notifyEmailInput);
+
+                        _logger.LogInformation("UserDetailChangeRequest Notification email {notificationId} to regulator sent successfully for the user {userId} from organisation {organisationId}", notificationId, userId, organisationId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "failed to send update user details request email notification to regulator for user {userId} from organisation {organisationId} of service '{serviceKey}'.", userId, organisationId, serviceKey);
+                    }
+                }
+
+                _logger.LogInformation("Update personal details successfully for the user {userId} from organisation {organisationId}", userId, organisationId);
+
+                return Ok(responseContent);
+            }
+            else
+            {
+                _logger.LogError("failed to update personal details for the user {userId} from organisation {organisationId}", userId, organisationId);
+                return HandleError.HandleErrorWithStatusCode(response.StatusCode);
+            }
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError("failed to update personal details for the user {userId} from organisation {organisationId} of service '{serviceKey}'.",
+                userId, organisationId, serviceKey);
+            return HandleError.Handle(exception);
         }
     }
 }
