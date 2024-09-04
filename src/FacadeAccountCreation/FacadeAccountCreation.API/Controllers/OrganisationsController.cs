@@ -158,7 +158,7 @@ public class OrganisationsController : Controller
 
         if (response == null)
         {
-            return Problem("Failed to add subsidiary id", statusCode: StatusCodes.Status500InternalServerError);
+            return Problem("Failed to Add Subsidiary Id", statusCode: StatusCodes.Status500InternalServerError);
         }
 
         return Ok(response);
