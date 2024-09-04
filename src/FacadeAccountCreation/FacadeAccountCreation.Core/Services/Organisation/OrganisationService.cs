@@ -216,7 +216,6 @@ public class OrganisationService : IOrganisationService
             _httpClient.DefaultRequestHeaders.Clear();
         }
     }
-
     /// <summary>
     /// Updates the details of an organisation
     /// </summary>

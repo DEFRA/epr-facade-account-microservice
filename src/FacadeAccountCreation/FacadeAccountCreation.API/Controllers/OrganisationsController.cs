@@ -149,45 +149,6 @@ public class OrganisationsController : Controller
         return Ok(response);
     }
 
-    /// <summary>
-    /// Updates the details of an organisation
-    /// </summary>
-    /// <param name="organisationId">Id of the organisation to update</param>
-    /// <param name="organisationDetails">The updated details for the organisation</param>
-    /// <returns>An async IActionResult</returns>
-    [HttpPut]
-    [Route("organisation/{id}")]
-    [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateOrganisationDetails(
-        Guid id,
-        [FromBody] OrganisationUpdateDto? organisationDetails)
-    {
-        if (organisationDetails == null)
-        {
-            return HandleError.HandleErrorWithStatusCode(HttpStatusCode.BadRequest);
-        }
-
-        try
-        {
-            var userId = User.UserId();
-
-            await _organisationService.UpdateOrganisationDetails(
-                userId,
-                id,
-                organisationDetails);
-            
-            return Ok();    
-        }
-        catch (Exception e)
-        {
-            _logger.LogError($"Error updating the nation Id for organisation {id}");
-            return HandleError.Handle(e);
-        }
-    }
-
     [HttpGet]
     [Route("{organisationId:guid}/organisationRelationships")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -223,6 +184,44 @@ public class OrganisationsController : Controller
         else
         {
             return NoContent();
+        }
+    }
+    /// <summary>
+    /// Updates the details of an organisation
+    /// </summary>
+    /// <param name="organisationId">Id of the organisation to update</param>
+    /// <param name="organisationDetails">The updated details for the organisation</param>
+    /// <returns>An async IActionResult</returns>
+    [HttpPut]
+    [Route("organisation/{id}")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateOrganisationDetails(
+        Guid id,
+        [FromBody] OrganisationUpdateDto? organisationDetails)
+    {
+        if (organisationDetails == null)
+        {
+            return HandleError.HandleErrorWithStatusCode(HttpStatusCode.BadRequest);
+        }
+
+        try
+        {
+            var userId = User.UserId();
+
+            await _organisationService.UpdateOrganisationDetails(
+                userId,
+                id,
+                organisationDetails);
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Error updating the nation Id for organisation {id}");
+            return HandleError.Handle(e);
         }
     }
 }

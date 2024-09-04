@@ -15,7 +15,7 @@ public class OrganisationDetailModel
     public string OrganisationType { get; set; }
 
     public string OrganisationNumber { get; set; }
-
+	
 	public string CompaniesHouseNumber { get; set; }
 
     public string? SubBuildingName { get; set; }

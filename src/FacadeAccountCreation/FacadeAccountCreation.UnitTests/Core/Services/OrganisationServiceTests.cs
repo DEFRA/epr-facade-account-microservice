@@ -589,7 +589,6 @@ public class OrganisationServiceTests
 
         loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to Export Organisation Relationships for Organisation Id: '{OrganisationId}'", _organisationId));
     }
-
     [TestMethod]
     public async Task UpdateOrganisationDetails_ShouldReturnSuccesfulResponse()
     {
