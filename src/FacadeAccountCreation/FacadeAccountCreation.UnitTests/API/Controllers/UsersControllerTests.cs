@@ -200,7 +200,14 @@ public class UsersControllerTests
     }
 
     [TestMethod]
-    public async Task UpdatePersonalDetails_ReturnsOk_WhenUpdateIsSuccessfulAndEmailIsSent()
+    [DataRow("Test Org", "OldJobTitle", "NewJobTitle")]
+    [DataRow(null, "OldJobTitle", "NewJobTitle")]
+    [DataRow("Test Org", null, "NewJobTitle")]
+    [DataRow("Test Org", "OldJobTitle", null)]
+    public async Task UpdatePersonalDetails_ReturnsOk_WhenUpdateIsSuccessfulAndEmailIsSent(
+        string organisationName,
+        string oldJobTitle,
+        string newJobTitle)
     {
         // Arrange
         var updateUserDetailsRequest = new UpdateUserDetailsRequest();
@@ -217,20 +224,20 @@ public class UsersControllerTests
                 Id = 1,
                 PersonId = 123,
                 OrganisationId = organisationId.GetHashCode(),
-                OrganisationName = "Test Org",
+                OrganisationName = organisationName,
                 Nation = "UK",
                 CompaniesHouseNumber = "12345",
                 OldValues = new UserDetailsChangeModel
                 {
                     FirstName = "OldFirstName",
                     LastName = "OldLastName",
-                    JobTitle = "OldJobTitle"
+                    JobTitle = oldJobTitle
                 },
                 NewValues = new UserDetailsChangeModel
                 {
                     FirstName = "NewFirstName",
                     LastName = "NewLastName",
-                    JobTitle = "NewJobTitle"
+                    JobTitle = newJobTitle
                 },
                 IsActive = true,
                 ApproverComments = "Approved",
