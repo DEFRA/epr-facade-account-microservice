@@ -21,6 +21,12 @@ public class UserDetailsModel
     public string? Service { get; set; }
     
     public int? ServiceRoleId { get; set; }
-    
+
+    public string? Telephone { get; set; }
+
+    public string? JobTitle { get; set; }
+
+    public bool IsChangeRequestPending { get; set; }
+
     public List<OrganisationDetailModel> Organisations { get; set; }
 }

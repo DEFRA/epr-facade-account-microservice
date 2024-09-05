@@ -3,6 +3,7 @@ using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Person;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -14,10 +15,14 @@ namespace FacadeAccountCreation.Core.Services.Person
         private const string PersonsWithExternalIdUri = "api/persons/person-by-externalId";
         private const string PersonsByInviteToken = "api/persons/person-by-invite-token";
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public PersonService(HttpClient httpClient)
+        public PersonService(
+            HttpClient httpClient,
+            IConfiguration config)
         {
             _httpClient = httpClient;
+            _config = config;
         }
 
         public async Task<PersonResponseModel?> GetPersonByUserIdAsync(Guid userId)

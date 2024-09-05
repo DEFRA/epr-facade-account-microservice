@@ -391,7 +391,6 @@ public class ConnectionsServiceTests
     {
         //Arrange
         var connectionId = Guid.NewGuid();
-        var serviceKey = "packaging";
         var apiResponse = _fixture.Create<UpdatePersonRoleResponse>();
         
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object)

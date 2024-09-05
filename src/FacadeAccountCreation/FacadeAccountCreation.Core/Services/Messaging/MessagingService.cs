@@ -15,17 +15,20 @@ namespace FacadeAccountCreation.Core.Services.Messaging
         private readonly INotificationClient _notificationClient;
         private readonly MessagingConfig _messagingConfig;
         private readonly RegulatorEmailConfig _regulatorEmailConfig;
+        private readonly EprPackagingRegulatorEmailConfig _eprPackagingRegulatorEmailConfig;
         private readonly ILogger<MessagingService> _logger;
         private const int timeoutInSeconds = 60;
         private const string ExceptionLogMessage = "GOV UK NOTIFY ERROR. Method: SendEmail, Organisation ID: {OrganisationId}, User ID: {UserId}, Template: {TemplateId}";
 
         public MessagingService(INotificationClient notificationClient, IOptions<MessagingConfig> messagingConfig,
             IOptions<RegulatorEmailConfig> regulatorEmailConfig,
+            IOptions<EprPackagingRegulatorEmailConfig> eprPackagingRegulatorEmailConfig,
             ILogger<MessagingService> logger)
         {
             _notificationClient = notificationClient;
             _messagingConfig = messagingConfig.Value;
             _regulatorEmailConfig = regulatorEmailConfig.Value;
+            _eprPackagingRegulatorEmailConfig = eprPackagingRegulatorEmailConfig.Value;
             _logger = logger;
         }
 
@@ -476,6 +479,32 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                 throw new ArgumentException("Nation not valid");
             }
         }
+        private string GetEprPackagingRegulatorEmail(string nation)
+        {
+            try
+            {
+                var timeout = TimeSpan.FromSeconds(timeoutInSeconds);
+                nation = Regex.Replace(nation, @"\s", string.Empty, RegexOptions.None, timeout);
+                switch (nation)
+                {
+                    case "England":
+                        return _eprPackagingRegulatorEmailConfig.England.ToLower();
+                    case "Scotland":
+                        return _eprPackagingRegulatorEmailConfig.Scotland.ToLower();
+                    case "Wales":
+                        return _eprPackagingRegulatorEmailConfig.Wales.ToLower();
+                    case "NorthernIreland":
+                        return _eprPackagingRegulatorEmailConfig.NorthernIreland.ToLower();
+                    default:
+                        throw new ArgumentException("Nation not valid");
+                }
+            }
+            catch (RegexMatchTimeoutException ex)
+            {
+                _logger.LogError(ex, "Regular Expression timeout out {Nation}", nation);
+                throw new ArgumentException("Nation not valid");
+            }
+        }
 
         public string? SendApprovedUserAccountCreationConfirmation(
             string companyName,
@@ -518,6 +547,34 @@ namespace FacadeAccountCreation.Core.Services.Messaging
                 _logger.LogError(ex, ExceptionLogMessage, organisationNumber, $"{firstName} {lastName}", templateId);
             }
 
+            return notificationId;
+        }
+
+        public string? SendUserDetailChangeRequestEmailToRegulator(UserDetailsChangeNotificationEmailInput input)
+        {
+            var parameters = new Dictionary<string, object>();
+            parameters.Add("firstName", input.OldFirstName);
+            parameters.Add("lastName", input.OldLastName);
+            parameters.Add("organisationName", input.OrganisationName);
+            parameters.Add("organisationNumber", input.OrganisationNumber);
+            parameters.Add("jobTitle", input.OldJobTitle);
+            parameters.Add("updatedfirstName", input.NewFirstName);
+            parameters.Add("updatedlastName", input.NewLastName);
+            parameters.Add("updatedjobTitle", input.NewJobTitle);
+            parameters.Add("email", input.ContactEmailAddress);
+            parameters.Add("telephoneNumber", input.ContactTelephone);
+            var templateId = _messagingConfig.UserDetailChangeRequestTemplateId;
+            var recipient = GetEprPackagingRegulatorEmail(input.Nation);
+            string? notificationId = null;
+            try
+            {
+                var response = _notificationClient.SendEmail(recipient, templateId, parameters);
+                notificationId = response.id;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ExceptionLogMessage, input.OrganisationNumber, $"{input.OldFirstName} {input.OldLastName}", templateId);
+            }
             return notificationId;
         }
 

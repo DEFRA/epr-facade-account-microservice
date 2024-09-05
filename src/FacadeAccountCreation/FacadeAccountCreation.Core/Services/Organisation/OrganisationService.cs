@@ -216,4 +216,25 @@ public class OrganisationService : IOrganisationService
             _httpClient.DefaultRequestHeaders.Clear();
         }
     }
+    /// <summary>
+    /// Updates the details of an organisation
+    /// </summary>
+    /// <param name="organisationId">The id of the organisation</param>
+    /// <param name="organisationDetails">The new organisation details for the organisation</param>
+    /// <returns>Async task indicating success</returns>
+    public async Task UpdateOrganisationDetails(
+        Guid userId,
+        Guid organisationId,
+        OrganisationUpdateDto organisationDetails)
+    {
+        var url = $"{_config.GetSection("OrganisationEndpoints").GetSection("UpdateOrganisation").Value}/{organisationId}";
+
+        _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
+
+        var response = await _httpClient.PutAsJsonAsync(
+            url,
+            organisationDetails);
+
+        response.EnsureSuccessStatusCode();
+    }
 }

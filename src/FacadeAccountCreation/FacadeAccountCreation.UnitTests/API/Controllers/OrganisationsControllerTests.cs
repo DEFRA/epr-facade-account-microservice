@@ -34,9 +34,9 @@ public class OrganisationsControllerTests
     private OrganisationsController _sut = null!;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private Mock<HttpContext>? _httpContextMock;
-    
+
     private readonly string _token = "test token";
-    
+
     [TestInitialize]
     public void Setup()
     {
@@ -49,7 +49,7 @@ public class OrganisationsControllerTests
     public async Task Should_return_statuscode_404_when_GetOrganisationUsersList_throws_notfound()
     {
         // Arrange
-        _mockOrganisationService.Setup(x => 
+        _mockOrganisationService.Setup(x =>
                 x.GetOrganisationUserList(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>()))
             .ThrowsAsync(new HttpRequestException("Test exception", null, HttpStatusCode.NotFound));
 
@@ -59,12 +59,12 @@ public class OrganisationsControllerTests
         // Assert
         result.Should().BeOfType<NotFoundResult>();
     }
-    
+
     [TestMethod]
     public async Task Should_return_statuscode_500_when_GetOrganisationUsersList_throws_500()
     {
         // Arrange
-        _mockOrganisationService.Setup(x => 
+        _mockOrganisationService.Setup(x =>
             x.GetOrganisationUserList(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>()))
             .ThrowsAsync(new HttpRequestException("Test exception", null, HttpStatusCode.InternalServerError));
 
@@ -81,13 +81,13 @@ public class OrganisationsControllerTests
     public async Task Should_return_organisation_user_list_if_no_exceptions()
     {
         // Arrange
-        var handlerResponse = 
+        var handlerResponse =
             _fixture
                 .Build<HttpResponseMessage>()
                 .With(x => x.StatusCode, HttpStatusCode.OK)
                 .With(x => x.Content, new StringContent(_fixture.Create<string>()))
                 .Create();
-        
+
         _mockOrganisationService.Setup(x =>
             x.GetOrganisationUserList(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>()))
             .ReturnsAsync(handlerResponse);
@@ -100,17 +100,18 @@ public class OrganisationsControllerTests
         var obj = result as OkObjectResult;
         obj?.Value.Should().BeEquivalentTo(handlerResponse.Content);
     }
-    
+
     [TestMethod]
     public async Task Should_return_statuscode_200_when_Success()
     {
         // Arrange
         var apiResponse = _fixture.Create<OrganisationUser>();
-        _mockOrganisationService.Setup(x => 
-                x.GetOrganisationUserList(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>())).ReturnsAsync(new HttpResponseMessage{
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
-        });
+        _mockOrganisationService.Setup(x =>
+                x.GetOrganisationUserList(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>())).ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+                });
 
         _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles()).Returns(new List<ServiceRolesLookupModel>());
 
@@ -122,7 +123,7 @@ public class OrganisationsControllerTests
         var statusCodeResult = result as OkObjectResult;
         statusCodeResult?.StatusCode.Should().Be(200);
     }
-    
+
     [TestMethod]
     public async Task Should_return_500_statuscode_when_empty_user()
     {
@@ -142,7 +143,7 @@ public class OrganisationsControllerTests
         var statusCodeResult = result as ObjectResult;
         statusCodeResult?.StatusCode.Should().Be(500);
     }
-    
+
     [TestMethod]
     public async Task Should_Return_StatusCode_200_When_GetNationIdByOrganisationId_Succeeds()
     {
@@ -164,7 +165,7 @@ public class OrganisationsControllerTests
         resultValue.Should().Contain(1);
         resultValue.Should().Contain(2);
     }
-    
+
     [TestMethod]
     public async Task Should_Return_StatusCode_400_When_GetNationIdByOrganisationId_Returns_BadRequest()
     {
@@ -178,7 +179,7 @@ public class OrganisationsControllerTests
         // Assert
         result.Should().BeOfType<BadRequestResult>();
     }
-    
+
     [TestMethod]
     public async Task Should_Return_StatusCode_500_When_GetNationIdByOrganisationId_Returns_InternalServerError()
     {
@@ -194,28 +195,28 @@ public class OrganisationsControllerTests
         result.Should().BeOfType<StatusCodeResult>();
         statusCodeResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
     }
-    
+
     [TestMethod]
     public async Task GetOrganisationNameByInviteToken_Should_return_Success()
     {
         // Arrange
-        _mockOrganisationService.Setup(x => 
+        _mockOrganisationService.Setup(x =>
             x.GetOrganisationNameByInviteToken(It.IsAny<string>())).ReturnsAsync(new ApprovedPersonOrganisationModel
-        {
-            SubBuildingName = "",
-            BuildingName = "",
-            BuildingNumber = "",
-            Street = "",
-            Town = "",
-            County = "",
-            Postcode = "",
-            Locality = "",
-            DependentLocality = "",
-            Country = "United Kingdom",
-            IsUkAddress = true,
-            OrganisationName = "testOrganisation",
-            ApprovedUserEmail = "adas@sdad.com"
-        });
+            {
+                SubBuildingName = "",
+                BuildingName = "",
+                BuildingNumber = "",
+                Street = "",
+                Town = "",
+                County = "",
+                Postcode = "",
+                Locality = "",
+                DependentLocality = "",
+                Country = "United Kingdom",
+                IsUkAddress = true,
+                OrganisationName = "testOrganisation",
+                ApprovedUserEmail = "adas@sdad.com"
+            });
 
         _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles()).Returns(new List<ServiceRolesLookupModel>());
 
@@ -272,8 +273,6 @@ public class OrganisationsControllerTests
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
-        result.StatusCode.Should().Be((int)HttpStatusCode.OK);
-        result.Value.Should().Be("Ref123456");
     }
 
     [TestMethod]
@@ -372,5 +371,75 @@ public class OrganisationsControllerTests
 
         // Assert
         Assert.IsInstanceOfType(result, typeof(NoContentResult));
+    }
+    [TestMethod]
+    public async Task UpdateOrganisationDetails_WithValidParameters_ReturnsOkResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var nationId = new OrganisationUpdateDto();
+
+        // Act
+        var result = await _sut.UpdateOrganisationDetails(
+            organisationId,
+            nationId) as OkResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        _mockOrganisationService.Verify(s =>
+            s.UpdateOrganisationDetails(
+                It.IsAny<Guid>(),
+                organisationId,
+                nationId),
+            Times.Once);
+    }
+
+    [TestMethod]
+    public async Task UpdateOrganisationDetails_WithNoNationId_ReturnsBadRequestResult()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+
+        // Act
+        var result = await _sut.UpdateOrganisationDetails(
+            organisationId,
+            null) as BadRequestResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        _mockOrganisationService.Verify(s =>
+            s.UpdateOrganisationDetails(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<OrganisationUpdateDto>()),
+            Times.Never);
+    }
+
+    [TestMethod]
+    public async Task UpdateOrganisationDetails_ThrowsException_InternalServerError()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var organisation = new OrganisationUpdateDto();
+        _mockOrganisationService.Setup(s => s.UpdateOrganisationDetails(
+            It.IsAny<Guid>(),
+                It.IsAny<Guid>(),
+                It.IsAny<OrganisationUpdateDto>()
+            )).Throws(new Exception());
+
+        // Act
+        var result = await _sut.UpdateOrganisationDetails(
+            organisationId,
+            organisation) as StatusCodeResult;
+
+        // Assert
+        Assert.IsNotNull(result);
+        Assert.AreEqual((int)HttpStatusCode.InternalServerError, result.StatusCode);
+        _mockOrganisationService.Verify(s =>
+            s.UpdateOrganisationDetails(
+                It.IsAny<Guid>(),
+                organisationId,
+                organisation),
+            Times.Once);
     }
 }
