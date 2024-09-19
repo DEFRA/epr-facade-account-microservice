@@ -189,7 +189,6 @@ public class OrganisationsController : Controller
     [HttpGet]
     [Route("{organisationId:guid}/number-of-subsidiaries")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOrganisationNumberOfSubsidiaries(Guid organisationId)
     {
@@ -199,10 +198,7 @@ public class OrganisationsController : Controller
         {
             return Ok(organisationSubsidiaries.Count(sub => sub.SubsidiaryId != null));
         }
-        else
-        {
-            return NoContent();
-        }
+        return Ok(0);
     }
 
     /// <summary>
@@ -239,7 +235,7 @@ public class OrganisationsController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogError($"Error updating the nation Id for organisation {id}");
+            _logger.LogError(e, "Error updating the nation Id for organisation {Id}", id);
             return HandleError.Handle(e);
         }
     }
