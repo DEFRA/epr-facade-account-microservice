@@ -1,5 +1,4 @@
-﻿using Azure;
-using FacadeAccountCreation.API.Extensions;
+﻿using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.API.Shared;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
@@ -186,6 +185,26 @@ public class OrganisationsController : Controller
             return NoContent();
         }
     }
+
+    [HttpGet]
+    [Route("{organisationId:guid}/number-of-subsidiaries")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetOrganisationNumberOfSubsidiaries(Guid organisationId)
+    {
+        var organisationSubsidiaries = await _organisationService.ExportOrganisationSubsidiaries(organisationId);
+
+        if (organisationSubsidiaries != null)
+        {
+            return Ok(organisationSubsidiaries.Count(sub => sub.SubsidiaryId != null));
+        }
+        else
+        {
+            return NoContent();
+        }
+    }
+
     /// <summary>
     /// Updates the details of an organisation
     /// </summary>
