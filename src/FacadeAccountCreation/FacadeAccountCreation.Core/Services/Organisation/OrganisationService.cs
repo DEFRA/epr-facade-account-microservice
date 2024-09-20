@@ -20,6 +20,7 @@ public class OrganisationService : IOrganisationService
     private readonly IConfiguration _config;
     private const string OrganisationUri = "api/organisations/organisation-by-externalId";
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
+    private const string OrganisationByReferenceNumberUrl = "api/organisations/organisation-by-reference-number";
     private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
@@ -74,7 +75,32 @@ public class OrganisationService : IOrganisationService
 
         return await response.Content.ReadFromJsonWithEnumsAsync<RemovedUserOrganisationModel>();
     }
-    
+
+    public async Task<OrganisationDto> GetOrganisationByReferenceNumber(string referenceNumber)
+    {
+        var response = await _httpClient.GetAsync($"{OrganisationByReferenceNumberUrl}?referenceNumber={referenceNumber}");
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            return null;
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+        var organisationName = response.Content.
+            ReadFromJsonWithEnumsAsync<OrganisationDto>();
+        
+        return organisationName.Result;
+    }
+
     public async Task<ApprovedPersonOrganisationModel> GetOrganisationNameByInviteToken(string token)
     {
         var response = await _httpClient.GetAsync($"{OrganisationNameUri}?token={token}");

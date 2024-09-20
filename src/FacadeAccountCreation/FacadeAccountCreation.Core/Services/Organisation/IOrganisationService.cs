@@ -25,6 +25,8 @@ public interface IOrganisationService
 
     Task<ApprovedPersonOrganisationModel> GetOrganisationNameByInviteToken(string token);
 
+    Task<OrganisationDto> GetOrganisationByReferenceNumber(string referenceNumber);
+
     Task<CheckRegulatorOrganisationExistResponseModel> GetRegulatorOrganisationByNationId(int nationId);
 
     Task<string?> CreateAndAddSubsidiaryAsync(LinkOrganisationModel linkOrganisationModel);

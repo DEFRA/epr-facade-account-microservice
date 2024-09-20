@@ -112,6 +112,19 @@ public class OrganisationsController : Controller
         return response == null ? NotFound() : Ok(response);
     }
 
+    [HttpGet]
+    [Route("organisation-by-reference-number/{referenceNumber}")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetOrganisationByReferenceNumber(string referenceNumber)
+    {
+        var response = await _organisationService.GetOrganisationByReferenceNumber(referenceNumber);
+
+        return response == null ? NotFound() : Ok(response);
+    }
+
     [HttpPost]
     [Route("create-and-add-subsidiary")]
     [Consumes("application/json")]
