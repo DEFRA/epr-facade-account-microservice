@@ -7,7 +7,6 @@ using FacadeAccountCreation.Core.Models.Subsidiary;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -104,7 +103,7 @@ public class OrganisationService : IOrganisationService
         var nationLookup = new NationLookup();
         var nationName = nationLookup.GetNationName(nationId);
         var url = $"{_config.GetSection("RegulatorOrganisationEndpoints").GetSection("GetOrganisationIdFromNation").Value}{nationName}";
-        _logger.LogInformation("Attempting to fetch the Regulator Organisation for nation id {nationName} from the backend", nationName);
+        _logger.LogInformation("Attempting to fetch the Regulator Organisation for nation id {NationName} from the backend", nationName);
 
         var response = await _httpClient.GetAsync(url);
 
@@ -204,6 +203,10 @@ public class OrganisationService : IOrganisationService
 
             var response = await _httpClient.GetAsync(endpoint);
 
+            if (string.IsNullOrEmpty(await response.Content.ReadAsStringAsync()))
+            {
+                return null;
+            }
             return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
         }
         catch (Exception e)
