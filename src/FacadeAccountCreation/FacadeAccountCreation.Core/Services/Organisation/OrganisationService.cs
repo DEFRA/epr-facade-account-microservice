@@ -22,6 +22,7 @@ public class OrganisationService : IOrganisationService
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
     private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
+    private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
 
     public OrganisationService(
@@ -169,6 +170,21 @@ public class OrganisationService : IOrganisationService
         var result = await response.Content.ReadAsStringAsync();
 
         return result;
+    }
+    
+    public async Task TerminateSubsidiaryAsync(SubsidiaryTerminateModel subsidiaryTerminateModel)
+    {
+        var response = await _httpClient.PostAsJsonAsync(OrganisationTerminateSubsidiaryUri, subsidiaryTerminateModel);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
     }
 
     public async Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId)
