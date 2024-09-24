@@ -95,10 +95,10 @@ public class OrganisationService : IOrganisationService
         }
 
         response.EnsureSuccessStatusCode();
-        var organisationName = response.Content.
+        var organisation = await response.Content.
             ReadFromJsonWithEnumsAsync<OrganisationDto>();
         
-        return organisationName.Result;
+        return organisation;
     }
 
     public async Task<ApprovedPersonOrganisationModel> GetOrganisationNameByInviteToken(string token)

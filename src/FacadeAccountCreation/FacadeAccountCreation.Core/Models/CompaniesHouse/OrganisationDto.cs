@@ -15,4 +15,8 @@ public class OrganisationDto
     public AddressDto? RegisteredOffice { get; set; }
 
     public OrganisationDataDto? OrganisationData { get; set; }
+
+    public int Id { get; set; }
+
+    public Guid ExternalId { get; set; }
 }
