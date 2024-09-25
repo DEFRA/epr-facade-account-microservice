@@ -1,6 +1,7 @@
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
+using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
@@ -273,6 +274,33 @@ public class OrganisationsControllerTests
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [TestMethod]
+    public async Task TerminateSubsidiary_Should_return_Success()
+    {
+        // Arrange
+
+        // Act
+        var result = await _sut.TerminateSubsidiary(new SubsidiaryTerminateModel()) as OkResult;
+
+        // Assert
+        result.Should().BeOfType<OkResult>();
+    }
+
+    [TestMethod]
+    public async Task TerminateSubsidiary_WhenExceptionThrown_ShouldReturnInternalServerError()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.TerminateSubsidiaryAsync(It.IsAny<SubsidiaryTerminateModel>())).ThrowsAsync(new ProblemResponseException());
+
+        // Act
+        var result = await _sut.TerminateSubsidiary(new SubsidiaryTerminateModel()) as StatusCodeResult;
+
+        // Assert
+        result.Should().BeOfType<StatusCodeResult>();
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
     }
 
     [TestMethod]

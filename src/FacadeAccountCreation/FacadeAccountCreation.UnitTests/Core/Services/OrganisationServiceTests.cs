@@ -30,6 +30,7 @@ public class OrganisationServiceTests
     private const string OrganisationNameUri = "api/organisations/organisation-by-invite-token";
     private const string OrganisationCreateAddSubsidiaryUri = "api/organisations/create-and-add-subsidiary";
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
+    private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetRelationshipUri = "api/organisations";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -427,6 +428,45 @@ public class OrganisationServiceTests
 
         //Act
         await sut.AddSubsidiaryAsync(It.IsAny<SubsidiaryAddModel>());
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Post &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+    }
+    
+    [TestMethod]
+    public async Task TerminateSubsidiaryAsync_ShouldReturnSuccess()
+    {
+        // Arrange
+        const string expectedUrl = $"{BaseAddress}/{OrganisationTerminateSubsidiaryUri}";
+        var apiResponse = _fixture.Create<string>();
+        
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        //Act
+        await sut.TerminateSubsidiaryAsync(It.IsAny<SubsidiaryTerminateModel>());
 
         // Assert
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
