@@ -470,4 +470,46 @@ public class OrganisationsControllerTests
                 organisation),
             Times.Once);
     }
+
+    [TestMethod]
+    public async Task GetOrganisationByReferenceNumber_OrganisationNotFound_ReturnsNotFoundResult()
+    {
+        // Arrange
+        const string referenceNumber = "ref:123456";
+
+        _mockOrganisationService
+            .Setup(service => service.GetOrganisationByReferenceNumber(referenceNumber))
+            .ReturnsAsync((OrganisationDto)null);
+
+        // Act
+        var result = await _sut.GetOrganisationByReferenceNumber(referenceNumber);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(NotFoundResult));
+        var response = result as NotFoundResult;
+        response.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+
+    }
+    
+    [TestMethod]
+    public async Task GetOrganisationByReferenceNumber_OrganisationIsFound_ReturnsOkObjectResult()
+    {
+        // Arrange
+        const string referenceNumber = "ref:123456";
+        const int organisationId = 1234;
+        var expectedOrganisation = new OrganisationDto { Id = organisationId, RegistrationNumber = referenceNumber };
+
+        _mockOrganisationService
+            .Setup(service => service.GetOrganisationByReferenceNumber(referenceNumber))
+            .ReturnsAsync(expectedOrganisation);
+
+        // Act
+        var result = await _sut.GetOrganisationByReferenceNumber(referenceNumber);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        var response = result as OkObjectResult;
+        var output = response.Value as OrganisationDto;
+        output.Should().BeEquivalentTo(expectedOrganisation);
+    }
 }
