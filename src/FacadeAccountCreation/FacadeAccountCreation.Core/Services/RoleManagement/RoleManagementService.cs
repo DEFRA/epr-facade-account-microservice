@@ -129,11 +129,6 @@ public class RoleManagementService : IRoleManagementService
 
     private async Task<T> GetFromEndpoint<T>(string endPointUrl, Guid userId, Guid organisationId) where T : class
     {
-        if (string.IsNullOrWhiteSpace(endPointUrl))
-        {
-            return null;
-        }
-
         _httpClient.DefaultRequestHeaders.Clear();
         _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
         _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
