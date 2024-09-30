@@ -23,7 +23,12 @@ public class CompaniesHouseLookupService : ICompaniesHouseLookupService
             return null;
         }
 
-        var response = await _httpClient.GetAsync($"{CompaniesHouseEndpoint}/{id}");
+        var uriBuilder = new UriBuilder($"{CompaniesHouseEndpoint}/{Uri.EscapeDataString(id)}");
+        string endPoint = "CompaniesHouse" + uriBuilder.Path;
+
+        var response = await _httpClient.GetAsync(endPoint);
+
+       // var response = await _httpClient.GetAsync($"{CompaniesHouseEndpoint}/{id}");
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {        
