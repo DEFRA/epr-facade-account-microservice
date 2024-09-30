@@ -1,4 +1,5 @@
 ﻿using FacadeAccountCreation.Core.Models.CompaniesHouse;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -17,9 +18,12 @@ public class CompaniesHouseLookupService : ICompaniesHouseLookupService
 
     public async Task<CompaniesHouseResponse?> GetCompaniesHouseResponseAsync(string id)
     {
-        var uri = new Uri($"{CompaniesHouseEndpoint}/{Uri.EscapeDataString(id)}");
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return null;
+        }
 
-        var response = await _httpClient.GetAsync(uri);
+        var response = await _httpClient.GetAsync($"{CompaniesHouseEndpoint}/{id}");
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {        

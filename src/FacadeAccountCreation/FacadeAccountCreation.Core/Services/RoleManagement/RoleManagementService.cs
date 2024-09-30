@@ -32,7 +32,7 @@ public class RoleManagementService : IRoleManagementService
 
     public async Task<ConnectionPersonModel> GetPerson(Guid connectionId, string serviceKey, Guid userId, Guid organisationId)
     {
-        _logger.LogInformation("Attempting to get the connection person for the connection id : '{connectionId}'", connectionId);
+        _logger.LogInformation("Attempting to get the connection person for the connection id : '{ConnectionId}'", connectionId);
 
         var endPoint = string.Format(_connectionsEndpoints.Person, connectionId, serviceKey);
 
@@ -41,7 +41,7 @@ public class RoleManagementService : IRoleManagementService
 
     public async Task<ConnectionWithEnrolmentsModel> GetEnrolments(Guid connectionId, string serviceKey, Guid userId, Guid organisationId)
     {
-        _logger.LogInformation("Attempting to get the connection enrolments for the connection id : '{connectionId}'", connectionId);
+        _logger.LogInformation("Attempting to get the connection enrolments for the connection id : '{ConnectionId}'", connectionId);
 
         var endPoint = string.Format(_connectionsEndpoints.Enrolments, connectionId, serviceKey);
 
@@ -129,11 +129,15 @@ public class RoleManagementService : IRoleManagementService
 
     private async Task<T> GetFromEndpoint<T>(string endPointUrl, Guid userId, Guid organisationId) where T : class
     {
+        if (string.IsNullOrWhiteSpace(endPointUrl))
+        {
+            return null;
+        }
+
         _httpClient.DefaultRequestHeaders.Clear();
         _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
         _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
-        var uriBuilder = new UriBuilder(endPointUrl);
-        var response = await _httpClient.GetAsync(uriBuilder.Uri);
+        var response = await _httpClient.GetAsync(endPointUrl);
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             return null;

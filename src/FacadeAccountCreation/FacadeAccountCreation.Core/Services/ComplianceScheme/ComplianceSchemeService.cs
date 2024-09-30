@@ -57,13 +57,13 @@ public class ComplianceSchemeService : IComplianceSchemeService
         
         try
         {
-            _logger.LogInformation("Attempting to get the compliance scheme for the organisation id : '{organisationId}'", organisationId);
+            _logger.LogInformation("Attempting to get the compliance scheme for the organisation id : '{OrganisationId}'", organisationId);
             
             return await _httpClient.GetAsync( $"{endpoint}?organisationId={organisationId}&userOid={userOid}");
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get compliance scheme for the organisation id: '{organisationId}'", organisationId);
+            _logger.LogError(e, "Failed to get compliance scheme for the organisation id: '{OrganisationId}'", organisationId);
             throw;
         }
     }
@@ -71,20 +71,20 @@ public class ComplianceSchemeService : IComplianceSchemeService
     public async Task<HttpResponseMessage> GetComplianceSchemeMembersAsync(Guid userId, Guid organisationId, Guid selectedSchemeId, string? query, int pageSize, int page)
     {
         HttpResponseMessage result = null;
-        var endpointConfigValue =  $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMembers").Value}";
-        var endpoint = new UriBuilder(string.Format(endpointConfigValue, organisationId, selectedSchemeId, pageSize, page, query));
+        var endpointConfigValue = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMembers").Value}";
+        var endpoint = string.Format(endpointConfigValue, organisationId, selectedSchemeId, pageSize, page, query);
 
         try
         {
-            _logger.LogInformation("Attempting to get the compliance schemes members for organisation id : '{organisationId}'", organisationId);
+            _logger.LogInformation("Attempting to get the compliance schemes members for organisation id : '{OrganisationId}'", organisationId);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
-            result = await _httpClient.GetAsync(endpoint.Uri);
+            result = await _httpClient.GetAsync(endpoint);
 
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get compliance scheme members for organisation id: '{organisationId}'", organisationId);
+            _logger.LogError(e, "Failed to get compliance scheme members for organisation id: '{OrganisationId}'", organisationId);
             throw;
         }
         finally
@@ -104,7 +104,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
         try
         {
             _logger.LogInformation(
-                "Attempting to get the compliance schemes for operator with the organisation id : '{operatorOrganisationId}'",
+                "Attempting to get the compliance schemes for operator with the organisation id : '{OperatorOrganisationId}'",
                 operatorOrganisationId);
 
             return await _httpClient.GetAsync($"{endpoint}?organisationId={operatorOrganisationId}");
@@ -112,7 +112,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
         catch (Exception e)
         {
             _logger.LogError(e,
-                "Failed to get compliance schemes for operator with the organisation id: '{operatorOrganisationId}'",
+                "Failed to get compliance schemes for operator with the organisation id: '{OperatorOrganisationId}'",
                 operatorOrganisationId);
             throw;
         }
@@ -140,12 +140,12 @@ public class ComplianceSchemeService : IComplianceSchemeService
 
         try
         {
-            _logger.LogInformation("Attempting to remove the selected compliance scheme id '{selectedSchemeId}' from the backend", model.SelectedSchemeId);
+            _logger.LogInformation("Attempting to remove the selected compliance scheme id '{SelectedSchemeId}' from the backend", model.SelectedSchemeId);
             return await _httpClient.PostAsJsonAsync(endpoint, model);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Request failed to remove selected compliance scheme id '{selectedSchemeId}'", model.SelectedSchemeId);
+            _logger.LogError(e, "Request failed to remove selected compliance scheme id '{SelectedSchemeId}'", model.SelectedSchemeId);
             throw;
         }
     }
@@ -188,14 +188,14 @@ public class ComplianceSchemeService : IComplianceSchemeService
         
         try
         {
-            _logger.LogInformation("Attempting to get the compliance scheme for the organisation id : '{organisationId}' and selected scheme id : '{selectedSchemeId}'", organisationId, selectedSchemeId);
+            _logger.LogInformation("Attempting to get the compliance scheme for the organisation id : '{OrganisationId}' and selected scheme id : '{SelectedSchemeId}'", organisationId, selectedSchemeId);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
             return await _httpClient.GetAsync( $"{endpoint}");
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get compliance scheme for the organisation id: '{organisationId}' and selected scheme id : '{selectedSchemeId}'", organisationId, selectedSchemeId);
+            _logger.LogError(e, "Failed to get compliance scheme for the organisation id: '{OrganisationId}' and selected scheme id : '{SelectedSchemeId}'", organisationId, selectedSchemeId);
             throw;
         }
     }
@@ -207,7 +207,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
 
         try
         {
-            _logger.LogInformation("Attempting to retrieve details for selected scheme id: '{selectedSchemeId}'", selectedSchemeId);
+            _logger.LogInformation("Attempting to retrieve details for selected scheme id: '{SelectedSchemeId}'", selectedSchemeId);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
             
@@ -219,7 +219,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to retrieve details for selected scheme id: '{selectedSchemeId}'", selectedSchemeId);
+            _logger.LogError(e, "Failed to retrieve details for selected scheme id: '{SelectedSchemeId}'", selectedSchemeId);
             throw;
         }
         finally
@@ -235,7 +235,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
 
         try
         {
-            _logger.LogInformation("Attempting to remove selected scheme id : '{selectedSchemeId}'", selectedSchemeId);
+            _logger.LogInformation("Attempting to remove selected scheme id : '{SelectedSchemeId}'", selectedSchemeId);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
             
@@ -259,7 +259,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to remove selected scheme id: '{selectedSchemeId}'", selectedSchemeId);
+            _logger.LogError(e, "Failed to remove selected scheme id: '{SelectedSchemeId}'", selectedSchemeId);
             throw;
         }
         finally
