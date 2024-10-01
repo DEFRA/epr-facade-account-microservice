@@ -76,14 +76,14 @@ public class ComplianceSchemeService : IComplianceSchemeService
         var endpointConfigValue = _config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMembers").Value;
         var uriBuilder = new UriBuilder(string.Format(endpointConfigValue, organisationId, selectedSchemeId, pageSize, page, query));
 
-        string endPoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
+        string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 
         try
         {
             _logger.LogInformation("Attempting to get the compliance schemes members for organisation id : '{organisationId}'", organisationId);
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
-            result = await _httpClient.GetAsync(endPoint);
+            result = await _httpClient.GetAsync(endpoint);
 
         }
         catch (Exception e)

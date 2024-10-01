@@ -18,9 +18,9 @@ public class CompaniesHouseLookupService : ICompaniesHouseLookupService
     public async Task<CompaniesHouseResponse?> GetCompaniesHouseResponseAsync(string id)
     {
         var uriBuilder = new UriBuilder($"{CompaniesHouseEndpoint}/{Uri.EscapeDataString(id)}");
-        string endPoint = "CompaniesHouse" + uriBuilder.Path;
+        string endpoint = "CompaniesHouse" + uriBuilder.Path;
 
-        var response = await _httpClient.GetAsync(endPoint);
+        var response = await _httpClient.GetAsync(endpoint);
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {        

@@ -36,9 +36,9 @@ public class RoleManagementService : IRoleManagementService
 
         var uriBuilder = new UriBuilder(string.Format(_connectionsEndpoints.Person, connectionId, serviceKey));
 
-        string endPoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
+        string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 
-        return await GetFromEndpoint<ConnectionPersonModel>(endPoint, userId, organisationId);
+        return await GetFromEndpoint<ConnectionPersonModel>(endpoint, userId, organisationId);
     }
 
     public async Task<ConnectionWithEnrolmentsModel> GetEnrolments(Guid connectionId, string serviceKey, Guid userId, Guid organisationId)
@@ -47,9 +47,9 @@ public class RoleManagementService : IRoleManagementService
 
         var uriBuilder = new UriBuilder(string.Format(_connectionsEndpoints.Enrolments, connectionId, serviceKey));
 
-        string endPoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
+        string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 
-       return await GetFromEndpoint<ConnectionWithEnrolmentsModel>(endPoint, userId, organisationId);
+       return await GetFromEndpoint<ConnectionWithEnrolmentsModel>(endpoint, userId, organisationId);
     }
 
     public async Task<UpdatePersonRoleResponse> UpdatePersonRole(Guid connectionId, Guid userId, Guid organisationId, string serviceKey, UpdatePersonRoleRequest updateRequest)
