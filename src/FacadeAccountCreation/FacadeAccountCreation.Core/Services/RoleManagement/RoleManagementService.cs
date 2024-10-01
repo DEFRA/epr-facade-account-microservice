@@ -34,7 +34,9 @@ public class RoleManagementService : IRoleManagementService
     {
         _logger.LogInformation("Attempting to get the connection person for the connection id : '{connectionId}'", connectionId);
 
-        var endPoint = string.Format(_connectionsEndpoints.Person, connectionId, serviceKey);
+        var uriBuilder = new UriBuilder(string.Format(_connectionsEndpoints.Person, connectionId, serviceKey));
+
+        string endPoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 
         return await GetFromEndpoint<ConnectionPersonModel>(endPoint, userId, organisationId);
     }
@@ -43,7 +45,9 @@ public class RoleManagementService : IRoleManagementService
     {
         _logger.LogInformation("Attempting to get the connection enrolments for the connection id : '{connectionId}'", connectionId);
 
-        var endPoint = string.Format(_connectionsEndpoints.Enrolments, connectionId, serviceKey);
+        var uriBuilder = new UriBuilder(string.Format(_connectionsEndpoints.Enrolments, connectionId, serviceKey));
+
+        string endPoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 
        return await GetFromEndpoint<ConnectionWithEnrolmentsModel>(endPoint, userId, organisationId);
     }
