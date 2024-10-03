@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 using FacadeAccountCreation.Core.Models.Subsidiary;
+using System.Web;
 
 namespace FacadeAccountCreation.Core.Services.ComplianceScheme;
 
@@ -71,8 +72,11 @@ public class ComplianceSchemeService : IComplianceSchemeService
     public async Task<HttpResponseMessage> GetComplianceSchemeMembersAsync(Guid userId, Guid organisationId, Guid selectedSchemeId, string? query, int pageSize, int page)
     {
         HttpResponseMessage result = null;
-        var endpointConfigValue =  $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMembers").Value}";
-        var endpoint = string.Format(endpointConfigValue, organisationId, selectedSchemeId, pageSize, page, query);
+
+        var endpointConfigValue = _config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMembers").Value;
+        var uriBuilder = new UriBuilder(string.Format(endpointConfigValue, organisationId, selectedSchemeId, pageSize, page, query));
+
+        string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 
         try
         {

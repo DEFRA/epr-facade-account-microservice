@@ -34,18 +34,22 @@ public class RoleManagementService : IRoleManagementService
     {
         _logger.LogInformation("Attempting to get the connection person for the connection id : '{connectionId}'", connectionId);
 
-        var endPoint = string.Format(_connectionsEndpoints.Person, connectionId, serviceKey);
+        var uriBuilder = new UriBuilder(string.Format(_connectionsEndpoints.Person, connectionId, serviceKey));
 
-        return await GetFromEndpoint<ConnectionPersonModel>(endPoint, userId, organisationId);
+        string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
+
+        return await GetFromEndpoint<ConnectionPersonModel>(endpoint, userId, organisationId);
     }
 
     public async Task<ConnectionWithEnrolmentsModel> GetEnrolments(Guid connectionId, string serviceKey, Guid userId, Guid organisationId)
     {
         _logger.LogInformation("Attempting to get the connection enrolments for the connection id : '{connectionId}'", connectionId);
 
-        var endPoint = string.Format(_connectionsEndpoints.Enrolments, connectionId, serviceKey);
+        var uriBuilder = new UriBuilder(string.Format(_connectionsEndpoints.Enrolments, connectionId, serviceKey));
 
-       return await GetFromEndpoint<ConnectionWithEnrolmentsModel>(endPoint, userId, organisationId);
+        string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
+
+       return await GetFromEndpoint<ConnectionWithEnrolmentsModel>(endpoint, userId, organisationId);
     }
 
     public async Task<UpdatePersonRoleResponse> UpdatePersonRole(Guid connectionId, Guid userId, Guid organisationId, string serviceKey, UpdatePersonRoleRequest updateRequest)
