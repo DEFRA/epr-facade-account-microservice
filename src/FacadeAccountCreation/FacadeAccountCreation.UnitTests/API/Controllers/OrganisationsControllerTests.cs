@@ -1,6 +1,7 @@
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
+using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
@@ -276,6 +277,33 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
+    public async Task TerminateSubsidiary_Should_return_Success()
+    {
+        // Arrange
+
+        // Act
+        var result = await _sut.TerminateSubsidiary(new SubsidiaryTerminateModel()) as OkResult;
+
+        // Assert
+        result.Should().BeOfType<OkResult>();
+    }
+
+    [TestMethod]
+    public async Task TerminateSubsidiary_WhenExceptionThrown_ShouldReturnInternalServerError()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.TerminateSubsidiaryAsync(It.IsAny<SubsidiaryTerminateModel>())).ThrowsAsync(new ProblemResponseException());
+
+        // Act
+        var result = await _sut.TerminateSubsidiary(new SubsidiaryTerminateModel()) as StatusCodeResult;
+
+        // Assert
+        result.Should().BeOfType<StatusCodeResult>();
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+    }
+
+    [TestMethod]
     public async Task AddSubsidiary_WhenResult_Null_Should_return_500()
     {
         // Arrange
@@ -441,5 +469,47 @@ public class OrganisationsControllerTests
                 organisationId,
                 organisation),
             Times.Once);
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationByReferenceNumber_OrganisationNotFound_ReturnsNotFoundResult()
+    {
+        // Arrange
+        const string referenceNumber = "ref:123456";
+
+        _mockOrganisationService
+            .Setup(service => service.GetOrganisationByReferenceNumber(referenceNumber))
+            .ReturnsAsync((OrganisationDto)null);
+
+        // Act
+        var result = await _sut.GetOrganisationByReferenceNumber(referenceNumber);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(NotFoundResult));
+        var response = result as NotFoundResult;
+        response.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+
+    }
+    
+    [TestMethod]
+    public async Task GetOrganisationByReferenceNumber_OrganisationIsFound_ReturnsOkObjectResult()
+    {
+        // Arrange
+        const string referenceNumber = "ref:123456";
+        const int organisationId = 1234;
+        var expectedOrganisation = new OrganisationDto { Id = organisationId, RegistrationNumber = referenceNumber };
+
+        _mockOrganisationService
+            .Setup(service => service.GetOrganisationByReferenceNumber(referenceNumber))
+            .ReturnsAsync(expectedOrganisation);
+
+        // Act
+        var result = await _sut.GetOrganisationByReferenceNumber(referenceNumber);
+
+        // Assert
+        Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+        var response = result as OkObjectResult;
+        var output = response.Value as OrganisationDto;
+        output.Should().BeEquivalentTo(expectedOrganisation);
     }
 }
