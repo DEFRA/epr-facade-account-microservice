@@ -1,6 +1,7 @@
 ﻿using Azure;
 using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.API.Shared;
+using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.Subsidiary;
@@ -112,6 +113,19 @@ public class OrganisationsController : Controller
         return response == null ? NotFound() : Ok(response);
     }
 
+    [HttpGet]
+    [Route("organisation-by-reference-number/{referenceNumber}")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetOrganisationByReferenceNumber(string referenceNumber)
+    {
+        var response = await _organisationService.GetOrganisationByReferenceNumber(referenceNumber);
+
+        return response == null ? NotFound() : Ok(response);
+    }
+
     [HttpPost]
     [Route("create-and-add-subsidiary")]
     [Consumes("application/json")]
@@ -148,6 +162,27 @@ public class OrganisationsController : Controller
 
         return Ok(response);
     }
+
+    [HttpPost]
+    [Route("terminate-subsidiary")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> TerminateSubsidiary(SubsidiaryTerminateModel subsidiaryTerminateModel)
+    {
+        try
+        {
+            subsidiaryTerminateModel.UserId = User.UserId();
+            await _organisationService.TerminateSubsidiaryAsync(subsidiaryTerminateModel);
+            return Ok();
+        }
+        catch (ProblemResponseException e)
+        {
+            _logger.LogError(e, "Error terminating subsidiary {ChildOrganisationId} for organisation {ParentOrganisationId}", subsidiaryTerminateModel.ChildOrganisationId, subsidiaryTerminateModel.ParentOrganisationId);
+            return HandleError.Handle(e);
+        }
+    }
+
 
     [HttpGet]
     [Route("{organisationId:guid}/organisationRelationships")]
