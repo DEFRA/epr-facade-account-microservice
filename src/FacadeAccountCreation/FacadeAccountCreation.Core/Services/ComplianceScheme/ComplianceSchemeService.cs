@@ -69,12 +69,12 @@ public class ComplianceSchemeService : IComplianceSchemeService
         }
     }
 
-    public async Task<HttpResponseMessage> GetComplianceSchemeMembersAsync(Guid userId, Guid organisationId, Guid selectedSchemeId, string? query, int pageSize, int page)
+    public async Task<HttpResponseMessage> GetComplianceSchemeMembersAsync(Guid userId, Guid organisationId, Guid selectedSchemeId, string? query, int pageSize, int page, bool hideNoSubsidiaries)
     {
         HttpResponseMessage result = null;
 
         var endpointConfigValue = _config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMembers").Value;
-        var uriBuilder = new UriBuilder(string.Format(endpointConfigValue, organisationId, selectedSchemeId, pageSize, page, query));
+        var uriBuilder = new UriBuilder(string.Format(endpointConfigValue, organisationId, selectedSchemeId, pageSize, page, query, hideNoSubsidiaries));
 
         string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 

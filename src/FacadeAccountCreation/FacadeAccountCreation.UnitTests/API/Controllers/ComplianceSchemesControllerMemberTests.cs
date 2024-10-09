@@ -50,7 +50,7 @@ public class ComplianceSchemesControllerMemberTests
         .Create();
 
         _mockComplianceSchemeServiceMock
-            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(serviceResponse);
 
         var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, "", 1);
@@ -69,7 +69,7 @@ public class ComplianceSchemesControllerMemberTests
                 .With(x => x.StatusCode, HttpStatusCode.NotFound).Create();
 
         _mockComplianceSchemeServiceMock
-            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(serviceResponse);
 
         var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, "", 1);
@@ -93,7 +93,7 @@ public class ComplianceSchemesControllerMemberTests
     public async Task GetComplianceSchemeMembersAsync_ShouldReturnInternalServerErrorStatus_WhenServiceArguementException()
     {
         _mockComplianceSchemeServiceMock
-            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
             .Throws<ArgumentException>();
 
         var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, "", 1);

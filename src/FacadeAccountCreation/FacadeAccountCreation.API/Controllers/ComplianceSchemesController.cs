@@ -46,7 +46,8 @@ public class ComplianceSchemesController : ControllerBase
         Guid complianceSchemeId,
         [BindRequired, FromQuery] int pageSize,
         string? query = "",
-        int? page = 1)
+        int? page = 1,
+        bool hideNoSubsidiaries = false)
     {
         if(query == null)
         {
@@ -69,7 +70,7 @@ public class ComplianceSchemesController : ControllerBase
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            var response = await _complianceSchemeService.GetComplianceSchemeMembersAsync(userId,organisationId, complianceSchemeId, query, pageSize, page.Value);
+            var response = await _complianceSchemeService.GetComplianceSchemeMembersAsync(userId,organisationId, complianceSchemeId, query, pageSize, page.Value, hideNoSubsidiaries);
 
             if (response.IsSuccessStatusCode)
             {
