@@ -1,5 +1,4 @@
-﻿using Azure;
-using FacadeAccountCreation.API.Extensions;
+﻿using FacadeAccountCreation.API.Extensions;
 using FacadeAccountCreation.API.Shared;
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.Organisations;
@@ -221,6 +220,22 @@ public class OrganisationsController : Controller
             return NoContent();
         }
     }
+
+    [HttpGet]
+    [Route("{organisationId:guid}/number-of-subsidiaries")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetOrganisationNumberOfSubsidiaries(Guid organisationId)
+    {
+        var organisationSubsidiaries = await _organisationService.ExportOrganisationSubsidiaries(organisationId);
+
+        if (organisationSubsidiaries != null)
+        {
+            return Ok(organisationSubsidiaries.Count(sub => sub.SubsidiaryId != null));
+        }
+        return Ok(0);
+    }
+
     /// <summary>
     /// Updates the details of an organisation
     /// </summary>
@@ -255,7 +270,7 @@ public class OrganisationsController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogError($"Error updating the nation Id for organisation {id}");
+            _logger.LogError(e, "Error updating the nation Id for organisation {Id}", id);
             return HandleError.Handle(e);
         }
     }
