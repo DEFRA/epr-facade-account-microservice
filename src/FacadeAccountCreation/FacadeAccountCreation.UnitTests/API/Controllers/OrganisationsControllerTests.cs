@@ -384,6 +384,31 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
+    public async Task GetOrganisationNumberOfSubsidiaries_ValidInputData_ReturnsCorrectCount()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var mockResponse = new List<ExportOrganisationSubsidiariesResponseModel>
+        {
+            new ExportOrganisationSubsidiariesResponseModel {
+                OrganisationId = "12", SubsidiaryId = "ABCD1234", OrganisationName = "Some Corporation", CompaniesHouseNumber = "CH1"
+            },
+            new ExportOrganisationSubsidiariesResponseModel {
+                OrganisationId = "13", SubsidiaryId = "EFGH1234", OrganisationName = "ABC Trading", CompaniesHouseNumber = "101234"
+            }
+        };
+
+        _mockOrganisationService.Setup(service => service.ExportOrganisationSubsidiaries(organisationId)).ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.GetOrganisationNumberOfSubsidiaries(organisationId);
+
+        // Assert
+        var okResult = result as OkObjectResult;
+        Assert.AreEqual(okResult.Value, mockResponse.Count);
+    }
+
+    [TestMethod]
     public async Task GetExportOrganisationSubsidiariesAsync_ValidInputWithNoData_ReturnsNoContentResult()
     {
         // Arrange
