@@ -101,6 +101,19 @@ public class OrganisationsController : Controller
     }
 
     [HttpGet]
+    [Route("nation")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetOrganisationNationByOrganisationExternalId(Guid organisationId)
+    {
+        var response = await _organisationService.GetOrganisationNationByExternalIdAsync(organisationId);
+        return response == null ? NotFound() : Ok(response);
+        return NoContent();
+    }
+
+    [HttpGet]
     [Route("organisation-name")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]

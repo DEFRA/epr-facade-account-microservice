@@ -16,6 +16,7 @@ using Moq.Protected;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxTokenParser;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
@@ -34,6 +35,7 @@ public class OrganisationServiceTests
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetRelationshipUri = "api/organisations";
     private const string OrganisationByReferenceNumberUrl = "api/organisations/organisation-by-reference-number";
+    private const string OrganisationNationUrl = "api/organisations/nation";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<OrganisationService> _logger = new();
@@ -824,5 +826,92 @@ public class OrganisationServiceTests
 
         // Assert
         await act.Should().ThrowAsync<ProblemResponseException>();
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationNationByExternalIdAsync_Should_Return_Successful_Response()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var expectedUrl = $"{BaseAddress}/{OrganisationNationUrl}?organisationId={organisationId}";
+
+        var apiResponse = new List<OrganisationNationModel>() { new() { Id = 1, NationCode = "GB-ENG", Name="England"} };
+
+        _httpMessageHandlerMock.Protected()
+           .Setup<Task<HttpResponseMessage>>("SendAsync",
+               ItExpr.Is<HttpRequestMessage>(
+                   req => req.RequestUri != null &&
+                          req.RequestUri.ToString() == expectedUrl),
+               ItExpr.IsAny<CancellationToken>())
+           .ReturnsAsync(new HttpResponseMessage
+           {
+               StatusCode = HttpStatusCode.OK,
+               Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+           });
+
+        _httpMessageHandlerMock.Verify();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        //Act
+       var result =  await sut.GetOrganisationNationByExternalIdAsync(organisationId);
+
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+
+        result.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationNationByExternalIdAsync_When_APIReturnsNoContent_ReturnsNullResponse()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var expectedUrl = $"{BaseAddress}/{OrganisationNationUrl}?organisationId={organisationId}";
+
+        _httpMessageHandlerMock.Protected()
+                   .Setup<Task<HttpResponseMessage>>("SendAsync",
+                       ItExpr.Is<HttpRequestMessage>(
+                           req => req.Method == HttpMethod.Get &&
+                                  req.RequestUri != null &&
+                                  req.RequestUri.ToString() == expectedUrl),
+                       ItExpr.IsAny<CancellationToken>())
+                   .ReturnsAsync(new HttpResponseMessage
+                   {
+                       StatusCode = HttpStatusCode.NoContent,
+                       Content = null
+                   }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        //Act
+        var result = await sut.GetOrganisationNationByExternalIdAsync(organisationId);
+
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+     ItExpr.Is<HttpRequestMessage>(
+         req => req.Method == HttpMethod.Get &&
+                req.RequestUri != null &&
+                req.RequestUri.ToString() == expectedUrl),
+     ItExpr.IsAny<CancellationToken>());
+
+        result.Should().BeNull();
     }
 }

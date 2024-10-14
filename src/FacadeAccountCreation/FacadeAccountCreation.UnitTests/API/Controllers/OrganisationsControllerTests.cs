@@ -512,4 +512,42 @@ public class OrganisationsControllerTests
         var output = response.Value as OrganisationDto;
         output.Should().BeEquivalentTo(expectedOrganisation);
     }
+
+
+    [TestMethod]
+    public async Task GetOrganisationNationByExternalId_When_OrganisationIsFound_Returns_SuccessResult()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.GetOrganisationNationByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(new List<OrganisationNationModel>
+            {
+                new(){ Id = 1, Name = "England", NationCode="GB-ENG"}
+            });
+
+        // Act
+        var result = await _sut.GetOrganisationNationByOrganisationExternalId(Guid.NewGuid());
+        var resultValue = (result as OkObjectResult).Value as List<OrganisationNationModel>;
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        resultValue[0].Id.Should().Be(1);
+        resultValue[0].Name.Should().Be("England");
+        resultValue[0].NationCode.Should().Be("GB-ENG");
+    }
+
+
+    [TestMethod]
+    public async Task GetOrganisationNationByExternalId_When_OrganisationNotFound_ReturnsNotFoundResult()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.GetOrganisationNationByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync((List<OrganisationNationModel>)null);
+
+        // Act
+        var result = await _sut.GetOrganisationNationByOrganisationExternalId(Guid.NewGuid());
+        var resultValue = result as NotFoundResult;
+        
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+        resultValue.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+    }
 }
