@@ -515,7 +515,7 @@ public class OrganisationsControllerTests
 
 
     [TestMethod]
-    public async Task GetOrganisationNationByExternalId_When_Api_Returns_200_SuccessResult()
+    public async Task GetRegulatorNation_When_Api_Returns_200_SuccessResult()
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
@@ -525,7 +525,7 @@ public class OrganisationsControllerTests
             });
 
         // Act
-        var result = await _sut.GetOrganisationNationByOrganisationExternalId(Guid.NewGuid());
+        var result = await _sut.GetRegulatorNation(Guid.NewGuid());
         var resultValue = (result as OkObjectResult).Value as List<OrganisationNationModel>;
         
         // Assert
@@ -542,14 +542,14 @@ public class OrganisationsControllerTests
 
 
     [TestMethod]
-    public async Task GetOrganisationNationByExternalId_When_Api_Returns_404_NotFoundResult()
+    public async Task GetRegulatorNation_When_Api_Returns_404_NotFoundResult()
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
             x.GetOrganisationNationByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync((List<OrganisationNationModel>)null);
 
         // Act
-        var result = await _sut.GetOrganisationNationByOrganisationExternalId(Guid.NewGuid()) as NotFoundResult;
+        var result = await _sut.GetRegulatorNation(Guid.NewGuid()) as NotFoundResult;
 
         // Assert
         _mockOrganisationService.Verify(s =>
@@ -561,14 +561,14 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
-    public async Task GetOrganisationNationByExternalId_When_Api_Returns_500_InternalServerError()
+    public async Task GetRegulatorNation_When_Api_Returns_500_InternalServerError()
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
             x.GetOrganisationNationByExternalIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception());
 
         // Act
-        var result = await _sut.GetOrganisationNationByOrganisationExternalId(Guid.NewGuid()) as StatusCodeResult;
+        var result = await _sut.GetRegulatorNation(Guid.NewGuid()) as StatusCodeResult;
 
         // Assert
         result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);

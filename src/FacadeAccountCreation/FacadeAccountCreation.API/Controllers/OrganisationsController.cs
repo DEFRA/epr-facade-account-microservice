@@ -101,13 +101,12 @@ public class OrganisationsController : Controller
     }
 
     [HttpGet]
-    [Route("nation")]
+    [Route("regulator-nation")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
-    public async Task<IActionResult> GetOrganisationNationByOrganisationExternalId(Guid organisationId)
+    public async Task<IActionResult> GetRegulatorNation(Guid organisationId)
     {
         try
         {
