@@ -952,7 +952,7 @@ public class OrganisationServiceTests
     }
 
     [TestMethod]
-    public async Task GetOrganisationNationByExternalIdAsync_When_APIReturns_ThrowsException()
+    public async Task GetOrganisationNationByExternalIdAsync_When_API_ThrowsException()
     {
         // Arrange
         var organisationId = Guid.NewGuid();
