@@ -513,7 +513,6 @@ public class OrganisationsControllerTests
         output.Should().BeEquivalentTo(expectedOrganisation);
     }
 
-
     [TestMethod]
     public async Task GetRegulatorNation_When_Api_Returns_200_SuccessResult()
     {
@@ -539,7 +538,6 @@ public class OrganisationsControllerTests
                  It.IsAny<Guid>()),
              Times.Once);
     }
-
 
     [TestMethod]
     public async Task GetRegulatorNation_When_Api_Returns_404_NotFoundResult()
