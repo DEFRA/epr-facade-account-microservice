@@ -280,7 +280,7 @@ public class OrganisationService : IOrganisationService
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<List<OrganisationNationModel>> GetOrganisationNationByExternalIdAsync(Guid organisationExternalId)
+    public async Task<List<OrganisationNationModel>?> GetOrganisationNationByExternalIdAsync(Guid organisationExternalId)
     {
         var url = $"{OrganisationNationUrl}?organisationId={organisationExternalId}";
 
@@ -290,7 +290,7 @@ public class OrganisationService : IOrganisationService
 
             var response = await _httpClient.GetAsync(url);
 
-            if (response.StatusCode == HttpStatusCode.NoContent) return null;
+            if (response.StatusCode == HttpStatusCode.NotFound) return null;
 
             response.EnsureSuccessStatusCode();
 
@@ -305,5 +305,7 @@ public class OrganisationService : IOrganisationService
         {
             _httpClient.DefaultRequestHeaders.Clear();
         }
+
+        return null;
     }
 }

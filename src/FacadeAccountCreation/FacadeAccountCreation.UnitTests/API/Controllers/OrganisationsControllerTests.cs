@@ -515,7 +515,7 @@ public class OrganisationsControllerTests
 
 
     [TestMethod]
-    public async Task GetOrganisationNationByExternalId_When_OrganisationIsFound_Returns_SuccessResult()
+    public async Task GetOrganisationNationByExternalId_When_Api_Returns_200_SuccessResult()
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
@@ -527,27 +527,54 @@ public class OrganisationsControllerTests
         // Act
         var result = await _sut.GetOrganisationNationByOrganisationExternalId(Guid.NewGuid());
         var resultValue = (result as OkObjectResult).Value as List<OrganisationNationModel>;
+        
         // Assert
         result.Should().BeOfType<OkObjectResult>();
         resultValue[0].Id.Should().Be(1);
         resultValue[0].Name.Should().Be("England");
         resultValue[0].NationCode.Should().Be("GB-ENG");
+
+        _mockOrganisationService.Verify(s =>
+             s.GetOrganisationNationByExternalIdAsync(
+                 It.IsAny<Guid>()),
+             Times.Once);
     }
 
 
     [TestMethod]
-    public async Task GetOrganisationNationByExternalId_When_OrganisationNotFound_ReturnsNotFoundResult()
+    public async Task GetOrganisationNationByExternalId_When_Api_Returns_404_NotFoundResult()
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
             x.GetOrganisationNationByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync((List<OrganisationNationModel>)null);
 
         // Act
-        var result = await _sut.GetOrganisationNationByOrganisationExternalId(Guid.NewGuid());
-        var resultValue = result as NotFoundResult;
-        
+        var result = await _sut.GetOrganisationNationByOrganisationExternalId(Guid.NewGuid()) as NotFoundResult;
+
         // Assert
+        _mockOrganisationService.Verify(s =>
+             s.GetOrganisationNationByExternalIdAsync(
+                 It.IsAny<Guid>()),
+             Times.Once);
         result.Should().BeOfType<NotFoundResult>();
-        resultValue.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+        result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationNationByExternalId_When_Api_Returns_500_InternalServerError()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.GetOrganisationNationByExternalIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception());
+
+        // Act
+        var result = await _sut.GetOrganisationNationByOrganisationExternalId(Guid.NewGuid()) as StatusCodeResult;
+
+        // Assert
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+        _mockOrganisationService.Verify(s =>
+            s.GetOrganisationNationByExternalIdAsync(
+                It.IsAny<Guid>()),
+            Times.Once);
     }
 }

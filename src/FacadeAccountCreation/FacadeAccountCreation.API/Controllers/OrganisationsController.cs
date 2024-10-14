@@ -104,13 +104,21 @@ public class OrganisationsController : Controller
     [Route("nation")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
     public async Task<IActionResult> GetOrganisationNationByOrganisationExternalId(Guid organisationId)
     {
-        var response = await _organisationService.GetOrganisationNationByExternalIdAsync(organisationId);
-        return response == null ? NotFound() : Ok(response);
-        return NoContent();
+        try
+        {
+            var response = await _organisationService.GetOrganisationNationByExternalIdAsync(organisationId);
+            return response == null ? NotFound() : Ok(response);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError("Error fetching the nation for organisation {OrganisationId}", organisationId);
+            return HandleError.Handle(exception);
+        }
     }
 
     [HttpGet]
