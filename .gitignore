@@ -362,3 +362,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 src/FacadeAccountCreation/.idea/.idea.FacadeAccountCreation/.idea/misc.xml
+
+
+**/appsettings.Development.json

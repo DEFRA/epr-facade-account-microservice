@@ -128,7 +128,7 @@ public class ComplianceSchemeServiceTests
 
         var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
-        HttpResponseMessage? response = await sut.GetComplianceSchemeMembersAsync(userId, organisationId, selectedSchemeId, query, pageSize, page);
+        HttpResponseMessage? response = await sut.GetComplianceSchemeMembersAsync(userId, organisationId, selectedSchemeId, query, pageSize, page, false);
 
         response.Should().BeEquivalentTo(apiResponse);
 
