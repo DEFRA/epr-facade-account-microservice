@@ -286,7 +286,7 @@ public class OrganisationService : IOrganisationService
 
         try
         {
-            _logger.LogInformation("Attempting to fetch the nation for an organisation id {organisationExternalId} from the backend", organisationExternalId);
+            _logger.LogInformation(message: "Attempting to fetch the nation for an organisation id {OrganisationExternalId} from the backend", organisationExternalId);
 
             var response = await _httpClient.GetAsync(url);
 
@@ -298,7 +298,7 @@ public class OrganisationService : IOrganisationService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get Organisation nation for Organisation Id: '{organisationExternalId}'", organisationExternalId);
+            _logger.LogError(e, "Failed to get Organisation nation for Organisation Id: '{OrganisationExternalId}'", organisationExternalId);
             throw;
         }
         finally

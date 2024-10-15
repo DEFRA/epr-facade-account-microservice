@@ -972,6 +972,6 @@ public class OrganisationServiceTests
 
         Assert.IsNotNull(act);
 
-        loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get Organisation nation for Organisation Id: '{organisationExternalId}'", organisationId));
+        loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get Organisation nation for Organisation Id: '{OrganisationExternalId}'", organisationId));
     }
 }

@@ -115,7 +115,7 @@ public class OrganisationsController : Controller
         }
         catch (Exception exception)
         {
-            _logger.LogError("Error fetching the nation for organisation {OrganisationId}", organisationId);
+            _logger.LogError(exception, "Error fetching the nation for organisation {OrganisationId}", organisationId);
             return HandleError.Handle(exception);
         }
     }
