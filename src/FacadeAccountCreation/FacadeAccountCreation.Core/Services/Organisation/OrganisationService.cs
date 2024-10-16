@@ -7,7 +7,6 @@ using FacadeAccountCreation.Core.Models.Subsidiary;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -25,6 +24,7 @@ public class OrganisationService : IOrganisationService
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
+    private const string OrganisationNationUrl = "api/organisations/nation";
 
     public OrganisationService(
         HttpClient httpClient,
@@ -278,5 +278,34 @@ public class OrganisationService : IOrganisationService
             organisationDetails);
 
         response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<List<OrganisationNationModel>?> GetOrganisationNationByExternalIdAsync(Guid organisationExternalId)
+    {
+        var url = $"{OrganisationNationUrl}?organisationId={organisationExternalId}";
+
+        try
+        {
+            _logger.LogInformation(message: "Attempting to fetch the nation for an organisation id {OrganisationExternalId} from the backend", organisationExternalId);
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (response.StatusCode == HttpStatusCode.NotFound) return null;
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonWithEnumsAsync<List<OrganisationNationModel>>();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to get Organisation nation for Organisation Id: '{OrganisationExternalId}'", organisationExternalId);
+            throw;
+        }
+        finally
+        {
+            _httpClient.DefaultRequestHeaders.Clear();
+        }
+
+        return null;
     }
 }

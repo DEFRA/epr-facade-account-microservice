@@ -101,6 +101,26 @@ public class OrganisationsController : Controller
     }
 
     [HttpGet]
+    [Route("regulator-nation")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetRegulatorNation(Guid organisationId)
+    {
+        try
+        {
+            var response = await _organisationService.GetOrganisationNationByExternalIdAsync(organisationId);
+            return response == null ? NotFound() : Ok(response);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Error fetching the nation for organisation {OrganisationId}", organisationId);
+            return HandleError.Handle(exception);
+        }
+    }
+
+    [HttpGet]
     [Route("organisation-name")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
