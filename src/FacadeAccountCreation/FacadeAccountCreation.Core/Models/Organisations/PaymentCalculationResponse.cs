@@ -5,22 +5,22 @@ namespace FacadeAccountCreation.Core.Models.Organisations
     [ExcludeFromCodeCoverage]
     public class PaymentCalculationResponse
     {
-        public decimal ProducerRegistrationFee { get; set; }
-        public decimal ProducerOnlineMarketPlaceFee { get; set; }
-        public decimal SubsidiariesFee { get; set; }
-        public decimal TotalFee { get; set; }
-        public decimal PreviousPayment { get; set; }
-        public decimal OutstandingPayment { get; set; }
+        public int ProducerRegistrationFee { get; set; }
+        public int ProducerOnlineMarketPlaceFee { get; set; }
+        public int SubsidiariesFee { get; set; }
+        public int TotalFee { get; set; }
+        public int PreviousPayment { get; set; }
+        public int OutstandingPayment { get; set; }
         public SubsidiariesFeeBreakdown SubsidiariesFeeBreakdown { get; set; }
     }
 
     [ExcludeFromCodeCoverage]
     public class SubsidiariesFeeBreakdown
     {
-        public decimal TotalSubsidiariesOMPFees { get; set; }
+        public int TotalSubsidiariesOMPFees { get; set; }
         public int CountOfOMPSubsidiaries { get; set; }
-        public decimal UnitOMPFees { get; set; }
-        public FeeBreakdown FeeBreakdowns { get; set; }
+        public int UnitOMPFees { get; set; }
+        public List<FeeBreakdown> FeeBreakdowns { get; set; }
     }
 
     [ExcludeFromCodeCoverage]
@@ -28,7 +28,7 @@ namespace FacadeAccountCreation.Core.Models.Organisations
     {
         public int BandNumber { get; set; }
         public int UnitCount { get; set; }
-        public decimal UnitPrice { get; set; }
-        public decimal TotalPrice { get; set; }
+        public int UnitPrice { get; set; }
+        public int TotalPrice { get; set; }
     }
 }
