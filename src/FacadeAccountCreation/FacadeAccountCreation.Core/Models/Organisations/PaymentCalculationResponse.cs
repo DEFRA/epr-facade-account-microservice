@@ -7,6 +7,7 @@ namespace FacadeAccountCreation.Core.Models.Organisations
     {
         public int ProducerRegistrationFee { get; set; }
         public int ProducerOnlineMarketPlaceFee { get; set; }
+        public int ProducerLateRegistrationFee { get; set; }
         public int SubsidiariesFee { get; set; }
         public int TotalFee { get; set; }
         public int PreviousPayment { get; set; }
@@ -20,7 +21,7 @@ namespace FacadeAccountCreation.Core.Models.Organisations
         public int TotalSubsidiariesOMPFees { get; set; }
         public int CountOfOMPSubsidiaries { get; set; }
         public int UnitOMPFees { get; set; }
-        public List<FeeBreakdown> FeeBreakdowns { get; set; }
+        public FeeBreakdown[] FeeBreakdowns { get; set; }
     }
 
     [ExcludeFromCodeCoverage]

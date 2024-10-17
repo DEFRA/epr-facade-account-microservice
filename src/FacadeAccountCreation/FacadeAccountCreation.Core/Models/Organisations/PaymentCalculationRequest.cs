@@ -10,6 +10,7 @@ namespace FacadeAccountCreation.Core.Models.Organisations
         public int Regulator { get; set; }
         public int NoOfSubsidiariesOnlineMarketplace { get; set; }
         public bool IsProducerOnlineMarketplace { get; set; }
+        public bool IsLateFeeApplicable { get; set; }
         public string ApplicationReferenceNumber { get; set; }
     }
 }
