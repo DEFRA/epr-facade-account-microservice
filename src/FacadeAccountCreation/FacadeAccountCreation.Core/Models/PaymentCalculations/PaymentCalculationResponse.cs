@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace FacadeAccountCreation.Core.Models.Organisations
+namespace FacadeAccountCreation.Core.Models.PaymentCalculations
 {
     [ExcludeFromCodeCoverage]
     public class PaymentCalculationResponse
