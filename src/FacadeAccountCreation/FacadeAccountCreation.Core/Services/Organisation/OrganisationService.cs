@@ -294,7 +294,7 @@ public class OrganisationService : IOrganisationService
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonWithEnumsAsync<string>();
+            return await response.Content.ReadAsStringAsync();
         }
         catch (Exception e)
         {
