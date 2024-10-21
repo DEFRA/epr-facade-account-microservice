@@ -24,7 +24,7 @@ public class OrganisationService : IOrganisationService
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
-    private const string OrganisationNationUrl = "api/organisations/nation";
+    private const string OrganisationNationUrl = "api/organisations/nation-code";
 
     public OrganisationService(
         HttpClient httpClient,
@@ -280,7 +280,7 @@ public class OrganisationService : IOrganisationService
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<List<OrganisationNationModel>?> GetOrganisationNationByExternalIdAsync(Guid organisationExternalId)
+    public async Task<string> GetOrganisationNationCodeByExternalIdAsync(Guid organisationExternalId)
     {
         var url = $"{OrganisationNationUrl}?organisationId={organisationExternalId}";
 
@@ -294,11 +294,11 @@ public class OrganisationService : IOrganisationService
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonWithEnumsAsync<List<OrganisationNationModel>>();
+            return await response.Content.ReadFromJsonWithEnumsAsync<string>();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get Organisation nation for Organisation Id: '{OrganisationExternalId}'", organisationExternalId);
+            _logger.LogError(e, "Failed to get organisation nation for Organisation Id: '{OrganisationExternalId}'", organisationExternalId);
             throw;
         }
         finally

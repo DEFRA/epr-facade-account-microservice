@@ -110,7 +110,7 @@ public class OrganisationsController : Controller
     {
         try
         {
-            var response = await _organisationService.GetOrganisationNationByExternalIdAsync(organisationId);
+            var response = await _organisationService.GetOrganisationNationCodeByExternalIdAsync(organisationId);
             return response == null ? NotFound() : Ok(response);
         }
         catch (Exception exception)
