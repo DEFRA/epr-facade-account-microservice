@@ -542,14 +542,16 @@ public class OrganisationsControllerTests
             x.GetOrganisationNationCodeByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync((string)null);
 
         // Act
-        var result = await _sut.GetRegulatorNation(Guid.NewGuid()) as NotFoundResult;
+        var result = await _sut.GetRegulatorNation(Guid.NewGuid()) as NotFoundObjectResult;
 
         // Assert
         _mockOrganisationService.Verify(s =>
              s.GetOrganisationNationCodeByExternalIdAsync(
                  It.IsAny<Guid>()),
              Times.Once);
-        result.Should().BeOfType<NotFoundResult>();
+
+        result.Should().BeOfType<NotFoundObjectResult>();
+        result?.Value.Should().Be("Organisation not found");
         result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
     }
 
