@@ -110,8 +110,8 @@ public class OrganisationsController : Controller
     {
         try
         {
-            var response = await _organisationService.GetOrganisationNationByExternalIdAsync(organisationId);
-            return response == null ? NotFound() : Ok(response);
+            var response = await _organisationService.GetOrganisationNationCodeByExternalIdAsync(organisationId);
+            return response == null ? NotFound("Organisation not found") : Ok(response);
         }
         catch (Exception exception)
         {
