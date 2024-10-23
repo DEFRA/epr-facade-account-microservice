@@ -39,5 +39,5 @@ public interface IOrganisationService
 
     Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId);
 
-    Task<List<OrganisationNationModel>?> GetOrganisationNationByExternalIdAsync(Guid organisationExternalId);
+    Task<string> GetOrganisationNationCodeByExternalIdAsync(Guid organisationExternalId);
 }

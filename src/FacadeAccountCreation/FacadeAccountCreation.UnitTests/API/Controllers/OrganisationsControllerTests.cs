@@ -518,23 +518,18 @@ public class OrganisationsControllerTests
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
-            x.GetOrganisationNationByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(new List<OrganisationNationModel>
-            {
-                new(){ Id = 1, Name = "England", NationCode="GB-ENG"}
-            });
+            x.GetOrganisationNationCodeByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync("GB-ENG");
 
         // Act
         var result = await _sut.GetRegulatorNation(Guid.NewGuid());
-        var resultValue = (result as OkObjectResult).Value as List<OrganisationNationModel>;
+        var resultValue = (result as OkObjectResult).Value as string;
         
         // Assert
         result.Should().BeOfType<OkObjectResult>();
-        resultValue[0].Id.Should().Be(1);
-        resultValue[0].Name.Should().Be("England");
-        resultValue[0].NationCode.Should().Be("GB-ENG");
+        resultValue.Should().Be("GB-ENG");
 
         _mockOrganisationService.Verify(s =>
-             s.GetOrganisationNationByExternalIdAsync(
+             s.GetOrganisationNationCodeByExternalIdAsync(
                  It.IsAny<Guid>()),
              Times.Once);
     }
@@ -544,17 +539,19 @@ public class OrganisationsControllerTests
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
-            x.GetOrganisationNationByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync((List<OrganisationNationModel>)null);
+            x.GetOrganisationNationCodeByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync((string)null);
 
         // Act
-        var result = await _sut.GetRegulatorNation(Guid.NewGuid()) as NotFoundResult;
+        var result = await _sut.GetRegulatorNation(Guid.NewGuid()) as NotFoundObjectResult;
 
         // Assert
         _mockOrganisationService.Verify(s =>
-             s.GetOrganisationNationByExternalIdAsync(
+             s.GetOrganisationNationCodeByExternalIdAsync(
                  It.IsAny<Guid>()),
              Times.Once);
-        result.Should().BeOfType<NotFoundResult>();
+
+        result.Should().BeOfType<NotFoundObjectResult>();
+        result?.Value.Should().Be("Organisation not found");
         result.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
     }
 
@@ -563,7 +560,7 @@ public class OrganisationsControllerTests
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
-            x.GetOrganisationNationByExternalIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception());
+            x.GetOrganisationNationCodeByExternalIdAsync(It.IsAny<Guid>())).ThrowsAsync(new Exception());
 
         // Act
         var result = await _sut.GetRegulatorNation(Guid.NewGuid()) as StatusCodeResult;
@@ -571,7 +568,7 @@ public class OrganisationsControllerTests
         // Assert
         result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         _mockOrganisationService.Verify(s =>
-            s.GetOrganisationNationByExternalIdAsync(
+            s.GetOrganisationNationCodeByExternalIdAsync(
                 It.IsAny<Guid>()),
             Times.Once);
     }
