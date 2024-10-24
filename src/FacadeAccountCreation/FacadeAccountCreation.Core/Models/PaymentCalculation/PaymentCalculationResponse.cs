@@ -1,9 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using FacadeAccountCreation;
-using FacadeAccountCreation.Core;
-using FacadeAccountCreation.Core.Models;
-using FacadeAccountCreation.Core.Models.Organisations;
-using FacadeAccountCreation.Core.Models.PaymentCalculation;
 
 namespace FacadeAccountCreation.Core.Models.PaymentCalculation
 {

@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FacadeAccountCreation.Core.Services.PaymentCalculation
@@ -28,7 +30,7 @@ namespace FacadeAccountCreation.Core.Services.PaymentCalculation
         {
             try
             {
-                var url = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("PayCalEndpointsConfig").Value}";
+                var url = $"{_config.GetSection("PaymentCalculationEndpoints").GetSection("PayCalEndpointsConfig").Value}";
 
                 _logger.LogInformation(message: "Attempting to calculate producer registration fee for {ApplicationReferenceNumber}", paymentCalculationRequest.ApplicationReferenceNumber);
 
@@ -38,7 +40,13 @@ namespace FacadeAccountCreation.Core.Services.PaymentCalculation
 
                 response.EnsureSuccessStatusCode();
 
-                return await response.Content.ReadFromJsonAsync<PaymentCalculationResponse>();
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+                var jsonContent = RemoveDecimalValues(await response.Content.ReadAsStringAsync());
+
+                return JsonSerializer.Deserialize<PaymentCalculationResponse>(jsonContent, options);
             }
             catch (Exception e)
             {
@@ -52,5 +60,11 @@ namespace FacadeAccountCreation.Core.Services.PaymentCalculation
 
             return null;
         }
+
+        private string RemoveDecimalValues(string jsonString)
+        {
+            return Regex.Replace(jsonString, @"(\d+)\.0+", "$1");
+        }
+
     }
 }
