@@ -12,6 +12,8 @@ public class ApiConfig
 
     public string AccountServiceBaseUrl { get; set; } = null!;
 
+    public string PayCalBaseUrl { get; set; } = null!;
+
     public string AccountServiceClientId { get; set; } = null!;
 
     public string Certificate { get; set; } = null!;
