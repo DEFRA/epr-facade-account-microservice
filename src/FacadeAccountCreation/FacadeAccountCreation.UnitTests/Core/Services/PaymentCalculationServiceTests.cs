@@ -32,11 +32,23 @@ namespace FacadeAccountCreation.UnitTests.Core.Services
         private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
         private readonly IConfiguration _configuration = GetConfig();
 
+        private PaymentCalculationRequest paymentCalculationRequest = new PaymentCalculationRequest()
+        {
+            ApplicationReferenceNumber = "Test",
+            ProducerType = "Large",
+            Regulator = "GB-ENG",
+            NoOfSubsidiariesOnlineMarketplace = 0,
+            IsProducerOnlineMarketplace = false,
+            NumberOfSubsidiaries = 0,
+            IsLateFeeApplicable = false,
+            SubmissionDate = DateTime.UtcNow
+        };
+
         private static IConfiguration GetConfig()
         {
             var config = new Dictionary<string, string?>
         {
-            {"ComplianceSchemeEndpoints:PayCalEndpointsConfig", GetPayCalEndpointsConfig}
+            {"PaymentCalculationEndpoints:PayCalEndpointsConfig", GetPayCalEndpointsConfig}
         };
 
             var configuration = new ConfigurationBuilder()
@@ -74,7 +86,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services
             var sut = new PaymentCalculationService(httpClient, _logger, _configuration);
 
             //Act
-            await sut.ProducerRegistrationFees(new PaymentCalculationRequest());
+            await sut.ProducerRegistrationFees(paymentCalculationRequest);
 
             // Assert
             _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
@@ -113,7 +125,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services
             var sut = new PaymentCalculationService(httpClient, _logger, _configuration);
 
             //Act
-            var act = async () => await sut.ProducerRegistrationFees(new PaymentCalculationRequest());
+            var act = async () => await sut.ProducerRegistrationFees(paymentCalculationRequest);
 
             // Assert
             await act.Should().ThrowAsync<HttpRequestException>();
