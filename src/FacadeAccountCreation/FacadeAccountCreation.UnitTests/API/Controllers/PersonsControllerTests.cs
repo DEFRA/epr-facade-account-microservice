@@ -2,27 +2,24 @@
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
+using System.Net;
+using System.Security.Claims;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Models.Person;
-using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.Person;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using Moq;
-using System.Net;
-using System.Security.Claims;
 
 [TestClass]
 public class PersonsControllerTests
 {
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly Mock<IPersonService> _mockPersonService = new();
-    private readonly ILogger<PersonsController> _logger = null;
     private PersonsController _sut = null!;
     private Guid _userId;
     private Guid _externalId;
@@ -31,7 +28,7 @@ public class PersonsControllerTests
     public void Setup()
     {
         var httpContextMock = new Mock<HttpContext>();
-        _sut = new PersonsController(_mockPersonService.Object, _logger);
+        _sut = new PersonsController(_mockPersonService.Object);
         _sut.ControllerContext.HttpContext = httpContextMock.Object;
         _userId = _fixture.Create<Guid>();
         _externalId = _fixture.Create<Guid>();
@@ -101,6 +98,27 @@ public class PersonsControllerTests
     }
 
     [TestMethod]
+    public async Task GetAllPerson_WhenExistingUser_ShouldReturnOK()
+    {
+        // arrange
+        var handlerResponse = _fixture.Create<PersonResponseModel>();
+
+        _mockPersonService
+            .Setup(x => x.GetAllPersonByUserIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(handlerResponse);
+
+        // act
+        var result = await _sut.GetAllPerson(_userId);
+
+        // assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult?.Value.Should().BeEquivalentTo(handlerResponse);
+        okResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
+    }
+
+    [TestMethod]
     public async Task GetPerson_WhenNotExistingUser_ShouldReturnNoContent()
     {
         // arrange
@@ -112,6 +130,26 @@ public class PersonsControllerTests
 
         // act
         var result = await _sut.GetPerson(_userId);
+
+        // assert
+        result.Should().BeOfType<NotFoundResult>();
+        var notFoundResult = result as NotFoundResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult?.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+    }
+
+    [TestMethod]
+    public async Task GetAllPerson_WhenNotExistingUser_ShouldReturnNoContent()
+    {
+        // arrange
+        var handlerResponse = (PersonResponseModel?)null;
+
+        _mockPersonService
+            .Setup(x => x.GetAllPersonByUserIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(handlerResponse);
+
+        // act
+        var result = await _sut.GetAllPerson(_userId);
 
         // assert
         result.Should().BeOfType<NotFoundResult>();

@@ -3,7 +3,6 @@ using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Person;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -12,30 +11,21 @@ namespace FacadeAccountCreation.Core.Services.Person
     public class PersonService : IPersonService
     {
         private const string PersonsUri = "api/persons";
+        private const string AllPersonsUri = $"{PersonsUri}/allpersons";
         private const string PersonsWithExternalIdUri = "api/persons/person-by-externalId";
         private const string PersonsByInviteToken = "api/persons/person-by-invite-token";
         private readonly HttpClient _httpClient;
-        private readonly IConfiguration _config;
 
-        public PersonService(
-            HttpClient httpClient,
-            IConfiguration config)
-        {
-            _httpClient = httpClient;
-            _config = config;
-        }
+        public PersonService(HttpClient httpClient) => _httpClient = httpClient;
 
         public async Task<PersonResponseModel?> GetPersonByUserIdAsync(Guid userId)
         {
-            var response = await _httpClient.GetAsync($"{PersonsUri}?userId={userId}");
-            if (response.StatusCode == HttpStatusCode.NoContent)
-            {
-                return null;
-            }
+            return await GetPersonByUserIdWithUrlAsync(userId, PersonsUri);
+        }
 
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadFromJsonWithEnumsAsync<PersonResponseModel>();
+        public async Task<PersonResponseModel?> GetAllPersonByUserIdAsync(Guid userId)
+        {
+            return await GetPersonByUserIdWithUrlAsync(userId, AllPersonsUri);
         }
 
         public async Task<PersonResponseModel?> GetPersonByExternalIdAsync(Guid externalId)
@@ -82,6 +72,18 @@ namespace FacadeAccountCreation.Core.Services.Person
             response.EnsureSuccessStatusCode();
             var serviceRoleId = response.Content.ReadFromJsonWithEnumsAsync<InviteApprovedUserModel>();
             return serviceRoleId.Result;
+        }
+        private async Task<PersonResponseModel?> GetPersonByUserIdWithUrlAsync(Guid userId, string url)
+        {
+            var response = await _httpClient.GetAsync($"{url}?userId={userId}");
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonWithEnumsAsync<PersonResponseModel>();
         }
     }
 }

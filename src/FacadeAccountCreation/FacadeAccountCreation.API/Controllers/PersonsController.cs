@@ -3,12 +3,9 @@ namespace FacadeAccountCreation.API.Controllers;
 using Core.Models.Person;
 using Core.Services.Person;
 using Extensions;
-using FacadeAccountCreation.API.Shared;
-using FacadeAccountCreation.Core.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
-using System.Net;
 
 [ApiController]
 [AllowAnonymous]
@@ -17,15 +14,8 @@ using System.Net;
 public class PersonsController : ControllerBase
 {
     private readonly IPersonService _personService;
-    private readonly ILogger<PersonsController> _logger;
 
-    public PersonsController(
-        IPersonService personService,
-        ILogger<PersonsController> logger)
-    {
-        _personService = personService;
-        _logger = logger;
-    }
+    public PersonsController(IPersonService personService) => _personService = personService;
 
     [HttpGet("current", Name = "GetCurrent")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -50,6 +40,18 @@ public class PersonsController : ControllerBase
     public async Task<IActionResult> GetPerson([FromQuery] Guid userId)
     {
         var personResponse = await _personService.GetPersonByUserIdAsync(userId);
+
+        return personResponse == null ? NotFound() : Ok(personResponse);
+    }
+
+    [HttpGet]
+    [Route("all-persons")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PersonResponseModel))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAllPerson([FromQuery] Guid userId)
+    {
+        var personResponse = await _personService.GetAllPersonByUserIdAsync(userId);
 
         return personResponse == null ? NotFound() : Ok(personResponse);
     }
