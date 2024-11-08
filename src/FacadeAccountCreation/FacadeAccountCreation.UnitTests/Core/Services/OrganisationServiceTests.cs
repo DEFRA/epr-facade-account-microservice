@@ -35,7 +35,7 @@ public class OrganisationServiceTests
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetRelationshipUri = "api/organisations";
     private const string OrganisationByReferenceNumberUrl = "api/organisations/organisation-by-reference-number";
-    private const string OrganisationNationUrl = "api/organisations/nation";
+    private const string OrganisationNationUrl = "api/organisations/nation-code";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<OrganisationService> _logger = new();
@@ -835,7 +835,7 @@ public class OrganisationServiceTests
         var organisationId = Guid.NewGuid();
         var expectedUrl = $"{BaseAddress}/{OrganisationNationUrl}?organisationId={organisationId}";
 
-        var apiResponse = new List<OrganisationNationModel>() { new() { Id = 1, NationCode = "GB-ENG", Name="England"} };
+        var apiResponse = "GB-ENG";
 
         _httpMessageHandlerMock.Protected()
            .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -859,7 +859,7 @@ public class OrganisationServiceTests
         var sut = new OrganisationService(httpClient, _logger, _configuration);
 
         //Act
-       var result =  await sut.GetOrganisationNationByExternalIdAsync(organisationId);
+       var result =  await sut.GetOrganisationNationCodeByExternalIdAsync(organisationId);
 
 
         // Assert
@@ -901,7 +901,7 @@ public class OrganisationServiceTests
         var sut = new OrganisationService(httpClient, _logger, _configuration);
 
         //Act
-        var result = await sut.GetOrganisationNationByExternalIdAsync(organisationId);
+        var result = await sut.GetOrganisationNationCodeByExternalIdAsync(organisationId);
 
 
         // Assert
@@ -944,7 +944,7 @@ public class OrganisationServiceTests
         var sut = new OrganisationService(httpClient, _logger, _configuration);
 
         //Act
-        var ex = await Assert.ThrowsExceptionAsync<HttpRequestException>(()=> sut.GetOrganisationNationByExternalIdAsync(organisationId));
+        var ex = await Assert.ThrowsExceptionAsync<HttpRequestException>(()=> sut.GetOrganisationNationCodeByExternalIdAsync(organisationId));
 
         // Assert
         ex.Should().NotBeNull();
@@ -965,7 +965,7 @@ public class OrganisationServiceTests
         var sut = new OrganisationService(httpClient, loggerMock.Object, _configuration);
 
         // Act
-        Func<Task> act = async () => await sut.GetOrganisationNationByExternalIdAsync(organisationId);
+        Func<Task> act = async () => await sut.GetOrganisationNationCodeByExternalIdAsync(organisationId);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();
