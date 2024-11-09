@@ -12,5 +12,7 @@ namespace FacadeAccountCreation.Core.Models.PaymentCalculations
         public bool IsProducerOnlineMarketplace { get; set; }
         public bool IsLateFeeApplicable { get; set; }
         public string ApplicationReferenceNumber { get; set; }
+
+        public DateTime SubmissionDate { get; set; }
     }
 }

@@ -41,6 +41,8 @@ public class PaymentCalculationController : ControllerBase
                 }
             }
         };
+        response.OutstandingPayment = response.TotalFee - response.PreviousPayment;
+;
 
         return Ok(response);
     }
