@@ -1,10 +1,9 @@
 ﻿using FacadeAccountCreation.Core.Models.PaymentCalculation;
-using System.Threading.Tasks;
 
-namespace FacadeAccountCreation.Core.Services.PaymentCalculation
+namespace FacadeAccountCreation.Core.Services.PaymentCalculation;
+
+public interface IPaymentCalculationService
 {
-    public interface IPaymentCalculationService
-    {
-        Task<PaymentCalculationResponse> ProducerRegistrationFees(PaymentCalculationRequest paymentCalculationRequest);
-    }
+    Task<PaymentCalculationResponse?> ProducerRegistrationFees(PaymentCalculationRequest paymentCalculationRequest);
+    Task<string?> PaymentInitiation(PaymentInitiationRequest paymentInitiationRequest);
 }
