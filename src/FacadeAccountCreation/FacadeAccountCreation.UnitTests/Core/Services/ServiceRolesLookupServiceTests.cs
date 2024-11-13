@@ -1,7 +1,5 @@
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
-using FluentAssertions;
-using Microsoft.Extensions.Options;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -15,24 +13,25 @@ public class ServiceRolesLookupServiceTests
     public void Setup()
     {
         _serviceRolesEmptyConfigOptions = Options.Create(new ServiceRolesConfig());
-        _serviceRolesConfigOptions = Options.Create(new ServiceRolesConfig()
+        _serviceRolesConfigOptions = Options.Create(new ServiceRolesConfig
         {
-            Roles = new List<ServiceRolesLookupModel>
-            {
+            Roles =
+            [
                 new ServiceRolesLookupModel
                 {
-                     Key = "Basic.Admin",
-                     PersonRoleId = 1,
-                     ServiceRoleId = 3,
-                     DescriptionKey = "Basic.AdminDescriptionKey"
+                    Key = "Basic.Admin",
+                    PersonRoleId = 1,
+                    ServiceRoleId = 3,
+                    DescriptionKey = "Basic.AdminDescriptionKey"
                 },
+
                 new ServiceRolesLookupModel
                 {
                     Key = "Basic.Employee",
                     PersonRoleId = 2,
                     ServiceRoleId = 3
                 }
-            }
+            ]
         });
     }
 
@@ -40,7 +39,7 @@ public class ServiceRolesLookupServiceTests
     public void When_Get_Service_Roles_Called_Should_Return_Successful_Not_Null_Response()
     {
         // Arrange
-        var expected = new List<ServiceRolesLookupModel>()
+        var expected = new List<ServiceRolesLookupModel>
         {
             new()
             {

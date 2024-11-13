@@ -1,33 +1,17 @@
-﻿using Azure;
-using FacadeAccountCreation.API.Extensions;
-using FacadeAccountCreation.API.Shared;
-using FacadeAccountCreation.Core.Exceptions;
+﻿using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
-using FacadeAccountCreation.Core.Models.Subsidiary;
-using FacadeAccountCreation.Core.Services.Organisation;
-using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
 [Route("api/organisations")]
-public class OrganisationsController : Controller
+public class OrganisationsController(
+    ILogger<OrganisationsController> logger,
+    IOrganisationService organisationService,
+    IServiceRolesLookupService serviceRolesLookupService)
+    : ControllerBase
 {
-    private readonly ILogger<OrganisationsController> _logger;
-    private readonly IOrganisationService _organisationService;
-    private readonly IServiceRolesLookupService _serviceRolesLookupService;
-
-    public OrganisationsController(ILogger<OrganisationsController> logger, IOrganisationService organisationService,
-        IServiceRolesLookupService serviceRolesLookupService)
-    {
-        _logger = logger;
-        _organisationService = organisationService;
-        _serviceRolesLookupService = serviceRolesLookupService;
-    }
-
     [HttpGet]
     [Route("users")]
     [Consumes("application/json")]
@@ -41,34 +25,34 @@ public class OrganisationsController : Controller
             var userId = User.UserId();
             if (userId == Guid.Empty)
             {
-                _logger.LogError("UserId not available");
+                logger.LogError("UserId not available");
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            var response = await _organisationService.GetOrganisationUserList(userId, organisationId, serviceRoleId);
+            var response = await organisationService.GetOrganisationUserList(userId, organisationId, serviceRoleId);
             if (response.IsSuccessStatusCode)
             {
-                var rolesLookupModels = _serviceRolesLookupService.GetServiceRoles();
+                var rolesLookupModels = serviceRolesLookupService.GetServiceRoles();
 
                 var userListResponse = response.Content.ReadFromJsonAsync<List<OrganisationUser>>().Result;
 
-                _logger.LogInformation("Fetched the users for organisation {OrganisationId}", organisationId);
+                logger.LogInformation("Fetched the users for organisation {OrganisationId}", organisationId);
 
                 var userList =
                     OrganisationUsersMapper.ConvertToOrganisationUserModels(userListResponse, rolesLookupModels);
 
-                _logger.LogInformation("Mapped the users for the response for organisation {OrganisationId}",
+                logger.LogInformation("Mapped the users for the response for organisation {OrganisationId}",
                     organisationId);
 
                 return Ok(userList);
             }
 
-            _logger.LogError("Failed to fetch the users for organisation {OrganisationId}", organisationId);
+            logger.LogError("Failed to fetch the users for organisation {OrganisationId}", organisationId);
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError("Error fetching the users for organisation {OrganisationId}", organisationId);
+            logger.LogError(e, "Error fetching the users for organisation {OrganisationId}", organisationId);
             return HandleError.Handle(e);
         }
     }
@@ -83,19 +67,19 @@ public class OrganisationsController : Controller
     {
         try
         {
-            var response = await _organisationService.GetNationIdByOrganisationId(organisationId);
+            var response = await organisationService.GetNationIdByOrganisationId(organisationId);
             if (response.IsSuccessStatusCode)
             {
                 var nationIdList = await response.Content.ReadFromJsonAsync<List<int>>();
                 return Ok(nationIdList);
             }
 
-            _logger.LogError("Failed to fetch the nation Id for organisation {OrganisationId}", organisationId);
+            logger.LogError("Failed to fetch the nation Id for organisation {OrganisationId}", organisationId);
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError("Error fetching the nation Id for organisation {OrganisationId}", organisationId);
+            logger.LogError(e, "Error fetching the nation Id for organisation {OrganisationId}", organisationId);
             return HandleError.Handle(e);
         }
     }
@@ -110,12 +94,12 @@ public class OrganisationsController : Controller
     {
         try
         {
-            var response = await _organisationService.GetOrganisationNationCodeByExternalIdAsync(organisationId);
+            var response = await organisationService.GetOrganisationNationCodeByExternalIdAsync(organisationId);
             return response == null ? NotFound("Organisation not found") : Ok(response);
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Error fetching the nation for organisation {OrganisationId}", organisationId);
+            logger.LogError(exception, "Error fetching the nation for organisation {OrganisationId}", organisationId);
             return HandleError.Handle(exception);
         }
     }
@@ -126,9 +110,9 @@ public class OrganisationsController : Controller
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetNationIdByOrganisationId([FromQuery] string token)
+    public async Task<IActionResult> GetOrganisationNameByInviteToken([FromQuery] string token)
     {
-        var response = await _organisationService.GetOrganisationNameByInviteToken(token);
+        var response = await organisationService.GetOrganisationNameByInviteToken(token);
 
         return response == null ? NotFound() : Ok(response);
     }
@@ -141,7 +125,7 @@ public class OrganisationsController : Controller
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetOrganisationByReferenceNumber(string referenceNumber)
     {
-        var response = await _organisationService.GetOrganisationByReferenceNumber(referenceNumber);
+        var response = await organisationService.GetOrganisationByReferenceNumber(referenceNumber);
 
         return response == null ? NotFound() : Ok(response);
     }
@@ -154,7 +138,7 @@ public class OrganisationsController : Controller
     public async Task<ActionResult> CreateAndAddSubsidiary(LinkOrganisationModel linkOrganisationModel)
     {
         linkOrganisationModel.UserId = User.UserId();
-        var response = await _organisationService.CreateAndAddSubsidiaryAsync(linkOrganisationModel);
+        var response = await organisationService.CreateAndAddSubsidiaryAsync(linkOrganisationModel);
 
         if (response == null)
         {
@@ -173,7 +157,7 @@ public class OrganisationsController : Controller
     {
         subsidiaryAddModel.UserId = User.UserId();
 
-        var response = await _organisationService.AddSubsidiaryAsync(subsidiaryAddModel);
+        var response = await organisationService.AddSubsidiaryAsync(subsidiaryAddModel);
 
         if (response == null)
         {
@@ -193,12 +177,12 @@ public class OrganisationsController : Controller
         try
         {
             subsidiaryTerminateModel.UserId = User.UserId();
-            await _organisationService.TerminateSubsidiaryAsync(subsidiaryTerminateModel);
+            await organisationService.TerminateSubsidiaryAsync(subsidiaryTerminateModel);
             return Ok();
         }
         catch (ProblemResponseException e)
         {
-            _logger.LogError(e, "Error terminating subsidiary {ChildOrganisationId} for organisation {ParentOrganisationId}", subsidiaryTerminateModel.ChildOrganisationId, subsidiaryTerminateModel.ParentOrganisationId);
+            logger.LogError(e, "Error terminating subsidiary {ChildOrganisationId} for organisation {ParentOrganisationId}", subsidiaryTerminateModel.ChildOrganisationId, subsidiaryTerminateModel.ParentOrganisationId);
             return HandleError.Handle(e);
         }
     }
@@ -211,16 +195,14 @@ public class OrganisationsController : Controller
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOrganisationRelationshipsByOrganisationIdAsync(Guid organisationId)
     {
-        var organisationRelationships = await _organisationService.GetOrganisationRelationshipsByOrganisationId(organisationId);
+        var organisationRelationships = await organisationService.GetOrganisationRelationshipsByOrganisationId(organisationId);
 
         if (organisationRelationships != null)
         {
             return Ok(organisationRelationships);
         }
-        else
-        {
-            return NoContent();
-        }
+
+        return NoContent();
     }
 
     [HttpGet]
@@ -230,21 +212,20 @@ public class OrganisationsController : Controller
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetExportOrganisationSubsidiariesAsync(Guid organisationId)
     {
-        var organisationSubsidiaries = await _organisationService.ExportOrganisationSubsidiaries(organisationId);
+        var organisationSubsidiaries = await organisationService.ExportOrganisationSubsidiaries(organisationId);
 
         if (organisationSubsidiaries != null)
         {
             return Ok(organisationSubsidiaries);
         }
-        else
-        {
-            return NoContent();
-        }
+
+        return NoContent();
     }
+    
     /// <summary>
     /// Updates the details of an organisation
     /// </summary>
-    /// <param name="organisationId">Id of the organisation to update</param>
+    /// <param name="id">Id of the organisation to update</param>
     /// <param name="organisationDetails">The updated details for the organisation</param>
     /// <returns>An async IActionResult</returns>
     [HttpPut]
@@ -266,7 +247,7 @@ public class OrganisationsController : Controller
         {
             var userId = User.UserId();
 
-            await _organisationService.UpdateOrganisationDetails(
+            await organisationService.UpdateOrganisationDetails(
                 userId,
                 id,
                 organisationDetails);
@@ -275,7 +256,7 @@ public class OrganisationsController : Controller
         }
         catch (Exception e)
         {
-            _logger.LogError($"Error updating the nation Id for organisation {id}");
+            logger.LogError(e, "Error updating the nation Id for organisation {Id}", id);
             return HandleError.Handle(e);
         }
     }

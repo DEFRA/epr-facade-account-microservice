@@ -1,8 +1,4 @@
-﻿using FacadeAccountCreation.Core.Models.CompaniesHouse;
-using FacadeAccountCreation.Core.Models.Organisations;
-using FacadeAccountCreation.Core.Models.Subsidiary;
-
-namespace FacadeAccountCreation.Core.Services.Organisation;
+﻿namespace FacadeAccountCreation.Core.Services.Organisation;
 
 public interface IOrganisationService
 {

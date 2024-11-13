@@ -1,25 +1,11 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
-using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
-using FacadeAccountCreation.UnitTests.TestHelpers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Identity.Web;
-using Moq;
-using System.Net;
-using System.Security.Claims;
-using System.Text.Json;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -28,7 +14,7 @@ public class OrganisationsControllerTests
 {
     private readonly Guid _oid = Guid.NewGuid();
     private readonly Guid _userId = Guid.NewGuid();
-    private readonly int _serviceRoleId = 1;
+    private const int ServiceRoleId = 1;
     private readonly NullLogger<OrganisationsController> _nullLogger = new();
     private readonly Mock<IOrganisationService> _mockOrganisationService = new();
     private readonly Mock<IServiceRolesLookupService> _serviceRolesLookupServiceMock = new();
@@ -36,7 +22,7 @@ public class OrganisationsControllerTests
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private Mock<HttpContext>? _httpContextMock;
 
-    private readonly string _token = "test token";
+    private const string Token = "test token";
 
     [TestInitialize]
     public void Setup()
@@ -47,7 +33,7 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
-    public async Task Should_return_statuscode_404_when_GetOrganisationUsersList_throws_notfound()
+    public async Task Should_return_statusCode_404_when_GetOrganisationUsersList_throws_notFound()
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
@@ -55,14 +41,14 @@ public class OrganisationsControllerTests
             .ThrowsAsync(new HttpRequestException("Test exception", null, HttpStatusCode.NotFound));
 
         // Act
-        var result = await _sut.GetOrganisationUsers(_userId, _serviceRoleId);
+        var result = await _sut.GetOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();
     }
 
     [TestMethod]
-    public async Task Should_return_statuscode_500_when_GetOrganisationUsersList_throws_500()
+    public async Task Should_return_statusCode_500_when_GetOrganisationUsersList_throws_500()
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
@@ -70,7 +56,7 @@ public class OrganisationsControllerTests
             .ThrowsAsync(new HttpRequestException("Test exception", null, HttpStatusCode.InternalServerError));
 
         // Act
-        var result = await _sut.GetOrganisationUsers(_userId, _serviceRoleId);
+        var result = await _sut.GetOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<StatusCodeResult>();
@@ -94,7 +80,7 @@ public class OrganisationsControllerTests
             .ReturnsAsync(handlerResponse);
 
         // Act
-        var result = await _sut.GetOrganisationUsers(_userId, _serviceRoleId);
+        var result = await _sut.GetOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<StatusCodeResult>();
@@ -103,7 +89,7 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
-    public async Task Should_return_statuscode_200_when_Success()
+    public async Task Should_return_statusCode_200_when_Success()
     {
         // Arrange
         var apiResponse = _fixture.Create<OrganisationUser>();
@@ -114,10 +100,10 @@ public class OrganisationsControllerTests
                     Content = new StringContent(JsonSerializer.Serialize(apiResponse))
                 });
 
-        _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles()).Returns(new List<ServiceRolesLookupModel>());
+        _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles()).Returns([]);
 
         // Act
-        var result = await _sut.GetOrganisationUsers(_userId, _serviceRoleId);
+        var result = await _sut.GetOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<StatusCodeResult>();
@@ -126,7 +112,7 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
-    public async Task Should_return_500_statuscode_when_empty_user()
+    public async Task Should_return_500_statusCode_when_empty_user()
     {
         // Arrange
         _httpContextMock.Setup(x => x.User.Claims).Returns(new List<Claim>
@@ -137,7 +123,7 @@ public class OrganisationsControllerTests
         _sut.ControllerContext.HttpContext = _httpContextMock.Object;
 
         // Act
-        var result = await _sut.GetOrganisationUsers(_userId, _serviceRoleId);
+        var result = await _sut.GetOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<ObjectResult>();
@@ -219,10 +205,10 @@ public class OrganisationsControllerTests
                 ApprovedUserEmail = "adas@sdad.com"
             });
 
-        _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles()).Returns(new List<ServiceRolesLookupModel>());
+        _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles()).Returns([]);
 
         // Act
-        var result = await _sut.GetNationIdByOrganisationId(_token);
+        var result = await _sut.GetOrganisationNameByInviteToken(Token);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
@@ -326,7 +312,15 @@ public class OrganisationsControllerTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var mockResponse = new OrganisationRelationshipModel() { Organisation = new OrganisationDetailModel() { OrganisationNumber = "12345", OrganisationType = "Producer" }, Relationships = new List<RelationshipResponseModel> { new RelationshipResponseModel() { OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent", CompaniesHouseNumber = "CH123455" } } };
+        var mockResponse = new OrganisationRelationshipModel { Organisation = new OrganisationDetailModel { OrganisationNumber = "12345", OrganisationType = "Producer" }, Relationships =
+            [
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent",
+                    CompaniesHouseNumber = "CH123455"
+                }
+            ]
+        };
 
         _mockOrganisationService
             .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId))
@@ -365,8 +359,8 @@ public class OrganisationsControllerTests
         // Arrange
         var organisationId = Guid.NewGuid();
         var mockResponse = new List<ExportOrganisationSubsidiariesResponseModel> {
-        new ExportOrganisationSubsidiariesResponseModel(){ OrganisationId = "1", SubsidiaryId = null, OrganisationName = "ABC", CompaniesHouseNumber = "CH1"},
-        new ExportOrganisationSubsidiariesResponseModel(){ OrganisationId = "1", SubsidiaryId = "2", OrganisationName = "ABC", CompaniesHouseNumber = "CH2"}
+        new ExportOrganisationSubsidiariesResponseModel { OrganisationId = "1", SubsidiaryId = null, OrganisationName = "ABC", CompaniesHouseNumber = "CH1"},
+        new ExportOrganisationSubsidiariesResponseModel { OrganisationId = "1", SubsidiaryId = "2", OrganisationName = "ABC", CompaniesHouseNumber = "CH2"}
         };
 
         _mockOrganisationService

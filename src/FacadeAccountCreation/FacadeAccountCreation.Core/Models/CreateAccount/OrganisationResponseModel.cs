@@ -1,7 +1,7 @@
-﻿namespace FacadeAccountCreation.Core.Models.CreateAccount
+﻿namespace FacadeAccountCreation.Core.Models.CreateAccount;
+
+[ExcludeFromCodeCoverage]
+public class OrganisationResponseModel : OrganisationModel
 {
-    public class OrganisationResponseModel : OrganisationModel
-    {
-        public DateTimeOffset CreatedOn { get; set; }
-    }
+    public DateTimeOffset CreatedOn { get; set; }
 }

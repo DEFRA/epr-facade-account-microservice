@@ -1,38 +1,22 @@
-namespace FacadeAccountCreation.API.Controllers;
-
-using Core.Models.Person;
-using Core.Services.Person;
-using Extensions;
-using FacadeAccountCreation.API.Shared;
-using FacadeAccountCreation.Core.Models.User;
+using FacadeAccountCreation.Core.Models.Person;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
-using System.Net;
+
+namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
 [AllowAnonymous]
 [RequiredScope("account-creation", "account-management")]
 [Route("api/persons")]
-public class PersonsController : ControllerBase
+public class PersonsController(
+    IPersonService personService)
+    : ControllerBase
 {
-    private readonly IPersonService _personService;
-    private readonly ILogger<PersonsController> _logger;
-
-    public PersonsController(
-        IPersonService personService,
-        ILogger<PersonsController> logger)
-    {
-        _personService = personService;
-        _logger = logger;
-    }
-
     [HttpGet("current", Name = "GetCurrent")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetCurrent()
     {
-        var personResponse = await _personService.GetPersonByUserIdAsync(User.UserId());
+        var personResponse = await personService.GetPersonByUserIdAsync(User.UserId());
 
         if (personResponse == null)
         {
@@ -49,7 +33,7 @@ public class PersonsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetPerson([FromQuery] Guid userId)
     {
-        var personResponse = await _personService.GetPersonByUserIdAsync(userId);
+        var personResponse = await personService.GetPersonByUserIdAsync(userId);
 
         return personResponse == null ? NotFound() : Ok(personResponse);
     }
@@ -62,7 +46,7 @@ public class PersonsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPersonFromExternalId([FromQuery] Guid externalId)
     {
-        var personResponse = await _personService.GetPersonByExternalIdAsync(externalId);
+        var personResponse = await personService.GetPersonByExternalIdAsync(externalId);
 
         return personResponse == null ? NotFound() : Ok(personResponse);
     }
@@ -75,7 +59,7 @@ public class PersonsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPersonFromInviteToken([FromQuery] string token)
     {
-        var personResponse = await _personService.GetPersonByInviteToken(token);
+        var personResponse = await personService.GetPersonByInviteToken(token);
 
         return personResponse == null ? NotFound() : Ok(personResponse);
     }

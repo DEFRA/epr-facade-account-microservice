@@ -1,15 +1,8 @@
-﻿using System.Net;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text;
 using System.Text.RegularExpressions;
-using AutoFixture;
-using AutoFixture.AutoMoq;
 using FacadeAccountCreation.Core.Models.PaymentCalculation;
 using FacadeAccountCreation.Core.Services.PaymentCalculation;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Moq;
-using Moq.Protected;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

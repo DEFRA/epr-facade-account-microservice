@@ -1,7 +1,6 @@
-﻿using FacadeAccountCreation.Core.Enums;
+﻿namespace FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 
-namespace FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
-
+[ExcludeFromCodeCoverage]
 public class OrganisationUserModel
 {
     public string FirstName { get; set; }

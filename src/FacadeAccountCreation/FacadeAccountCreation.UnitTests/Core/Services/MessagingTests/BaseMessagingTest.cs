@@ -1,10 +1,4 @@
-﻿using FacadeAccountCreation.Core.Models.Messaging;
-using FacadeAccountCreation.Core.Services.Messaging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Microsoft.FeatureManagement;
-using Moq;
-using Notify.Interfaces;
+﻿using Notify.Interfaces;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests;
 
@@ -20,7 +14,7 @@ public class BaseMessagingTest
     protected BaseMessagingTest()
     {
         _notificationClientMock = new Mock<INotificationClient>();
-        _messagingConfigOptions = Options.Create(new MessagingConfig()
+        _messagingConfigOptions = Options.Create(new MessagingConfig
         {
             ApiKey = "dummykey",
             ComplianceSchemeAccountConfirmationTemplateId = "dummytemplate",
@@ -32,14 +26,14 @@ public class BaseMessagingTest
             AccountLoginUrl="dummyUrl",
             AccountCreationUrl= "dummyCreateUrl"
         });
-        _regulatorEmailConfig = Options.Create(new RegulatorEmailConfig()
+        _regulatorEmailConfig = Options.Create(new RegulatorEmailConfig
         {
             England = "dummyEmailEngland",
             Scotland = "dummyEmailScotland",
             Wales = "dummyEmailWales",
             NorthernIreland = "dummyEmailNI"
         });
-        _eprPackagingRegulatorEmailConfig = Options.Create(new EprPackagingRegulatorEmailConfig()
+        _eprPackagingRegulatorEmailConfig = Options.Create(new EprPackagingRegulatorEmailConfig
         {
             England = "dummyEmailEngland",
             Scotland = "dummyEmailScotland",

@@ -1,6 +1,4 @@
-﻿using FacadeAccountCreation.Core.Models.Enrolments;
-
-namespace FacadeAccountCreation.Core.Services.Enrolments;
+﻿namespace FacadeAccountCreation.Core.Services.Enrolments;
 
 public interface IEnrolmentService
 {

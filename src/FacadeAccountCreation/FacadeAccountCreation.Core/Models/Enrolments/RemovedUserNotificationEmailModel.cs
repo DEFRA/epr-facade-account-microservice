@@ -1,5 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.Enrolments;
 
+[ExcludeFromCodeCoverage]
 public class RemovedUserNotificationEmailModel
 {
     public Guid UserId { get; set; }

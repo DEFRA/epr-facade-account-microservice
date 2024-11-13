@@ -1,76 +1,60 @@
-﻿using FacadeAccountCreation.API.Extensions;
-using FacadeAccountCreation.API.Shared;
-using FacadeAccountCreation.Core.Models.Connections;
-using FacadeAccountCreation.Core.Services.Connection;
-using FacadeAccountCreation.Core.Services.Messaging;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Net;
+﻿using FacadeAccountCreation.Core.Services.RoleManagement;
 
-namespace FacadeAccountCreation.API.Controllers
+namespace FacadeAccountCreation.API.Controllers;
+
+[ApiController]
+[Route("api/enrolments")]
+public class ApprovedPersonEnrolmentsController(
+    IRoleManagementService roleManagementService,
+    IMessagingService messagingService,
+    ILogger<ApprovedPersonEnrolmentsController> logger)
+    : ControllerBase
 {
-    [ApiController]
-    [Route("api/enrolments")]
-    public class ApprovedPersonEnrolmentsController : Controller
+    [HttpPut]
+    [Consumes("application/json")]
+    [Route("{enrolmentId:guid}/approved-person-acceptance")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AcceptNominationForApprovedPerson(
+        Guid enrolmentId,
+        [BindRequired, FromBody] AcceptNominationApprovedPersonRequest acceptNominationRequest,
+        [BindRequired, FromQuery] string serviceKey,
+        [BindRequired, FromHeader(Name = "X-EPR-Organisation")] Guid organisationId)
     {
-        private readonly IRoleManagementService _roleManagementService;
-        private readonly IMessagingService _messagingService;
-        private readonly ILogger<ApprovedPersonEnrolmentsController> _logger;
+        var userId = User.UserId();
 
-        public ApprovedPersonEnrolmentsController(IRoleManagementService roleManagementService, IMessagingService? messagingService, ILogger<ApprovedPersonEnrolmentsController> logger)
+        try
         {
-            _roleManagementService = roleManagementService;
-            _messagingService = messagingService;
-            _logger = logger;
+            var result = await roleManagementService.AcceptNominationForApprovedPerson(enrolmentId, userId, organisationId, serviceKey, acceptNominationRequest);
+
+            if (result.StatusCode != HttpStatusCode.OK)
+            {
+                logger.LogError(
+                    "Accept nomination failed for user {UserId} from organisation {OrganisationId} of service '{ServiceKey}'. StatusCode: {StatusCode}",
+                    userId, organisationId, serviceKey, result.StatusCode);
+
+                return HandleError.HandleErrorWithStatusCode(result.StatusCode);
+            }
+
+            messagingService.SendApprovedUserAccountCreationConfirmation(
+                acceptNominationRequest.OrganisationName,
+                acceptNominationRequest.PersonFirstName,
+                acceptNominationRequest.PersonLastName,
+                acceptNominationRequest.OrganisationNumber,
+                acceptNominationRequest.ContactEmail);
+
+            logger.LogInformation(
+                "Nominated user {UserId} from organisation {OrganisationId} accepted the nomination to become an approved person. Service: '{ServiceKey}'",
+                userId, organisationId, serviceKey);
+
+            return Ok();                
         }
-         
-        [HttpPut]
-        [Consumes("application/json")]
-        [Route("{enrolmentId:guid}/approved-person-acceptance")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AcceptNominationForApprovedPerson(
-            Guid enrolmentId,
-            [BindRequired, FromBody] AcceptNominationApprovedPersonRequest acceptNominationRequest,
-            [BindRequired, FromQuery] string serviceKey,
-            [BindRequired, FromHeader(Name = "X-EPR-Organisation")] Guid organisationId)
+        catch (Exception exception)
         {
-            var userId = User.UserId();
+            logger.LogError(exception, "Accept nomination failed for user {UserId} from organisation {OrganisationId} of service '{ServiceKey}'.",
+                userId, organisationId, serviceKey);
 
-            try
-            {
-                var result = await _roleManagementService.AcceptNominationForApprovedPerson(enrolmentId, userId, organisationId, serviceKey, acceptNominationRequest);
-
-                if (result.StatusCode != HttpStatusCode.OK)
-                {
-                    _logger.LogError(
-                        "Accept nomination failed for user {UserId} from organisation {OrganisationId} of service '{ServiceKey}'. StatusCode: {StatusCode}",
-                        userId, organisationId, serviceKey, result.StatusCode);
-
-                    return HandleError.HandleErrorWithStatusCode(result.StatusCode);
-                }
-
-                _messagingService.SendApprovedUserAccountCreationConfirmation(
-                    acceptNominationRequest.OrganisationName,
-                    acceptNominationRequest.PersonFirstName,
-                    acceptNominationRequest.PersonLastName,
-                    acceptNominationRequest.OrganisationNumber,
-                    acceptNominationRequest.ContactEmail);
-
-                _logger.LogInformation(
-                        "Nominated user {UserId} from organisation {OrganisationId} accepted the nomination to become an approved person. Service: '{ServiceKey}'",
-                        userId, organisationId, serviceKey);
-
-                return Ok();                
-            }
-            catch (Exception exception)
-            {
-                _logger.LogError(
-                    "Accept nomination failed for user {UserId} from organisation {OrganisationId} of service '{ServiceKey}'.",
-                    userId, organisationId, serviceKey);
-
-                return HandleError.Handle(exception);
-            }
+            return HandleError.Handle(exception);
         }
     }
 }

@@ -1,29 +1,17 @@
+using System.Collections.ObjectModel;
 using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Exceptions;
-using FacadeAccountCreation.Core.Extensions;
-using FacadeAccountCreation.Core.Models.CreateAccount;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using System.Collections.ObjectModel;
-using System.Net;
-using System.Net.Http.Json;
 
 namespace FacadeAccountCreation.Core.Services.CreateAccount;
 
-public class AccountService : IAccountService
+public class AccountService(HttpClient httpClient, IOptions<AccountsEndpointsConfig> accountsEndpointsConfigOptions)
+    : IAccountService
 {
-    private readonly HttpClient _httpClient;
-    private readonly AccountsEndpointsConfig _accountsEndpointsConfig;
-
-    public AccountService(HttpClient httpClient, IOptions<AccountsEndpointsConfig> accountsEndpointsConfigOptions)
-    {
-        _httpClient = httpClient;
-        _accountsEndpointsConfig = accountsEndpointsConfigOptions.Value;
-    }
+    private readonly AccountsEndpointsConfig _accountsEndpointsConfig = accountsEndpointsConfigOptions.Value;
 
     public async Task<CreateAccountResponse?> AddAccountAsync(AccountWithUserModel accountWithUser )
     {
-        var response = await _httpClient.PostAsJsonAsync(_accountsEndpointsConfig.Accounts, accountWithUser);
+        var response = await httpClient.PostAsJsonAsync(_accountsEndpointsConfig.Accounts, accountWithUser);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -45,7 +33,7 @@ public class AccountService : IAccountService
     public async Task<CreateAccountResponse?> AddApprovedUserAccountAsync(AccountModel approvedUser )
     {
         
-        var response = await _httpClient.PostAsJsonAsync(_accountsEndpointsConfig.ApprovedUserAccounts, approvedUser);
+        var response = await httpClient.PostAsJsonAsync(_accountsEndpointsConfig.ApprovedUserAccounts, approvedUser);
         
         if (!response.IsSuccessStatusCode)
         {
@@ -66,7 +54,7 @@ public class AccountService : IAccountService
     
     public async Task<IReadOnlyCollection<OrganisationResponseModel>?> GetOrganisationsByCompanyHouseNumberAsync(string companiesHouseNumber)
     {
-        var response = await _httpClient.GetAsync($"{_accountsEndpointsConfig.Organisations}?companiesHouseNumber={companiesHouseNumber}");
+        var response = await httpClient.GetAsync($"{_accountsEndpointsConfig.Organisations}?companiesHouseNumber={companiesHouseNumber}");
 
         if (response.StatusCode == HttpStatusCode.NoContent)
         {
@@ -92,11 +80,11 @@ public class AccountService : IAccountService
     
     public async Task<HttpResponseMessage> SaveInviteAsync(AccountInvitationModel accountInvitation)
     {
-        return  await _httpClient.PostAsJsonAsync(_accountsEndpointsConfig.InviteUser, accountInvitation);
+        return  await httpClient.PostAsJsonAsync(_accountsEndpointsConfig.InviteUser, accountInvitation);
     }
 
     public async Task<HttpResponseMessage> EnrolInvitedUserAsync(EnrolInvitedUserModel enrolInvitedUserModel)
     {
-        return await _httpClient.PostAsJsonAsync(_accountsEndpointsConfig.EnrolInvitedUser, enrolInvitedUserModel);
+        return await httpClient.PostAsJsonAsync(_accountsEndpointsConfig.EnrolInvitedUser, enrolInvitedUserModel);
     }
 }

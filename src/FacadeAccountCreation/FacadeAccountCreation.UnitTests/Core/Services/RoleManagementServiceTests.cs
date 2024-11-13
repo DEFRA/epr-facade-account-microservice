@@ -1,12 +1,7 @@
 ﻿using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Models.Connections;
-using FacadeAccountCreation.Core.Services.Connection;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
+using FacadeAccountCreation.Core.Services.RoleManagement;
 using RichardSzalay.MockHttp;
-using System.Net;
-using System.Net.Http;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

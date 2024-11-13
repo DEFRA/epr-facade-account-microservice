@@ -1,6 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace FacadeAccountCreation.API.Configs;
 
-namespace FacadeAccountCreation.API.Configs;
 [ExcludeFromCodeCoverage]
 public class ApiConfig
 {

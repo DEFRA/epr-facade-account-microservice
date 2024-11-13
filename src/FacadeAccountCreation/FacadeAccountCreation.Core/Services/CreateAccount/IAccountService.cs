@@ -1,5 +1,3 @@
-using FacadeAccountCreation.Core.Models.CreateAccount;
-
 namespace FacadeAccountCreation.Core.Services.CreateAccount;
 
 public interface IAccountService

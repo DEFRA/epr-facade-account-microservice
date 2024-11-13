@@ -1,16 +1,7 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.Core.Exceptions;
+﻿using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Person;
 using FacadeAccountCreation.Core.Services.Person;
-using FluentAssertions;
-using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Text.Json;
-using Microsoft.Extensions.Configuration;
-using FacadeAccountCreation.Core.Models.User;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -18,28 +9,11 @@ namespace FacadeAccountCreation.UnitTests.Core.Services;
 public class PersonServiceTests
 {
     private const string PersonEndpoint = "api/persons";
-    private const string UpdateUserDetailsEndpoint = "UpdateUserDetails";
     private const string BaseAddress = "http://localhost";
     private const string ExternalIdEndpoint = "api/persons/person-by-externalId";
     private const string PersonsByInviteToken = "api/persons/person-by-invite-token";
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
-    private readonly IConfiguration _configuration = GetConfig();
-
-    public static IConfiguration GetConfig()
-    {
-        var config = new Dictionary<string, string?>
-        {
-            {"ApiConfig:AccountServiceBaseUrl", BaseAddress},
-            {"ComplianceSchemeEndpoints:GetUserOrganisations", UpdateUserDetailsEndpoint},
-        };
-
-        var configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection(config)
-            .Build();
-
-        return configuration;
-    }
 
     [TestMethod]
     public async Task GetPersonByUserIdAsync_WhenValidUserId_ShouldReturnPersonResponse()
@@ -61,7 +35,7 @@ public class PersonServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new PersonService(httpClient, _configuration);
+        var sut = new PersonService(httpClient);
 
         // Act
         var result = await sut.GetPersonByUserIdAsync(userId);
@@ -95,7 +69,7 @@ public class PersonServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new PersonService(httpClient, _configuration);
+        var sut = new PersonService(httpClient);
 
         // Act
         var result = await sut.GetPersonByUserIdAsync(userId);
@@ -131,7 +105,7 @@ public class PersonServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new PersonService(httpClient, _configuration);
+        var sut = new PersonService(httpClient);
 
         // Act
         var result = await sut.GetPersonByExternalIdAsync(externalId);
@@ -168,7 +142,7 @@ public class PersonServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new PersonService(httpClient,_configuration);
+        var sut = new PersonService(httpClient);
 
         // Act
         var result = await sut.GetPersonByExternalIdAsync(externalId);
@@ -202,7 +176,7 @@ public class PersonServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new PersonService(httpClient, _configuration);
+        var sut = new PersonService(httpClient);
 
         // Act
         var result = await sut.GetPersonByExternalIdAsync(externalId);
@@ -239,7 +213,7 @@ public class PersonServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new PersonService(httpClient, _configuration);
+        var sut = new PersonService(httpClient);
 
         // Act
         var result = await sut.GetPersonByInviteToken(token);
@@ -274,7 +248,7 @@ public class PersonServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new PersonService(httpClient, _configuration);
+        var sut = new PersonService(httpClient);
 
         // Act
         var result = await sut.GetPersonByInviteToken(token);

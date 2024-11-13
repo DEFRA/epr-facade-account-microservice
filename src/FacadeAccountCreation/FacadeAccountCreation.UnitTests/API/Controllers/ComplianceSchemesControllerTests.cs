@@ -1,21 +1,7 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
-using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
-using FacadeAccountCreation.Core.Services.Messaging;
-using FacadeAccountCreation.UnitTests.TestHelpers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.FeatureManagement;
-using Microsoft.Identity.Web;
-using Moq;
-using System.Net;
-using System.Security.Claims;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -924,13 +910,6 @@ public class ComplianceSchemesControllerTests
     public async Task GetExportOrganisationSubsidiariesAsync_ValidInputWithData_ReturnsOkResult()
     {
         // Arrange
-        var handlerResponse =
-            _fixture
-                .Build<HttpResponseMessage>()
-                .With(x => x.StatusCode, HttpStatusCode.OK)
-                .With(x => x.Content, new StringContent(_fixture.Create<string>()))
-                .Create();
-
         var expectedModel = _fixture.Create<List<ExportOrganisationSubsidiariesResponseModel>>();
 
         _mockComplianceSchemeServiceMock

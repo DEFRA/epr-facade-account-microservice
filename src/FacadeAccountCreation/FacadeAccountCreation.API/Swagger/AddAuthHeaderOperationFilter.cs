@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Diagnostics.CodeAnalysis;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 namespace FacadeAccountCreation.API.Swagger;

@@ -1,7 +1,4 @@
 ﻿using FacadeAccountCreation.Core.Models.ComplianceScheme;
-using FacadeAccountCreation.Core.Models.Messaging;
-using FluentAssertions;
-using Moq;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests;
 
@@ -20,7 +17,7 @@ public class MessagingRemovalNotficationToProducerTests : BaseMessagingTest
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
+            null, null)).Returns(new EmailNotificationResponse { id = emailNotificationId });
 
         _sut = GetServiceUnderTest();
 
@@ -39,26 +36,26 @@ public class MessagingRemovalNotficationToProducerTests : BaseMessagingTest
     {
         get
         {
-            yield return new NotifyComplianceSchemeProducerEmailInput[]
-            {
-                new NotifyComplianceSchemeProducerEmailInput()
+            yield return
+            [
+                new NotifyComplianceSchemeProducerEmailInput
                 {
                     UserId = Guid.Parse("fd4c6137-dd77-4684-a7cd-c9ae7f4c7762"),
-                    Recipients = new List<EmailRecipient>
-                    {
-                    new()
+                    Recipients =
+                    [
+                        new()
                         {
                             Email = "dummyEmail",
                             FirstName = "Test",
                             LastName = "last",
 
                         }
-                    },
+                    ],
                     OrganisationId = "1",
                     OrganisationName = "Organisation",
                     ComplianceScheme = "Compliance Scheme Name"
                 }
-            };
+            ];
         }
     }
 }

@@ -1,13 +1,6 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
 using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.User;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Moq.Protected;
-using System.Net;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

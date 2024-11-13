@@ -1,20 +1,10 @@
-﻿using FacadeAccountCreation.API.Controllers;
-using FacadeAccountCreation.Core.Models.Enrolments;
-using FacadeAccountCreation.Core.Models.Messaging;
+﻿using FacadeAccountCreation.Core.Models.Enrolments;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Person;
 using FacadeAccountCreation.Core.Services.Enrolments;
-using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.Person;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
-using FacadeAccountCreation.UnitTests.TestHelpers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
-using System.Net;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -39,7 +29,8 @@ public class EnrolmentsControllerTests
         _deleteUserModel.PersonExternalIdToDelete = Guid.Parse("00000000-0000-0000-0000-000000000001");
         _deleteUserModel.ServiceRoleId = ProducerApprovedPerson;
         
-        var messagingConfig = new MessagingConfig() { 
+        var messagingConfig = new MessagingConfig
+        { 
             ApiKey = "test", 
             RemovedUserNotificationTemplateId = Guid.NewGuid().ToString()
         }; 
@@ -94,31 +85,6 @@ public class EnrolmentsControllerTests
         // Act
         var response = await _sut.Delete(Guid.NewGuid(), Guid.NewGuid(), _deleteUserModel.ServiceRoleId);
         
-        // Assert
-        response.Should().BeOfType<NoContentResult>();
-        _mockMessagingService.Verify(x => x.SendRemovedUserNotification(It.IsAny<RemovedUserNotificationEmailModel>()), Times.Once);
-    }
-
-
-
-    [TestMethod]
-    [DataRow(HttpStatusCode.OK)]
-    [DataRow(HttpStatusCode.NoContent)]
-    public async Task When_service_successfully_deletes_role(HttpStatusCode statusCode)
-    {
-        // Arrange
-        _enrolmentService.Setup(x => x.DeleteUser(It.IsAny<DeleteUserModel>()))
-            .ReturnsAsync(new HttpResponseMessage(statusCode));
-
-        _mockPersonService.Setup(x => x.GetPersonByExternalIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync(new PersonResponseModel());
-        _mockOrganisationService.Setup(x => x.GetOrganisationByExternalId(It.IsAny<Guid>()))
-            .ReturnsAsync(new RemovedUserOrganisationModel());
-        _mockServiceRolesLookup.Setup(x => x.IsProducer(1)).Returns(true);
-
-        // Act
-        var response = await _sut.Delete(Guid.NewGuid(), Guid.NewGuid(), _deleteUserModel.ServiceRoleId);
-
         // Assert
         response.Should().BeOfType<NoContentResult>();
         _mockMessagingService.Verify(x => x.SendRemovedUserNotification(It.IsAny<RemovedUserNotificationEmailModel>()), Times.Once);

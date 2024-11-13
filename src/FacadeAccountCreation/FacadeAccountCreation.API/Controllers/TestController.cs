@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web.Resource;
-
 namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]

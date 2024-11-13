@@ -1,7 +1,5 @@
-﻿using FacadeAccountCreation.API.Shared;
-using FacadeAccountCreation.Core.Models.PaymentCalculation;
+﻿using FacadeAccountCreation.Core.Models.PaymentCalculation;
 using FacadeAccountCreation.Core.Services.PaymentCalculation;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FacadeAccountCreation.API.Controllers;
 

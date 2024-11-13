@@ -1,5 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.Enrolments;
 
+[ExcludeFromCodeCoverage]
 public class DeleteUserModel
 {
     public Guid PersonExternalIdToDelete { get; set; }

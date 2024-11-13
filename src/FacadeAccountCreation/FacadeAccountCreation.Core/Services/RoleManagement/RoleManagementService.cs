@@ -1,16 +1,8 @@
-﻿using FacadeAccountCreation.Core.Configs;
-using FacadeAccountCreation.Core.Extensions;
-using FacadeAccountCreation.Core.Models.Connections;
+﻿using System.Text;
+using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Models.DelegatedPerson;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.Net;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
-namespace FacadeAccountCreation.Core.Services.Connection;
+namespace FacadeAccountCreation.Core.Services.RoleManagement;
 
 public class RoleManagementService : IRoleManagementService
 {
@@ -32,22 +24,22 @@ public class RoleManagementService : IRoleManagementService
 
     public async Task<ConnectionPersonModel> GetPerson(Guid connectionId, string serviceKey, Guid userId, Guid organisationId)
     {
-        _logger.LogInformation("Attempting to get the connection person for the connection id : '{connectionId}'", connectionId);
+        _logger.LogInformation("Attempting to get the connection person for the connection id : '{ConnectionId}'", connectionId);
 
         var uriBuilder = new UriBuilder(string.Format(_connectionsEndpoints.Person, connectionId, serviceKey));
 
-        string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
+        var endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 
         return await GetFromEndpoint<ConnectionPersonModel>(endpoint, userId, organisationId);
     }
 
     public async Task<ConnectionWithEnrolmentsModel> GetEnrolments(Guid connectionId, string serviceKey, Guid userId, Guid organisationId)
     {
-        _logger.LogInformation("Attempting to get the connection enrolments for the connection id : '{connectionId}'", connectionId);
+        _logger.LogInformation("Attempting to get the connection enrolments for the connection id : '{ConnectionId}'", connectionId);
 
         var uriBuilder = new UriBuilder(string.Format(_connectionsEndpoints.Enrolments, connectionId, serviceKey));
 
-        string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
+        var endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 
        return await GetFromEndpoint<ConnectionWithEnrolmentsModel>(endpoint, userId, organisationId);
     }
@@ -57,7 +49,7 @@ public class RoleManagementService : IRoleManagementService
         _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
         _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
 
-        string requestUri = $"api/connections/{connectionId}/roles?serviceKey={serviceKey}";
+        var requestUri = $"api/connections/{connectionId}/roles?serviceKey={serviceKey}";
 
         var response = await PutAsJsonAsync(userId, organisationId, requestUri, updateRequest);
         response.EnsureSuccessStatusCode();
@@ -70,7 +62,7 @@ public class RoleManagementService : IRoleManagementService
         _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
         _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
 
-        string requestUri = $"api/connections/{connectionId}/delegated-person-nomination?serviceKey={serviceKey}";
+        var requestUri = $"api/connections/{connectionId}/delegated-person-nomination?serviceKey={serviceKey}";
 
         var requestContent = new StringContent(JsonSerializer.Serialize(nominationRequest, _jsonSerializerOptions), Encoding.UTF8, "application/json");
 
@@ -86,7 +78,7 @@ public class RoleManagementService : IRoleManagementService
         _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
         _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
 
-        string requestUri = $"api/enrolments/{enrolmentId}/delegated-person-acceptance?serviceKey={serviceKey}";
+        var requestUri = $"api/enrolments/{enrolmentId}/delegated-person-acceptance?serviceKey={serviceKey}";
 
         var requestContent = new StringContent(JsonSerializer.Serialize(acceptNominationRequest, _jsonSerializerOptions), Encoding.UTF8, "application/json");
 
@@ -103,7 +95,7 @@ public class RoleManagementService : IRoleManagementService
         _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
         _httpClient.DefaultRequestHeaders.Add(XEprOrganisationHeader, organisationId.ToString());
 
-        string requestUri = $"api/enrolments/{enrolmentId}/approved-person-acceptance?serviceKey={serviceKey}";
+        var requestUri = $"api/enrolments/{enrolmentId}/approved-person-acceptance?serviceKey={serviceKey}";
 
         var requestContent = new StringContent(JsonSerializer.Serialize(acceptNominationRequest, _jsonSerializerOptions), Encoding.UTF8, "application/json");
 

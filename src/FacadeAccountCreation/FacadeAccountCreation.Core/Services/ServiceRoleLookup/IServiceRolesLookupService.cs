@@ -1,5 +1,3 @@
-using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
-
 namespace FacadeAccountCreation.Core.Services.ServiceRoleLookup;
 
 public interface IServiceRolesLookupService

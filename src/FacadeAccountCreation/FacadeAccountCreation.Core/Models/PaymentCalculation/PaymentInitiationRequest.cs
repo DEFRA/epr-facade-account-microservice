@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace FacadeAccountCreation.Core.Models.PaymentCalculation;
+﻿namespace FacadeAccountCreation.Core.Models.PaymentCalculation;
 
 [ExcludeFromCodeCoverage]
 public class PaymentInitiationRequest

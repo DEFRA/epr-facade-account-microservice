@@ -1,12 +1,6 @@
-﻿using System.Net;
-using FacadeAccountCreation.API.Controllers;
-using FacadeAccountCreation.Core.Models.PaymentCalculation;
+﻿using FacadeAccountCreation.Core.Models.PaymentCalculation;
 using FacadeAccountCreation.Core.Services.PaymentCalculation;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moq;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

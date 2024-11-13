@@ -1,22 +1,5 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
-using Azure;
-using FacadeAccountCreation.API.Controllers;
-using FacadeAccountCreation.API.Extensions;
-using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.User;
-using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.Core.Services.User;
-using FacadeAccountCreation.UnitTests.TestHelpers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Identity.Web;
-using Moq;
-using System.Net;
-using System.Security.Claims;
-using System.Text.Json;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -334,7 +317,6 @@ public class UsersControllerTests
         var updateUserDetailsRequest = new UpdateUserDetailsRequest();
         var serviceKey = "test-service-key";
         var organisationId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
 
         _mockUserService.Setup(s => s.UpdatePersonalDetailsAsync(It.IsAny<Guid>(), organisationId, serviceKey, updateUserDetailsRequest))
             .ThrowsAsync(new Exception("Test exception"));

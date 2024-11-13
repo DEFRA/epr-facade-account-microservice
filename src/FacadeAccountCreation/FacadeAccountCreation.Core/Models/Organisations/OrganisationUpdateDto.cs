@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace FacadeAccountCreation.Core.Models.Organisations;
+﻿namespace FacadeAccountCreation.Core.Models.Organisations;
 
 /// <summary>
 /// This dto is used for updating of an organisation details

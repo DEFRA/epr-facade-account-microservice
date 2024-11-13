@@ -1,8 +1,6 @@
-﻿using FacadeAccountCreation.Core.Enums;
-using System.Text.Json.Serialization;
+﻿namespace FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 
-namespace FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
-
+[ExcludeFromCodeCoverage]
 public class OrganisationUserEnrolment
 {
     [JsonPropertyName("EnrolmentStatusId")]

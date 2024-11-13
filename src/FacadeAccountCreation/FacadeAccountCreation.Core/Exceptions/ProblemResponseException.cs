@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Runtime.Serialization;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Runtime.Serialization;
 
 namespace FacadeAccountCreation.Core.Exceptions;
 
