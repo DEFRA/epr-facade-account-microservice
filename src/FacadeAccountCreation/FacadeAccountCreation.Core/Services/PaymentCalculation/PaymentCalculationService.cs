@@ -74,6 +74,8 @@ public class PaymentCalculationService(
 
     private static string RemoveDecimalValues(string jsonString)
     {
-        return Regex.Replace(jsonString, @"(\d+)\.0+", "$1");
+        var decimalPattern = new Regex(@"(\d+)\.0+", RegexOptions.None, TimeSpan.FromMilliseconds(100));
+
+        return decimalPattern.Replace(jsonString, "$1");
     }
 }
