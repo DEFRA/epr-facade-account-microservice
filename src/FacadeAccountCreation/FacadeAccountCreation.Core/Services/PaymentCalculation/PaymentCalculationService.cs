@@ -53,7 +53,7 @@ public class PaymentCalculationService(
 
             const string pattern = @"window\.location\.href\s*=\s*'(?<url>.*?)';";
             
-            var match = Regex.Match(htmlContent, pattern);
+            var match = Regex.Match(htmlContent, pattern, RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
             // Extract the URL if the match is found
             if (match.Success)
@@ -74,8 +74,6 @@ public class PaymentCalculationService(
 
     private static string RemoveDecimalValues(string jsonString)
     {
-        var decimalPattern = new Regex(@"(\d+)\.0+", RegexOptions.None, TimeSpan.FromMilliseconds(100));
-
-        return decimalPattern.Replace(jsonString, "$1");
+        return Regex.Replace(jsonString, @"(\d+)\.0+", "$1", RegexOptions.None, TimeSpan.FromMilliseconds(100));
     }
 }
