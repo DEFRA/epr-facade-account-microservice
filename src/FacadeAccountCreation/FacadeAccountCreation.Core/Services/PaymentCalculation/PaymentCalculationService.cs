@@ -12,10 +12,16 @@ public class PaymentCalculationService(
     private const string PaymentInitiationUrl = "api/organisations/nation-code";
     private readonly JsonSerializerOptions _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
+    // ReSharper disable once MemberCanBePrivate.Global
+    public bool ReturnFakeData { get; set; } = true;
+
     public async Task<PaymentCalculationResponse?> ProducerRegistrationFees(PaymentCalculationRequest paymentCalculationRequest)
     {
         try
         {
+            if (ReturnFakeData)
+                return new PaymentCalculationResponse { OutstandingPayment = 10, PreviousPayment = 20, ProducerLateRegistrationFee = 30, ProducerOnlineMarketPlaceFee = 50, ProducerRegistrationFee = 100, SubsidiariesFee = 200, SubsidiariesFeeBreakdown = new SubsidiariesFeeBreakdown { CountOfOMPSubsidiaries = 5, FeeBreakdowns = [new FeeBreakdown { BandNumber = 1, TotalPrice = 50, UnitCount = 1, UnitPrice = 50 }], TotalSubsidiariesOMPFees = 500, UnitOMPFees = 5} };
+
             logger.LogInformation(message: "Attempting to calculate producer registration fee for {Reference}", paymentCalculationRequest.ApplicationReferenceNumber);
 
             var response = await httpClient.PostAsJsonAsync(ProducerRegistrationFeesUri, paymentCalculationRequest);
@@ -43,16 +49,19 @@ public class PaymentCalculationService(
     {
         try
         {
+            if (ReturnFakeData)
+                return "https://card.payments.service.gov.uk/secure/9defb517-66f8-45cd-8d9b-20e571b76fb5";
+
             logger.LogInformation(message: "Attempting to initialise Payment request for {Reference}", paymentInitiationRequest.Reference);
 
             var response = await httpClient.PostAsJsonAsync(PaymentInitiationUrl, paymentInitiationRequest);
-            
+
             response.EnsureSuccessStatusCode();
 
             var htmlContent = await response.Content.ReadAsStringAsync();
 
             const string pattern = @"window\.location\.href\s*=\s*'(?<url>.*?)';";
-            
+
             var match = Regex.Match(htmlContent, pattern, RegexOptions.None, TimeSpan.FromMilliseconds(100));
 
             // Extract the URL if the match is found

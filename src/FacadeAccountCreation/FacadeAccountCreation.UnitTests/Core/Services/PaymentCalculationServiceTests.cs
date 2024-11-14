@@ -48,8 +48,9 @@ public class PaymentCalculationServiceTests
     public async Task ProducerRegistrationFees_ShouldReturnCorrectResponse()
     {
         // Arrange
-        var apiResponse = _fixture.Create<PaymentCalculationResponse>();
+        _service.ReturnFakeData = false;
 
+        var apiResponse = _fixture.Create<PaymentCalculationResponse>();
         var expectedUrl = $"{BaseAddress}/{ProducerRegistrationFeesUri}";
 
         _httpMessageHandlerMock.Protected()
@@ -81,8 +82,9 @@ public class PaymentCalculationServiceTests
     public async Task ProducerRegistrationFees_ShouldReturnUnsuccessfulResponse()
     {
         // Arrange
-        var apiResponse = _fixture.Create<HttpRequestException>();
+        _service.ReturnFakeData = false;
 
+        var apiResponse = _fixture.Create<HttpRequestException>();
         var expectedUrl = $"{BaseAddress}/{ProducerRegistrationFeesUri}";
 
         _httpMessageHandlerMock.Protected()
@@ -109,6 +111,8 @@ public class PaymentCalculationServiceTests
     public async Task PaymentInitiation_ShouldReturnRedirectUrl_WhenHtmlContainsRedirectUrl()
     {
         // Arrange
+        _service.ReturnFakeData = false;
+
         var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
         var expectedReturnUrl = "https://card.payments.service.gov.uk/secure/9defb517-66f8-45cd-8d9b-20e571b76fb5";
@@ -149,6 +153,8 @@ public class PaymentCalculationServiceTests
     public async Task PaymentInitiation_ShouldReturnNull_WhenOkResponseHtmlContentIsEmpty()
     {
         // Arrange
+        _service.ReturnFakeData = false;
+
         var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
         var response = new HttpResponseMessage(HttpStatusCode.OK)
@@ -186,6 +192,8 @@ public class PaymentCalculationServiceTests
     public async Task PaymentInitiation_ShouldReturnNull_WhenNoContentResponseHtmlContentIsEmpty()
     {
         // Arrange
+        _service.ReturnFakeData = false;
+        
         var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
 
@@ -224,6 +232,8 @@ public class PaymentCalculationServiceTests
     public async Task PaymentInitiation_ShouldLogErrorAndThrowException_WhenHttpRequestFails()
     {
         // Arrange
+        _service.ReturnFakeData = false;
+        
         var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
 
@@ -297,5 +307,90 @@ public class PaymentCalculationServiceTests
         // Assert
         _httpMessageHandlerMock.Invocations.Clear();
         _httpClient.DefaultRequestHeaders.Should().BeEmpty();
+    }
+
+    [TestMethod]
+    public async Task ProducerRegistrationFees_ShouldReturnFakeResponse_WhenFakeDataIsTrue()
+    {
+        // Arrange
+        _service.ReturnFakeData = true;
+
+        var apiResponse = _fixture.Create<PaymentCalculationResponse>();
+        var expectedUrl = $"{BaseAddress}/{ProducerRegistrationFeesUri}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        //Act
+        await _service.ProducerRegistrationFees(_paymentCalculationRequest);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync",
+            Times.Never(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Post &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [TestMethod]
+    public async Task PaymentInitiation_ShouldReturnRedirectUrl_ShouldReturnFakeResponse_WhenFakeDataIsTrue()
+    {
+        // Arrange
+        _service.ReturnFakeData = true;
+
+        var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
+        var request = new PaymentInitiationRequest { Reference = "TestRef" };
+        var expectedReturnUrl = "https://card.payments.service.gov.uk/secure/9defb517-66f8-45cd-8d9b-20e571b76fb5";
+        var htmlContent = $@"<!DOCTYPE html><html lang=""en""><script>window.location.href = '{expectedReturnUrl}';</script>";
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(htmlContent, Encoding.UTF8, "text/html")
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == requestUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response)
+            .Verifiable();
+
+        // Act
+        var result = await _service.PaymentInitiation(request);
+
+        // Assert
+        result.Should().Be(expectedReturnUrl);
+            
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains($"Attempting to initialise Payment request for {request.Reference}")),
+                It.IsAny<Exception>(),
+                ((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!),
+            Times.Never);
+
+        _httpMessageHandlerMock.Protected().Verify("SendAsync",
+            Times.Never(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Post &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == requestUrl),
+            ItExpr.IsAny<CancellationToken>());
     }
 }
