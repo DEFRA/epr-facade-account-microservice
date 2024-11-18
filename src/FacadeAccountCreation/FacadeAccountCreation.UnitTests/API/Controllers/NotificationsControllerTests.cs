@@ -1,14 +1,6 @@
-using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Models.Notifications;
-using FacadeAccountCreation.Core.Services.Connection;
-using FacadeAccountCreation.UnitTests.TestHelpers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using System.Net;
+using FacadeAccountCreation.Core.Services.Notification;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -31,13 +23,17 @@ public class NotificationsControllerTests
     public async Task GetNotifications_WhenFound_ReturnNotificationResponse()
     {
         var enrolmentId = Guid.NewGuid().ToString();
-        var expectedModel = new NotificationsResponse() { 
-            Notifications = new List<Notification> { 
-                new Notification { 
-                    Type = NotificationTypes.Packaging.DelegatedPersonNomination, 
-                    Data = new List<KeyValuePair<string, string>>{ new KeyValuePair<string, string>("enrolmentId", enrolmentId) }
+        var expectedModel = new NotificationsResponse
+        { 
+            Notifications =
+            [
+                new Notification
+                {
+                    Type = NotificationTypes.Packaging.DelegatedPersonNomination,
+                    Data = new List<KeyValuePair<string, string>>
+                        { new KeyValuePair<string, string>("enrolmentId", enrolmentId) }
                 }
-            } 
+            ]
         };
 
         _mockNotificationsService.Setup(x => x.GetNotificationsForServiceAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(expectedModel));

@@ -1,5 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.Messaging;
 
+[ExcludeFromCodeCoverage]
 public class NominateUserEmailInput
 {
     public Guid UserId { get; set; }

@@ -1,6 +1,4 @@
-﻿using FacadeAccountCreation.Core.Models.CompaniesHouse;
-
-namespace FacadeAccountCreation.Core.Services.CompaniesHouse;
+﻿namespace FacadeAccountCreation.Core.Services.CompaniesHouse;
 
 public interface ICompaniesHouseLookupService
 {

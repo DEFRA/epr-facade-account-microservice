@@ -1,21 +1,6 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.API.Controllers;
-using FacadeAccountCreation.Core.Models.CreateAccount;
-using FacadeAccountCreation.Core.Models.Messaging;
-using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
+﻿using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 using FacadeAccountCreation.Core.Services.CreateAccount;
-using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Microsoft.Identity.Web;
-using Moq;
-using System.Net;
-using System.Security.Claims;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -36,8 +21,7 @@ public class AccountsManagementControllerTests
     public void Setup()
     {
         _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles())
-            .Returns(new List<ServiceRolesLookupModel>()
-            {
+            .Returns([
                 new()
                 {
                     Key = "Basic.Admin",
@@ -45,6 +29,7 @@ public class AccountsManagementControllerTests
                     PersonRoleId = 1,
                     InvitationTemplateId = Guid.NewGuid().ToString()
                 },
+
                 new()
                 {
                     Key = "Basic.Employee",
@@ -52,7 +37,7 @@ public class AccountsManagementControllerTests
                     PersonRoleId = 2,
                     InvitationTemplateId = Guid.NewGuid().ToString()
                 }
-            });
+            ]);
 
         var messagingConfigOptions = Options.Create(new MessagingConfig
         {

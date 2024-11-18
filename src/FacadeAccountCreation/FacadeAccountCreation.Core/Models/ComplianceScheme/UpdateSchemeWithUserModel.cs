@@ -1,17 +1,10 @@
 ﻿namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
 
-public class UpdateSchemeWithUserModel
+[ExcludeFromCodeCoverage]
+public class UpdateSchemeWithUserModel(UpdateSchemeModel model, Guid oId)
 {
-    public UpdateSchemeWithUserModel(UpdateSchemeModel model, Guid oId)
-    {
-        SelectedSchemeId = model.SelectedSchemeId;
-        ProducerOrganisationId = model.OrganisationId;
-        ComplianceSchemeId = model.ComplianceSchemeId;
-        UserOId = oId;
-    }
-    
-    public Guid SelectedSchemeId { get; set; }
-    public Guid ProducerOrganisationId { get; set; }
-    public Guid ComplianceSchemeId { get; set; }
-    public Guid UserOId { get; set; }
+    public Guid SelectedSchemeId { get; set; } = model.SelectedSchemeId;
+    public Guid ProducerOrganisationId { get; set; } = model.OrganisationId;
+    public Guid ComplianceSchemeId { get; set; } = model.ComplianceSchemeId;
+    public Guid UserOId { get; set; } = oId;
 }

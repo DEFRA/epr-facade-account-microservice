@@ -1,9 +1,6 @@
+using System.Net.Http.Headers;
 using Azure.Core;
 using Azure.Identity;
-using FacadeAccountCreation.API.Configs;
-using Microsoft.Extensions.Options;
-using System.Diagnostics.CodeAnalysis;
-using System.Net.Http.Headers;
 
 namespace FacadeAccountCreation.API.Handlers;
 
@@ -21,7 +18,7 @@ public class AccountServiceAuthorisationHandler : DelegatingHandler
             return;
         }
 
-        _tokenRequestContext = new TokenRequestContext(new[] { options.Value.AccountServiceClientId });
+        _tokenRequestContext = new TokenRequestContext([options.Value.AccountServiceClientId]);
         _credentials = new DefaultAzureCredential();
     }
 

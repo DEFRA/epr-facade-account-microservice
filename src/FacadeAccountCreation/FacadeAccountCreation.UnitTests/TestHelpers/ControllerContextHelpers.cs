@@ -1,8 +1,3 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web;
-
 namespace FacadeAccountCreation.UnitTests.TestHelpers;
 
 public static class ControllerContextHelpers

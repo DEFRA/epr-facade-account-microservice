@@ -1,5 +1,3 @@
-using FacadeAccountCreation.Core.Models.User;
-
 namespace FacadeAccountCreation.Core.Services.User;
 
 public interface IUserService

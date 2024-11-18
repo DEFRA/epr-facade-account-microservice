@@ -1,12 +1,5 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
 using FacadeAccountCreation.Core.Models.AddressLookup;
 using FacadeAccountCreation.Core.Services.AddressLookup;
-using FluentAssertions;
-using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Text.Json;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

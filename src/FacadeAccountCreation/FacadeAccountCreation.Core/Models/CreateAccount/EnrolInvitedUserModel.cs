@@ -1,9 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FacadeAccountCreation.Core.Models.CreateAccount;
-
-using Attributes;
-using System.Diagnostics.CodeAnalysis;
+﻿namespace FacadeAccountCreation.Core.Models.CreateAccount;
 
 [ExcludeFromCodeCoverage]
 public class EnrolInvitedUserModel

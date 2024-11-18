@@ -1,12 +1,5 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

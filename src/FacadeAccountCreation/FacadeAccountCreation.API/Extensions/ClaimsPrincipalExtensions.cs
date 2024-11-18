@@ -1,5 +1,5 @@
-using Microsoft.Identity.Web;
 using System.Security.Claims;
+using Microsoft.Identity.Web;
 
 namespace FacadeAccountCreation.API.Extensions;
 

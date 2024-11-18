@@ -1,23 +1,10 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.Core.Exceptions;
+﻿using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
-using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services.Organisation;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Net.Http;
-using System.Text.Json;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxTokenParser;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -303,8 +290,8 @@ public class OrganisationServiceTests
     public async Task Get_GetRegulatorOrganisationByNationId_ShouldReturnEmptyResponse()
     {
         // Arrange
-        int nationId = 1;
-        string nationName = "England";
+        var nationId = 1;
+        var nationName = "England";
 
         var expectedUrl =
             $"{BaseAddress}/{GetOrganisationIdFromNationEndpoint}{nationName}";
@@ -336,8 +323,8 @@ public class OrganisationServiceTests
     {
         // Arrange
         var apiResponse = _fixture.Create<ProblemDetails>();
-        int nationId = 1;
-        string nationName = "England";
+        var nationId = 1;
+        var nationName = "England";
 
         var expectedUrl =
             $"{BaseAddress}/{GetOrganisationIdFromNationEndpoint}{nationName}";
@@ -674,16 +661,12 @@ public class OrganisationServiceTests
         // Arrange
         var userId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
-        var organisation = new OrganisationUpdateDto
-        {
-        };
+        var organisation = new OrganisationUpdateDto();
 
         var expectedUrl =
             $"{BaseAddress}/{UpdateOrganisationEndPoint}/{organisationId}";
 
-        var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-        };
+        var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK);
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -919,7 +902,6 @@ public class OrganisationServiceTests
     public async Task GetOrganisationNationByExternalIdAsync_When_APIReturns_500_InternalServerError_ReturnsExeption()
     {
         // Arrange
-        var expectedError = new HttpRequestException("", new Exception(), HttpStatusCode.InternalServerError);
         var organisationId = Guid.NewGuid();
         var expectedUrl = $"{BaseAddress}/{OrganisationNationUrl}?organisationId={organisationId}";
 

@@ -1,33 +1,16 @@
-using FacadeAccountCreation.API.Extensions;
-using FacadeAccountCreation.API.Shared;
-using FacadeAccountCreation.Core.Extensions;
-using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.User;
-using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.Core.Services.User;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
 [Route("api/user-accounts")]
-public class UsersController : ControllerBase
+public class UsersController(
+    ILogger<UsersController> logger,
+    IUserService userService,
+    IMessagingService messagingService)
+    : ControllerBase
 {
-    private readonly ILogger<UsersController> _logger;
-    private readonly IUserService _userService;
-    private readonly IMessagingService _messagingService;
-
-    public UsersController(
-        ILogger<UsersController> logger,
-        IUserService userService,
-        IMessagingService messagingService)
-    {
-        _logger = logger;
-        _userService = userService;
-        _messagingService = messagingService;
-    }
-
     [HttpGet]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -39,25 +22,23 @@ public class UsersController : ControllerBase
             var userId = User.UserId();
             if (userId == Guid.Empty)
             {
-                _logger.LogError($"Unable to get the OId for the user when attempting to get organisation details");
+                logger.LogError("Unable to get the OId for the user when attempting to get organisation details");
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
-            var response = await _userService.GetUserOrganisations(userId);
+            var response = await userService.GetUserOrganisations(userId);
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation("Fetched the organisations list successfully for the user {userId}", userId);
+                logger.LogInformation("Fetched the organisations list successfully for the user {UserId}", userId);
                 return Ok(await response.Content.ReadFromJsonAsync<UserOrganisationsListModel>());
             }
-            else
-            {
-                _logger.LogError("Failed to fetch the organisations list for the user {userId}", userId);
-                return HandleError.HandleErrorWithStatusCode(response.StatusCode);
-            }
+
+            logger.LogError("Failed to fetch the organisations list for the user {UserId}", userId);
+            return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error fetching the organisations list for the user");
+            logger.LogError(e, "Error fetching the organisations list for the user");
             return HandleError.Handle(e);
         }
     }
@@ -75,7 +56,7 @@ public class UsersController : ControllerBase
         var userId = User.UserId();
         try
         {
-            var response = await _userService.UpdatePersonalDetailsAsync(userId, organisationId, serviceKey, updateUserDetailsRequest);
+            var response = await userService.UpdatePersonalDetailsAsync(userId, organisationId, serviceKey, updateUserDetailsRequest);
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadFromJsonAsync<UpdateUserDetailsResponse>();
@@ -84,7 +65,7 @@ public class UsersController : ControllerBase
                     try
                     {
                         var ch = responseContent.ChangeHistory;
-                        var notifyEmailInput = new UserDetailsChangeNotificationEmailInput()
+                        var notifyEmailInput = new UserDetailsChangeNotificationEmailInput
                         {
                               Nation = ch.Nation,
                               ContactEmailAddress = ch.EmailAddress,
@@ -99,29 +80,27 @@ public class UsersController : ControllerBase
                               OldJobTitle = ch.OldValues.JobTitle ?? "",
                         };
 
-                     var notificationId =   _messagingService.SendUserDetailChangeRequestEmailToRegulator(notifyEmailInput);
+                     var notificationId =   messagingService.SendUserDetailChangeRequestEmailToRegulator(notifyEmailInput);
 
-                        _logger.LogInformation("UserDetailChangeRequest Notification email {notificationId} to regulator sent successfully for the user {userId} from organisation {organisationId}", notificationId, userId, organisationId);
+                        logger.LogInformation("UserDetailChangeRequest Notification email {NotificationId} to regulator sent successfully for the user {UserId} from organisation {OrganisationId}", notificationId, userId, organisationId);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "failed to send update user details request email notification to regulator for user {userId} from organisation {organisationId} of service '{serviceKey}'.", userId, organisationId, serviceKey);
+                        logger.LogError(ex, "failed to send update user details request email notification to regulator for user {UserId} from organisation {OrganisationId} of service '{ServiceKey}'.", userId, organisationId, serviceKey);
                     }
                 }
 
-                _logger.LogInformation("Update personal details successfully for the user {userId} from organisation {organisationId}", userId, organisationId);
+                logger.LogInformation("Update personal details successfully for the user {UserId} from organisation {OrganisationId}", userId, organisationId);
 
                 return Ok(responseContent);
             }
-            else
-            {
-                _logger.LogError("failed to update personal details for the user {userId} from organisation {organisationId}", userId, organisationId);
-                return HandleError.HandleErrorWithStatusCode(response.StatusCode);
-            }
+
+            logger.LogError("failed to update personal details for the user {UserId} from organisation {OrganisationId}", userId, organisationId);
+            return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception exception)
         {
-            _logger.LogError("failed to update personal details for the user {userId} from organisation {organisationId} of service '{serviceKey}'.",
+            logger.LogError(exception, "failed to update personal details for the user {UserId} from organisation {OrganisationId} of service '{ServiceKey}'.",
                 userId, organisationId, serviceKey);
             return HandleError.Handle(exception);
         }

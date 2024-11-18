@@ -1,9 +1,5 @@
 ﻿using FacadeAccountCreation.Core.Helpers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
-using Moq;
 
 namespace FacadeAccountCreation.UnitTests.Core.Helpers;
 

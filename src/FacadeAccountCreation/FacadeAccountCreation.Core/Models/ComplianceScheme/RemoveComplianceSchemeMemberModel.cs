@@ -1,7 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
 
+[ExcludeFromCodeCoverage]
 public class RemoveComplianceSchemeMemberModel
 {
     [Required]

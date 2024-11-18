@@ -1,26 +1,17 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using FacadeAccountCreation.Core.Models.AddressLookup;
+﻿using FacadeAccountCreation.Core.Models.AddressLookup;
 
 namespace FacadeAccountCreation.Core.Services.AddressLookup;
 
-public class AddressLookupService : IAddressLookupService
+public class AddressLookupService(HttpClient httpClient) : IAddressLookupService
 {
     private const string PostcodeEndpoint = "postcodes";
     private const string PostcodeQueryStringKey = "postcode";
-
-    private readonly HttpClient _httpClient;
-
-    public AddressLookupService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
 
     public async Task<AddressLookupResponseDto?> GetAddressLookupResponseAsync(string postcode)
     {
         var url = $"{PostcodeEndpoint}?{PostcodeQueryStringKey}={postcode}";
 
-        var response = await _httpClient.GetAsync(url);
+        var response = await httpClient.GetAsync(url);
 
         switch (response.StatusCode)
         {

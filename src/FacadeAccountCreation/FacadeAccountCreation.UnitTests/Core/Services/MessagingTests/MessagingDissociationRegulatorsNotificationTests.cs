@@ -1,9 +1,4 @@
-﻿using FacadeAccountCreation.Core.Models.Messaging;
-using FluentAssertions;
-using Moq;
-using Notify.Exceptions;
-
-namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests;
+﻿namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests;
 
 [TestClass]
 public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessagingTest
@@ -21,7 +16,7 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(), 
             null, 
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
+            null, null)).Returns(new EmailNotificationResponse { id = emailNotificationId });
 
         _sut = GetServiceUnderTest();
         
@@ -49,7 +44,7 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
             It.IsAny<string>(), 
             It.IsAny<Dictionary<string, dynamic>>(), 
             null, 
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = emailNotificationId });
+            null, null)).Returns(new EmailNotificationResponse { id = emailNotificationId });
 
         _sut = GetServiceUnderTest();
         
@@ -70,9 +65,9 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
     {
         get
         {
-            yield return new MemberDissociationRegulatorsEmailInput[]
-            {
-                new MemberDissociationRegulatorsEmailInput()
+            yield return
+            [
+                new MemberDissociationRegulatorsEmailInput
                 {
                     UserId = Guid.Parse("fd4c6137-dd77-4684-a7cd-c9ae7f4c7763"),
                     ComplianceSchemeName = "Compliance Scheme Name",
@@ -81,7 +76,7 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
                     OrganisationNation = "England",
                     OrganisationNumber = "1"
                 }
-            };
+            ];
         }
     }
     
@@ -89,9 +84,9 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
     {
         get
         {
-            yield return new MemberDissociationRegulatorsEmailInput[]
-            {
-                new MemberDissociationRegulatorsEmailInput()
+            yield return
+            [
+                new MemberDissociationRegulatorsEmailInput
                 {
                     UserId = Guid.Parse("fd4c6137-dd77-4684-a7cd-c9ae7f4c7763"),
                     ComplianceSchemeName = "Compliance Scheme Name",
@@ -100,7 +95,7 @@ public class MessagingServiceDissociationRegulatorsNotificationTests : BaseMessa
                     OrganisationNation = "Scotland",
                     OrganisationNumber = "1"
                 }
-            };
+            ];
         }
     }
 }

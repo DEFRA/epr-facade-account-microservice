@@ -1,10 +1,9 @@
-﻿namespace FacadeAccountCreation.Core.Constants
+﻿namespace FacadeAccountCreation.Core.Constants;
+
+public static class ServiceRoles
 {
-    public static class ServiceRoles
+    public static class Packaging
     {
-        public static class Packaging
-        {
-            public const string DelegatedPerson = "Packaging.DelegatedPerson";
-        }
+        public const string DelegatedPerson = "Packaging.DelegatedPerson";
     }
 }

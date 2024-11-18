@@ -1,9 +1,8 @@
 ﻿using FacadeAccountCreation.Core.Models.Notifications;
 
-namespace FacadeAccountCreation.Core.Services.Connection
+namespace FacadeAccountCreation.Core.Services.Notification;
+
+public interface INotificationsService
 {
-    public interface INotificationsService
-    {
-        Task<NotificationsResponse?> GetNotificationsForServiceAsync(Guid userId, Guid organisationId, string serviceKey);
-    }
+    Task<NotificationsResponse?> GetNotificationsForServiceAsync(Guid userId, Guid organisationId, string serviceKey);
 }

@@ -1,7 +1,4 @@
-﻿using FacadeAccountCreation.Core.Models.Messaging;
-using FluentAssertions;
-using Moq;
-using Notify.Exceptions;
+﻿using Notify.Exceptions;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests;
 
@@ -28,7 +25,7 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
         };
 
         var emailNotificationId = "Notification123";
-        var emailResponse = new Notify.Models.Responses.EmailNotificationResponse { id = emailNotificationId };
+        var emailResponse = new EmailNotificationResponse { id = emailNotificationId };
 
         _notificationClientMock.Setup(nc => nc.SendEmail(
                 It.IsAny<string>(),
@@ -65,7 +62,7 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
         };
 
         var emailNotificationId = "Notification123";
-        var emailResponse = new Notify.Models.Responses.EmailNotificationResponse { id = emailNotificationId };
+        var emailResponse = new EmailNotificationResponse { id = emailNotificationId };
 
         _notificationClientMock.Setup(nc => nc.SendEmail(
                 It.IsAny<string>(),
@@ -102,7 +99,7 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
         };
 
         var emailNotificationId = "Notification123";
-        var emailResponse = new Notify.Models.Responses.EmailNotificationResponse { id = emailNotificationId };
+        var emailResponse = new EmailNotificationResponse { id = emailNotificationId };
 
         _notificationClientMock.Setup(nc => nc.SendEmail(
                 It.IsAny<string>(),
@@ -139,7 +136,7 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
         };
 
         var emailNotificationId = "Notification123";
-        var emailResponse = new Notify.Models.Responses.EmailNotificationResponse { id = emailNotificationId };
+        var emailResponse = new EmailNotificationResponse { id = emailNotificationId };
 
         _notificationClientMock.Setup(nc => nc.SendEmail(
                 It.IsAny<string>(),
@@ -177,7 +174,7 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
         };
 
         var emailNotificationId = "Notification123";
-        var emailResponse = new Notify.Models.Responses.EmailNotificationResponse { id = emailNotificationId };
+        var emailResponse = new EmailNotificationResponse { id = emailNotificationId };
 
         _notificationClientMock.Setup(nc => nc.SendEmail(
                 It.IsAny<string>(),

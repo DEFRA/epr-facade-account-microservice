@@ -1,8 +1,6 @@
-﻿using FacadeAccountCreation;
-using FacadeAccountCreation.Core;
-using FacadeAccountCreation.Core.Models;
+﻿namespace FacadeAccountCreation.Core.Models.Subsidiary;
 
-namespace FacadeAccountCreation.Core.Models.Subsidiary;
+[ExcludeFromCodeCoverage]
 public class ExportOrganisationSubsidiariesResponseModel
 {
     public string OrganisationId { get; set; }

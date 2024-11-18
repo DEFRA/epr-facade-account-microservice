@@ -1,15 +1,6 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.Core.Configs;
+﻿using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Models.DelegatedPerson;
-using FacadeAccountCreation.Core.Services.Connection;
-using FluentAssertions;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Text.Json;
+using FacadeAccountCreation.Core.Services.RoleManagement;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

@@ -1,6 +1,3 @@
-using FacadeAccountCreation.Core.Models.ComplianceScheme;
-using FacadeAccountCreation.Core.Models.Subsidiary;
-
 namespace FacadeAccountCreation.Core.Services.ComplianceScheme;
 
 public interface IComplianceSchemeService

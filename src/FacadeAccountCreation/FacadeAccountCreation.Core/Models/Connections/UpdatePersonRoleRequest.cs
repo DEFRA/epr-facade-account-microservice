@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace FacadeAccountCreation.Core.Models.Connections;
 
-namespace FacadeAccountCreation.Core.Models.Connections;
-
+[ExcludeFromCodeCoverage]
 public class UpdatePersonRoleRequest
 {
     [Required]

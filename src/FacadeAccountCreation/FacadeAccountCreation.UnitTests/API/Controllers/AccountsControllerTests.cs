@@ -1,15 +1,4 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.API.Controllers;
-using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Services.CreateAccount;
-using FacadeAccountCreation.Core.Services.Messaging;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web;
-using Moq;
-using System.Security.Claims;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

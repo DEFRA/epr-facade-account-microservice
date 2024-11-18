@@ -1,13 +1,13 @@
-﻿namespace FacadeAccountCreation.Core.Models.Notifications
-{
-    public class NotificationsResponse
-    {
-        public List<Notification> Notifications { get; set; }
-    }
+﻿namespace FacadeAccountCreation.Core.Models.Notifications;
 
-    public class Notification
-    {
-        public string Type { get; set; }
-        public ICollection<KeyValuePair<string, string>> Data { get; set; }
-    }
+[ExcludeFromCodeCoverage]
+public class NotificationsResponse
+{
+    public List<Notification> Notifications { get; set; }
+}
+
+public class Notification
+{
+    public string Type { get; set; }
+    public ICollection<KeyValuePair<string, string>> Data { get; set; }
 }

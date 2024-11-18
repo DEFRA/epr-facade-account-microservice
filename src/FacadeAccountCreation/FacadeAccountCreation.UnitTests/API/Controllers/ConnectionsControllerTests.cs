@@ -1,19 +1,8 @@
-using FacadeAccountCreation.API.Controllers;
-using FacadeAccountCreation.API.Shared;
 using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Models.Connections;
-using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.Person;
-using FacadeAccountCreation.Core.Services.Connection;
-using FacadeAccountCreation.Core.Services.Messaging;
 using FacadeAccountCreation.Core.Services.Person;
-using FacadeAccountCreation.UnitTests.TestHelpers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
+using FacadeAccountCreation.Core.Services.RoleManagement;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -33,7 +22,8 @@ public class ConnectionsControllerTests
     public void Setup()
     {
 
-        var messagingConfig = new MessagingConfig() { 
+        var messagingConfig = new MessagingConfig
+        { 
             ApiKey = "test", 
             ComplianceSchemeAccountConfirmationTemplateId = Guid.NewGuid().ToString(),
             NominateDelegatedUserTemplateId = Guid.NewGuid().ToString(),
@@ -51,7 +41,7 @@ public class ConnectionsControllerTests
     [TestMethod]
     public async Task GetConnectionPerson_WhenFound_ReturnConnectionPersonModel()
     {
-        var expectedModel = new ConnectionPersonModel() { FirstName = "Johnny", LastName = "Cash" };
+        var expectedModel = new ConnectionPersonModel { FirstName = "Johnny", LastName = "Cash" };
         _roleManagementService.Setup(x => x.GetPerson(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(expectedModel));
 
         var result = await _sut.GetConnectionPerson(Guid.NewGuid(), "Packaging", Guid.NewGuid());
@@ -82,7 +72,7 @@ public class ConnectionsControllerTests
         var expectedModel = new ConnectionWithEnrolmentsModel();
         _roleManagementService.Setup(x => x.GetEnrolments(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(expectedModel));
 
-        var result = await _sut.GetConnectionEnrolements(Guid.NewGuid(), "Packaging", Guid.NewGuid());
+        var result = await _sut.GetConnectionEnrollments(Guid.NewGuid(), "Packaging", Guid.NewGuid());
         result.Should().BeOfType<ActionResult<ConnectionWithEnrolmentsModel>>();
         result.Result.Should().BeOfType<OkObjectResult>();
 
@@ -98,7 +88,7 @@ public class ConnectionsControllerTests
     {
         _roleManagementService.Setup(x => x.GetEnrolments(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<ConnectionWithEnrolmentsModel>(null));
 
-        var result = await _sut.GetConnectionEnrolements(Guid.NewGuid(), "Packaging", Guid.NewGuid());
+        var result = await _sut.GetConnectionEnrollments(Guid.NewGuid(), "Packaging", Guid.NewGuid());
         result.Should().BeOfType<ActionResult<ConnectionWithEnrolmentsModel>>();
         result.Result.Should().BeOfType<NotFoundResult>();
     }
@@ -134,7 +124,7 @@ public class ConnectionsControllerTests
 
         _roleManagementService
             .Setup(x => x.UpdatePersonRole(_connectionId, _userId, _organisationId, "Packaging", updateRequest))
-            .ThrowsAsync(new HttpRequestException(null, null, System.Net.HttpStatusCode.Forbidden));
+            .ThrowsAsync(new HttpRequestException(null, null, HttpStatusCode.Forbidden));
 
         var result = await _sut.UpdatePersonRole(_connectionId, updateRequest, "Packaging", _organisationId) as StatusCodeResult;
 
@@ -152,7 +142,7 @@ public class ConnectionsControllerTests
 
         _roleManagementService
             .Setup(x => x.UpdatePersonRole(_connectionId, _userId, _organisationId, "Packaging", updateRequest))
-            .ThrowsAsync(new HttpRequestException(null, null, System.Net.HttpStatusCode.BadRequest));
+            .ThrowsAsync(new HttpRequestException(null, null, HttpStatusCode.BadRequest));
 
         var result = await _sut.UpdatePersonRole(_connectionId, updateRequest, "Packaging", _organisationId) as BadRequestResult;
 
@@ -170,7 +160,7 @@ public class ConnectionsControllerTests
 
         _roleManagementService
             .Setup(x => x.UpdatePersonRole(_connectionId, _userId, _organisationId, "Packaging", updateRequest))
-            .Throws(new HttpRequestException(null, null, System.Net.HttpStatusCode.Conflict));
+            .Throws(new HttpRequestException(null, null, HttpStatusCode.Conflict));
        
         var result = await _sut.UpdatePersonRole(_connectionId, updateRequest, "Packaging", _organisationId) as StatusCodeResult;
 
@@ -191,13 +181,13 @@ public class ConnectionsControllerTests
             .Setup(x => x.UpdatePersonRole(_connectionId, _userId, _organisationId, "Packaging", updateRequest))
             .ReturnsAsync(new UpdatePersonRoleResponse
             {
-                RemovedServiceRoles = new List<RemovedServiceRole>
-                {
+                RemovedServiceRoles =
+                [
                     new()
                     {
                         ServiceRoleKey = ServiceRoles.Packaging.DelegatedPerson
                     }
-                }
+                ]
             });
         _roleManagementService.Setup(x => x.GetPerson(_connectionId, "Packaging", _userId, _organisationId))
             .ReturnsAsync(new ConnectionPersonModel());
@@ -226,13 +216,13 @@ public class ConnectionsControllerTests
             .Setup(x => x.UpdatePersonRole(_connectionId, _userId, _organisationId, "Packaging", updateRequest))
             .ReturnsAsync(new UpdatePersonRoleResponse
             {
-                RemovedServiceRoles = new List<RemovedServiceRole>
-                {
+                RemovedServiceRoles =
+                [
                     new()
                     {
                         ServiceRoleKey = ServiceRoles.Packaging.DelegatedPerson
                     }
-                }
+                ]
             });
         _roleManagementService.Setup(x => x.GetPerson(_connectionId, "Packaging", _userId, _organisationId));
 
@@ -256,13 +246,13 @@ public class ConnectionsControllerTests
             .Setup(x => x.UpdatePersonRole(_connectionId, _userId, _organisationId, "Packaging", updateRequest))
             .ReturnsAsync(new UpdatePersonRoleResponse
             {
-                RemovedServiceRoles = new List<RemovedServiceRole>
-                {
+                RemovedServiceRoles =
+                [
                     new()
                     {
                         ServiceRoleKey = ServiceRoles.Packaging.DelegatedPerson
                     }
-                }
+                ]
             });
         _roleManagementService.Setup(x => x.GetPerson(_connectionId, "Packaging", _userId, _organisationId)).ReturnsAsync(new ConnectionPersonModel());
         _mockPersonService.Setup(x => x.GetPersonByUserIdAsync(_userId));
@@ -288,7 +278,7 @@ public class ConnectionsControllerTests
             .Setup(x => x.NominateToDelegatedPerson(_connectionId, _userId, _organisationId, "Packaging", nominationRequest))
             .ReturnsAsync(new HttpResponseMessage
             {
-                StatusCode = System.Net.HttpStatusCode.OK
+                StatusCode = HttpStatusCode.OK
             });
 
         var result = await _sut.NominateToDelegatedPerson(_connectionId, nominationRequest, "Packaging", _organisationId) as OkResult;
@@ -311,7 +301,7 @@ public class ConnectionsControllerTests
             .Setup(x => x.NominateToDelegatedPerson(_connectionId, _userId, _organisationId, "Packaging", nominationRequest))
             .ReturnsAsync(new HttpResponseMessage
             {
-                StatusCode = System.Net.HttpStatusCode.Forbidden
+                StatusCode = HttpStatusCode.Forbidden
             });
 
         var result = await _sut.NominateToDelegatedPerson(_connectionId, nominationRequest, "Packaging", _organisationId) as StatusCodeResult;
@@ -334,7 +324,7 @@ public class ConnectionsControllerTests
             .Setup(x => x.NominateToDelegatedPerson(_connectionId, _userId, _organisationId, "Packaging", nominationRequest))
             .ReturnsAsync(new HttpResponseMessage
             {
-                StatusCode = System.Net.HttpStatusCode.BadRequest
+                StatusCode = HttpStatusCode.BadRequest
             });
 
         var result = await _sut.NominateToDelegatedPerson(_connectionId, nominationRequest, "Packaging", _organisationId) as BadRequestResult;
@@ -357,7 +347,7 @@ public class ConnectionsControllerTests
             .Setup(x => x.NominateToDelegatedPerson(_connectionId, _userId, _organisationId, "Packaging", nominationRequest))
             .ReturnsAsync(new HttpResponseMessage
             {
-                StatusCode = System.Net.HttpStatusCode.Conflict
+                StatusCode = HttpStatusCode.Conflict
             });
 
         var result = await _sut.NominateToDelegatedPerson(_connectionId, nominationRequest, "Packaging", _organisationId) as StatusCodeResult;
@@ -384,7 +374,7 @@ public class ConnectionsControllerTests
     {
         _roleManagementService.Setup(x => x.GetEnrolments(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<Guid>())).ThrowsAsync(new Exception("Test exception"));
 
-        var result = await _sut.GetConnectionEnrolements(Guid.NewGuid(), "Packaging", Guid.NewGuid());
+        var result = await _sut.GetConnectionEnrollments(Guid.NewGuid(), "Packaging", Guid.NewGuid());
         result.Should().BeOfType<ActionResult<ConnectionWithEnrolmentsModel>>();
         result.Result.Should().BeOfType<StatusCodeResult>();
 
@@ -405,13 +395,13 @@ public class ConnectionsControllerTests
             .Setup(x => x.UpdatePersonRole(_connectionId, _userId, _organisationId, "Packaging", updateRequest))
             .ReturnsAsync(new UpdatePersonRoleResponse
             {
-                RemovedServiceRoles = new List<RemovedServiceRole>
-                {
+                RemovedServiceRoles =
+                [
                     new()
                     {
                         ServiceRoleKey = ServiceRoles.Packaging.DelegatedPerson
                     }
-                }
+                ]
             });
         _roleManagementService.Setup(x => x.GetPerson(_connectionId, "Packaging", _userId, _organisationId)).ThrowsAsync(new Exception("Test exception"));
 

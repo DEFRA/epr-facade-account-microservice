@@ -1,6 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace FacadeAccountCreation.API.Configs;
 
-namespace FacadeAccountCreation.API.Configs;
 [ExcludeFromCodeCoverage]
 public class ApiConfig
 {
@@ -11,6 +10,8 @@ public class ApiConfig
     public string CompaniesHouseLookupBaseUrl { get; set; } = null!;
 
     public string AccountServiceBaseUrl { get; set; } = null!;
+
+    public string PayCalBaseUrl { get; set; } = null!;
 
     public string AccountServiceClientId { get; set; } = null!;
 

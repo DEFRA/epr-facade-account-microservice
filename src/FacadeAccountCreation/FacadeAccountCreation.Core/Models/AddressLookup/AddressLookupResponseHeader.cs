@@ -1,7 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace FacadeAccountCreation.Core.Models.AddressLookup;
 
-namespace FacadeAccountCreation.Core.Models.AddressLookup;
-
+[ExcludeFromCodeCoverage]
 public class AddressLookupResponseHeader
 {
     public string? Query { get; set; }

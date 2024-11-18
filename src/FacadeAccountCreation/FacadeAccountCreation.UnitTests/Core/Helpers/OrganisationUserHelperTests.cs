@@ -2,7 +2,6 @@
 using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
-using FluentAssertions;
 
 namespace FacadeAccountCreation.UnitTests.Core.Helpers;
 
@@ -13,21 +12,23 @@ public class OrganisationUserHelperTests
     
     public OrganisationUserHelperTests()
     {
-        _rolesLookupModels = new List<ServiceRolesLookupModel>
-        {
-            new ServiceRolesLookupModel()
+        _rolesLookupModels =
+        [
+            new ServiceRolesLookupModel
             {
                 ServiceRoleId = 3,
                 PersonRoleId = 1,
                 Key = "Basic.Admin",
             },
-            new ServiceRolesLookupModel()
+
+            new ServiceRolesLookupModel
             {
                 ServiceRoleId = 3,
                 PersonRoleId = 2,
                 Key = "Basic.Employee",
-            },            
-        };
+            }
+
+        ];
     }
     
     [TestMethod]
@@ -37,14 +38,15 @@ public class OrganisationUserHelperTests
         var organisationUser = new OrganisationUser
         {
             PersonRoleId = 1,
-            Enrolments = new List<OrganisationUserEnrolment>()
-            {
-                new OrganisationUserEnrolment()
+            Enrolments =
+            [
+                new OrganisationUserEnrolment
                 {
                     ServiceRoleId = 3,
                     EnrolmentStatus = EnrolmentStatus.Approved
-                },
-            }
+                }
+
+            ]
         };
 
         // Act
@@ -62,14 +64,15 @@ public class OrganisationUserHelperTests
         var organisationUser = new OrganisationUser
         {
             PersonRoleId = 2,
-            Enrolments = new List<OrganisationUserEnrolment>()
-            {
-                new OrganisationUserEnrolment()
+            Enrolments =
+            [
+                new OrganisationUserEnrolment
                 {
                     ServiceRoleId = 3,
                     EnrolmentStatus = EnrolmentStatus.Approved
-                },
-            }
+                }
+
+            ]
         };
 
         // Act
@@ -91,14 +94,15 @@ public class OrganisationUserHelperTests
         var organisationUser = new OrganisationUser
         {
             PersonRoleId = personRoleId,
-            Enrolments = new List<OrganisationUserEnrolment>()
-            {
+            Enrolments =
+            [
                 new()
                 {
                     ServiceRoleId = serviceRoleId,
                     EnrolmentStatus = EnrolmentStatus.Approved
-                },
-            }
+                }
+
+            ]
         };
 
         // Act

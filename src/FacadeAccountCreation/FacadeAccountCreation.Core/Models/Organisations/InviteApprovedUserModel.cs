@@ -1,5 +1,6 @@
 namespace FacadeAccountCreation.Core.Models.Organisations;
 
+[ExcludeFromCodeCoverage]
 public class InviteApprovedUserModel
 {
     public string ServiceRoleId { get; set; }

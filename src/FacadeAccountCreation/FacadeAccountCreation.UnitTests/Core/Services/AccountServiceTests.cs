@@ -1,15 +1,6 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.Core.Configs;
-using FacadeAccountCreation.Core.Models.CreateAccount;
-using FacadeAccountCreation.Core.Services.CreateAccount;
-using FluentAssertions;
-using Microsoft.Extensions.Options;
-using Moq;
-using Moq.Protected;
 using System.Collections.ObjectModel;
-using System.Net;
-using System.Text.Json;
+using FacadeAccountCreation.Core.Configs;
+using FacadeAccountCreation.Core.Services.CreateAccount;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -173,7 +164,7 @@ public class AccountServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var accountsEndpointsOptions = Options.Create(new AccountsEndpointsConfig()
+        var accountsEndpointsOptions = Options.Create(new AccountsEndpointsConfig
         {
             Accounts = "api/producer-accounts",
             Organisations = "api/organisations",
@@ -215,7 +206,6 @@ public class AccountServiceTests
     {
         // Arrange
         var apiResponse = _fixture.Create<CreateAccountResponse?>();
-        var apiRequest = _fixture.Create<AccountModel>();
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -233,7 +223,7 @@ public class AccountServiceTests
         var sut = GetAccountService();
         
         //Act
-        var result = await sut.AddApprovedUserAccountAsync(It.IsAny<AccountModel>());
+        await sut.AddApprovedUserAccountAsync(It.IsAny<AccountModel>());
 
         // Assert
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
