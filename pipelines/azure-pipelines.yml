@@ -30,9 +30,9 @@ variables:
   - name: testProjectFolder
     value: FacadeAccountCreation.UnitTests
   - name: sonarQubeProjectKey
-    value: facade-account-microservice
+    value: epr-facade-account-microservice
   - name: sonarQubeProjectName
-    value: facade-account-microservice
+    value: epr-facade-account-microservice
   - name: runNugetTasks
     value: true
   - name: dotnetVersion
@@ -43,7 +43,7 @@ resources:
     - repository: CommonTemplates
       name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
       type: git
-      ref: feature/automation-testing-facade
+      ref: feature/sonarupdate
 
     - repository: AutomationTesting
       name: RWD-CPR-EPR4P-ADO/epr-playwright-bdd
