@@ -30,9 +30,9 @@ variables:
   - name: testProjectFolder
     value: FacadeAccountCreation.UnitTests
   - name: sonarQubeProjectKey
-    value: FacadeAccountCreation/facade-account-microservice
+    value: facade-account-microservice
   - name: sonarQubeProjectName
-    value: FacadeAccountCreation/facade-account-microservice
+    value: facade-account-microservice
   - name: runNugetTasks
     value: true
   - name: dotnetVersion
