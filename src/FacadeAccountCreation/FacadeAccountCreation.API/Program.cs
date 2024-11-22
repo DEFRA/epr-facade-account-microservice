@@ -14,6 +14,7 @@ builder.Services.AddFeatureManagement();
 
 builder.Services
     .AddApplicationInsightsTelemetry()
+    .AddLogging()
     .AddHealthChecks();
 
 builder.Services.RegisterComponents(builder.Configuration);
