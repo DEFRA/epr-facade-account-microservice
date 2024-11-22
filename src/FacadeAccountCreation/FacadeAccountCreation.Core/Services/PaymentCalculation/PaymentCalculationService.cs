@@ -8,8 +8,8 @@ public class PaymentCalculationService(
     ILogger<PaymentCalculationService> logger)
     : IPaymentCalculationService
 {
-    private const string ProducerRegistrationFeesUri = "api/producer/registration-fee";
-    private const string PaymentInitiationUrl = "api/organisations/nation-code";
+    private const string ProducerRegistrationFeesUri = "/producer/registration-fee";
+    private const string PaymentInitiationUrl = "/online-payments";
     private readonly JsonSerializerOptions _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     // ReSharper disable once MemberCanBePrivate.Global
