@@ -348,6 +348,7 @@ public class PaymentCalculationServiceTests
     public async Task PaymentInitiation_ShouldReturnRedirectUrl_ShouldReturnFakeResponse_WhenFakeDataIsTrue()
     {
         // Arrange
+
         _service.ReturnFakeData = true;
 
         var requestUrl = $"{BaseAddress}{PaymentInitiationUrl}";
