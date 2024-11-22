@@ -112,7 +112,7 @@ public static class HttpClientServiceCollectionExtension
         {
             var config = sp.GetRequiredService<IOptions<ApiConfig>>().Value;
 
-            client.BaseAddress = new Uri($"{config.PayCalBaseUrl}/api/v1");
+            client.BaseAddress = new Uri(config.PayCalBaseUrl);
             client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         })
         .AddHttpMessageHandler<AccountServiceAuthorisationHandler>();

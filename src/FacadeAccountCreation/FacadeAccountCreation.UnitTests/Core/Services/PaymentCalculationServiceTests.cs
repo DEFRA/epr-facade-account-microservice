@@ -10,8 +10,8 @@ namespace FacadeAccountCreation.UnitTests.Core.Services;
 public class PaymentCalculationServiceTests
 {
     private const string BaseAddress = "http://localhost";
-    private const string ProducerRegistrationFeesUri = "api/producer/registration-fee";
-    private const string PaymentInitiationUrl = "api/organisations/nation-code";
+    private const string ProducerRegistrationFeesUri = "/api/V1/producer/registration-fee";
+    private const string PaymentInitiationUrl = "/api/V1/online-payments";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private Mock<ILogger<PaymentCalculationService>> _loggerMock = null!;
@@ -51,7 +51,7 @@ public class PaymentCalculationServiceTests
         _service.ReturnFakeData = false;
 
         var apiResponse = _fixture.Create<PaymentCalculationResponse>();
-        var expectedUrl = $"{BaseAddress}/{ProducerRegistrationFeesUri}";
+        var expectedUrl = $"{BaseAddress}{ProducerRegistrationFeesUri}";
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -85,7 +85,7 @@ public class PaymentCalculationServiceTests
         _service.ReturnFakeData = false;
 
         var apiResponse = _fixture.Create<HttpRequestException>();
-        var expectedUrl = $"{BaseAddress}/{ProducerRegistrationFeesUri}";
+        var expectedUrl = $"{BaseAddress}{ProducerRegistrationFeesUri}";
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -113,7 +113,7 @@ public class PaymentCalculationServiceTests
         // Arrange
         _service.ReturnFakeData = false;
 
-        var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
+        var requestUrl = $"{BaseAddress}{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
         var expectedReturnUrl = "https://card.payments.service.gov.uk/secure/9defb517-66f8-45cd-8d9b-20e571b76fb5";
         var htmlContent = $@"<!DOCTYPE html><html lang=""en""><script>window.location.href = '{expectedReturnUrl}';</script>";
@@ -155,7 +155,7 @@ public class PaymentCalculationServiceTests
         // Arrange
         _service.ReturnFakeData = false;
 
-        var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
+        var requestUrl = $"{BaseAddress}{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -194,7 +194,7 @@ public class PaymentCalculationServiceTests
         // Arrange
         _service.ReturnFakeData = false;
         
-        var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
+        var requestUrl = $"{BaseAddress}{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
 
         var response = new HttpResponseMessage(HttpStatusCode.NoContent)
@@ -234,7 +234,7 @@ public class PaymentCalculationServiceTests
         // Arrange
         _service.ReturnFakeData = false;
         
-        var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
+        var requestUrl = $"{BaseAddress}{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
 
         _httpMessageHandlerMock.Protected()
@@ -282,7 +282,7 @@ public class PaymentCalculationServiceTests
     public async Task PaymentInitiation_ShouldClearHeadersInFinallyBlock()
     {
         // Arrange
-        var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
+        var requestUrl = $"{BaseAddress}{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
         var htmlContent = "<html><script>window.location.href = 'https://example.com/redirect';</script></html>";
 
@@ -316,7 +316,7 @@ public class PaymentCalculationServiceTests
         _service.ReturnFakeData = true;
 
         var apiResponse = _fixture.Create<PaymentCalculationResponse>();
-        var expectedUrl = $"{BaseAddress}/{ProducerRegistrationFeesUri}";
+        var expectedUrl = $"{BaseAddress}{ProducerRegistrationFeesUri}";
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -350,7 +350,7 @@ public class PaymentCalculationServiceTests
         // Arrange
         _service.ReturnFakeData = true;
 
-        var requestUrl = $"{BaseAddress}/{PaymentInitiationUrl}";
+        var requestUrl = $"{BaseAddress}{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
         var expectedReturnUrl = "https://card.payments.service.gov.uk/secure/9defb517-66f8-45cd-8d9b-20e571b76fb5";
         var htmlContent = $@"<!DOCTYPE html><html lang=""en""><script>window.location.href = '{expectedReturnUrl}';</script>";
