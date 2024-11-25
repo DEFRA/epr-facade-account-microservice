@@ -1,6 +1,4 @@
 ﻿using FacadeAccountCreation.Core.Models.Enrolments;
-using FluentAssertions;
-using Moq;
 using Notify.Exceptions;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests;
@@ -11,14 +9,14 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
     [TestMethod]
    public void SendRemovedUserNotification_WhenValidParameters_ItShouldReturnCorrectId()
     {
-        string expectedId = "P123456";
+        var expectedId = "P123456";
         
         _notificationClientMock.Setup(nc => nc.SendEmail(
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = expectedId });
+            null, null)).Returns(new EmailNotificationResponse { id = expectedId });
 
         _sut = GetServiceUnderTest();
 

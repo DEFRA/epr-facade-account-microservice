@@ -1,8 +1,7 @@
-﻿namespace FacadeAccountCreation.Core.Enums
+﻿namespace FacadeAccountCreation.Core.Enums;
+
+public enum PersonRole
 {
-    public enum PersonRole
-    {
-        Admin = 1,
-        Employee = 2
-    }
+    Admin = 1,
+    Employee = 2
 }

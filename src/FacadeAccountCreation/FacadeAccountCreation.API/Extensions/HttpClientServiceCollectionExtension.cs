@@ -1,17 +1,14 @@
-﻿using FacadeAccountCreation.API.Configs;
+﻿using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using FacadeAccountCreation.API.Handlers;
 using FacadeAccountCreation.Core.Services.AddressLookup;
 using FacadeAccountCreation.Core.Services.CompaniesHouse;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
-using FacadeAccountCreation.Core.Services.Connection;
-using FacadeAccountCreation.Core.Services.CreateAccount;
 using FacadeAccountCreation.Core.Services.Enrolments;
-using FacadeAccountCreation.Core.Services.Organisation;
-using FacadeAccountCreation.Core.Services.Person;
+using FacadeAccountCreation.Core.Services.Notification;
+using FacadeAccountCreation.Core.Services.PaymentCalculation;
+using FacadeAccountCreation.Core.Services.RoleManagement;
 using FacadeAccountCreation.Core.Services.User;
-using Microsoft.Extensions.Options;
-using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
 
 namespace FacadeAccountCreation.API.Extensions;
 
@@ -107,6 +104,15 @@ public static class HttpClientServiceCollectionExtension
             var config = sp.GetRequiredService<IOptions<ApiConfig>>().Value;
 
             client.BaseAddress = new Uri(config.AccountServiceBaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(config.Timeout);
+        })
+        .AddHttpMessageHandler<AccountServiceAuthorisationHandler>();
+
+        services.AddHttpClient<IPaymentCalculationService, PaymentCalculationService>((sp, client) =>
+        {
+            var config = sp.GetRequiredService<IOptions<ApiConfig>>().Value;
+
+            client.BaseAddress = new Uri(config.PayCalBaseUrl);
             client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         })
         .AddHttpMessageHandler<AccountServiceAuthorisationHandler>();

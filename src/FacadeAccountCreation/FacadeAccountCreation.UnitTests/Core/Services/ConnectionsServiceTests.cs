@@ -1,15 +1,6 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.Core.Configs;
+﻿using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Models.Connections;
-using FacadeAccountCreation.Core.Services.Connection;
-using FluentAssertions;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Text.Json;
+using FacadeAccountCreation.Core.Services.RoleManagement;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -338,7 +329,6 @@ public class ConnectionsServiceTests
     {
         //Arrange
         var connectionId = Guid.NewGuid();
-        var serviceKey = "packaging";
         var apiResponse = _fixture.Create<UpdatePersonRoleResponse>();
         
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
@@ -417,7 +407,7 @@ public class ConnectionsServiceTests
             userId: Guid.NewGuid(),
             organisationId: Guid.NewGuid(),
             serviceKey: "Packaging",
-            nominationRequest: new DelegatedPersonNominationRequest()
+            nominationRequest: new DelegatedPersonNominationRequest
             {
                 RelationshipType = RelationshipType.Employment
             });

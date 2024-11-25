@@ -1,7 +1,6 @@
-using FacadeAccountCreation.Core.Enums;
-
 namespace FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 
+[ExcludeFromCodeCoverage]
 public class ServiceRolesLookupModel
 {
     public string Key { get; set; }

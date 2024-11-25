@@ -1,15 +1,15 @@
 ﻿using FacadeAccountCreation.Core.Helpers;
-using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 
 namespace FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 
+[ExcludeFromCodeCoverage]
 public static class OrganisationUsersMapper
 {
     public static List<OrganisationUserModel> ConvertToOrganisationUserModels(List<OrganisationUser> organisationUsers, List<ServiceRolesLookupModel> rolesLookupModels)
     {
         var userList = new List<OrganisationUserModel>();
         
-        foreach (OrganisationUser organisationUser in organisationUsers)
+        foreach (var organisationUser in organisationUsers)
         {
             var highestRole = OrganisationUserHelper.GetHighestRole(organisationUser, rolesLookupModels);
 

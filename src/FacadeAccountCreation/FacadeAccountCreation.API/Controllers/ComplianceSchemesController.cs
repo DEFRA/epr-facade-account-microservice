@@ -1,38 +1,20 @@
-using FacadeAccountCreation.API.Extensions;
-using FacadeAccountCreation.API.Shared;
 using FacadeAccountCreation.Core.Constants;
-using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
-using FacadeAccountCreation.Core.Models.Messaging;
-using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
-using FacadeAccountCreation.Core.Services.Messaging;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.FeatureManagement;
-using System.Net;
 
 namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
 [Route("api/compliance-schemes")]
-public class ComplianceSchemesController : ControllerBase
+public class ComplianceSchemesController(
+    IComplianceSchemeService complianceSchemeService,
+    ILogger<ComplianceSchemesController> logger,
+    IMessagingService messagingService,
+    IFeatureManager featureManager)
+    : ControllerBase
 {
-    private readonly IComplianceSchemeService _complianceSchemeService;
-    private readonly ILogger<ComplianceSchemesController> _logger;
-    private readonly IMessagingService _messagingService;
-    private readonly IFeatureManager _featureManager;
-    
     private const int MaxQueryLength = 160;
-
-    public ComplianceSchemesController(IComplianceSchemeService complianceSchemeService, ILogger<ComplianceSchemesController> logger, IMessagingService messagingService, IFeatureManager featureManager)
-    {
-        _complianceSchemeService = complianceSchemeService;
-        _logger = logger;
-        _messagingService = messagingService;
-        _featureManager = featureManager;
-    }
-
 
 
     [Route("{organisationId:guid}/schemes/{complianceSchemeId:guid}/scheme-members")]
@@ -46,12 +28,10 @@ public class ComplianceSchemesController : ControllerBase
         Guid complianceSchemeId,
         [BindRequired, FromQuery] int pageSize,
         string? query = "",
-        int? page = 1)
+        int? page = 1,
+        bool hideNoSubsidiaries = false)
     {
-        if(query == null)
-        {
-            query = string.Empty;
-        }
+        query ??= string.Empty;
 
         if (query.Length > MaxQueryLength)
         {
@@ -65,25 +45,25 @@ public class ComplianceSchemesController : ControllerBase
 
             if (userId == Guid.Empty)
             {
-                _logger.LogError($"Unable to get the OId for the user when attempting to get compliance scheme members list");
+                logger.LogError("Unable to get the OId for the user when attempting to get compliance scheme members list");
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            var response = await _complianceSchemeService.GetComplianceSchemeMembersAsync(userId,organisationId, complianceSchemeId, query, pageSize, page.Value);
+            var response = await complianceSchemeService.GetComplianceSchemeMembersAsync(userId,organisationId, complianceSchemeId, query, pageSize, page.Value, hideNoSubsidiaries);
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation($"Fetched compliance scheme members list successfully");
+                logger.LogInformation("Fetched compliance scheme members list successfully");
                 return new OkObjectResult(response.Content.ReadFromJsonAsync<ComplianceSchemeMembershipResponse>().Result);
             }
 
-            _logger.LogError($"Fetching compliance scheme members list failed");
+            logger.LogError("Fetching compliance scheme members list failed");
 
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error fetching compliance scheme members list");
+            logger.LogError(e, "Error fetching compliance scheme members list");
             return HandleError.Handle(e);
         }
     }
@@ -97,21 +77,21 @@ public class ComplianceSchemesController : ControllerBase
     {
         try
         {
-            var response = await _complianceSchemeService.GetAllComplianceSchemesAsync();
+            var response = await complianceSchemeService.GetAllComplianceSchemesAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation($"Fetched compliance scheme list successfully");
+                logger.LogInformation("Fetched compliance scheme list successfully");
                 return new OkObjectResult(response.Content.ReadFromJsonAsync<List<ComplianceSchemeModel>>().Result);
             }
 
-            _logger.LogError($"Fetching compliance scheme list failed");
+            logger.LogError("Fetching compliance scheme list failed");
 
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error fetching compliance scheme list");
+            logger.LogError(e, "Error fetching compliance scheme list");
             return HandleError.Handle(e);
         }
     }
@@ -125,24 +105,23 @@ public class ComplianceSchemesController : ControllerBase
     {
         try
         {
-            var response = await _complianceSchemeService.GetComplianceSchemesForOperatorAsync(operatorOrganisationId);
+            var response = await complianceSchemeService.GetComplianceSchemesForOperatorAsync(operatorOrganisationId);
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation(
-                    "Fetched compliance scheme list for operatorOrganisationId {operatorOrganisationId} successfully", operatorOrganisationId);
+                logger.LogInformation("Fetched compliance scheme list for operatorOrganisationId {OperatorOrganisationId} successfully", operatorOrganisationId);
                 return new OkObjectResult(response.Content.ReadFromJsonAsync<List<ComplianceSchemeModel>>().Result);
             }
 
-            _logger.LogError("Failed retrieving list of compliance Schemes for operatorOrganisationId {operatorOrganisationId}",
+            logger.LogError("Failed retrieving list of compliance Schemes for operatorOrganisationId {OperatorOrganisationId}",
                 operatorOrganisationId);
 
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e,
-                "Error fetching compliance scheme list for operatorOrganisationId {operatorOrganisationId}",
+            logger.LogError(e,
+                "Error fetching compliance scheme list for operatorOrganisationId {OperatorOrganisationId}",
                 operatorOrganisationId);
             return HandleError.Handle(e);
         }
@@ -157,11 +136,11 @@ public class ComplianceSchemesController : ControllerBase
     {
         try
         {
-            var response = await _complianceSchemeService.GetComplianceSchemeForProducerAsync(producerOrganisationId, User.UserId());
+            var response = await complianceSchemeService.GetComplianceSchemeForProducerAsync(producerOrganisationId, User.UserId());
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                _logger.LogError("No current selected compliance scheme for producerOrganisationId {producerOrganisationId}", producerOrganisationId);
+                logger.LogError("No current selected compliance scheme for producerOrganisationId {ProducerOrganisationId}", producerOrganisationId);
                 return new NotFoundResult();
             }
 
@@ -170,13 +149,13 @@ public class ComplianceSchemesController : ControllerBase
                 return new OkObjectResult(response.Content.ReadFromJsonAsync<ProducerComplianceSchemeModel>().Result);
             }
 
-            _logger.LogError("Failed retrieving Compliance Scheme for producerOrganisationId {producerOrganisationId}", producerOrganisationId);
+            logger.LogError("Failed retrieving Compliance Scheme for producerOrganisationId {ProducerOrganisationId}", producerOrganisationId);
 
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed retrieving Compliance Scheme for producerOrganisationId {producerOrganisationId}", producerOrganisationId);
+            logger.LogError(e, "Failed retrieving Compliance Scheme for producerOrganisationId {ProducerOrganisationId}", producerOrganisationId);
             return HandleError.Handle(e);
         }
     }
@@ -200,13 +179,13 @@ public class ComplianceSchemesController : ControllerBase
         {
             var userId = User.UserId();
             
-            var response = await _complianceSchemeService.GetComplianceSchemesSummary(complianceSchemeId, organisationId, userId);
+            var response = await complianceSchemeService.GetComplianceSchemesSummary(complianceSchemeId, organisationId, userId);
 
             return Ok(response);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get compliance scheme summaries for operator {OrganisationId}", complianceSchemeId);
+            logger.LogError(e, "Failed to get compliance scheme summaries for operator {OrganisationId}", complianceSchemeId);
 
             return HandleError.Handle(e);
         }         
@@ -221,21 +200,21 @@ public class ComplianceSchemesController : ControllerBase
     {
         try
         {
-            var response = await _complianceSchemeService.GetAllReasonsForRemovalsAsync();
+            var response = await complianceSchemeService.GetAllReasonsForRemovalsAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation($"Fetched reasons for removal list successfully");
+                logger.LogInformation("Fetched reasons for removal list successfully");
                 return new OkObjectResult(response.Content.ReadFromJsonAsync<List<ReasonsForRemovalModel>>().Result);
             }
 
-            _logger.LogError($"Fetching reasons for removal list failed");
+            logger.LogError("Fetching reasons for removal list failed");
 
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error fetching reasons for removal list");
+            logger.LogError(e, "Error fetching reasons for removal list");
             return HandleError.Handle(e);
         }
     }
@@ -253,27 +232,25 @@ public class ComplianceSchemesController : ControllerBase
 
             if (oId == Guid.Empty)
             {
-                _logger.LogError("Unable to get the OId for the user when attempting to remove the selected scheme id {SelectedSchemeId}", request.SelectedSchemeId);
+                logger.LogError("Unable to get the OId for the user when attempting to remove the selected scheme id {SelectedSchemeId}", request.SelectedSchemeId);
                 return Problem("UserId not  available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
             request.UserOId = oId;
-            var response = await _complianceSchemeService.RemoveComplianceScheme(request);
+            var response = await complianceSchemeService.RemoveComplianceScheme(request);
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation("Selected compliance scheme id {SelectedSchemeId} removed successfully", request.SelectedSchemeId);
+                logger.LogInformation("Selected compliance scheme id {SelectedSchemeId} removed successfully", request.SelectedSchemeId);
                 return Ok();
             }
-            else
-            {
-                _logger.LogError("Removing the selected scheme id {SelectedSchemeId} failed", request.SelectedSchemeId);
-                return HandleError.HandleErrorWithStatusCode(response.StatusCode);
-            }
+
+            logger.LogError("Removing the selected scheme id {SelectedSchemeId} failed", request.SelectedSchemeId);
+            return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Removing selected scheme id {SelectedSchemeId} failed", request.SelectedSchemeId);
+            logger.LogError(e, "Removing selected scheme id {SelectedSchemeId} failed", request.SelectedSchemeId);
             return HandleError.Handle(e);
         }
     }
@@ -290,30 +267,30 @@ public class ComplianceSchemesController : ControllerBase
             var oId = User.UserId();
             if (oId == Guid.Empty)
             {
-                _logger.LogError(
+                logger.LogError(
                     "Unable to get the OId for the user when attempting to select the compliance scheme with id {ModelComplianceSchemeId}",
                     model.ComplianceSchemeId);
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            var response = await _complianceSchemeService.SelectComplianceSchemeAsync(
+            var response = await complianceSchemeService.SelectComplianceSchemeAsync(
                 new SelectSchemeWithUserModel(model, oId));
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation("Compliance scheme id {ModelComplianceSchemeId} selected successfully",
+                logger.LogInformation("Compliance scheme id {ModelComplianceSchemeId} selected successfully",
                     model.ComplianceSchemeId);
                 return new OkObjectResult(response.Content.ReadFromJsonAsync<SelectedSchemeIdModel>().Result);
             }
 
-            _logger.LogError("$Selecting the selected scheme id {model.ComplianceSchemeId} failed",
+            logger.LogError("$Selecting the selected scheme id {ComplianceSchemeId} failed",
                 model.ComplianceSchemeId);
 
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Selecting compliance scheme failed");
+            logger.LogError(e, "Selecting compliance scheme failed");
             return HandleError.Handle(e);
         }
     }
@@ -330,31 +307,31 @@ public class ComplianceSchemesController : ControllerBase
             var oId = User.UserId();
             if (oId == Guid.Empty)
             {
-                _logger.LogError(
+                logger.LogError(
                     "Unable to get the OId for the user when attempting to update the selected scheme with id {ModelComplianceSchemeId} and selected compliance scheme with id {RequestedComplianceSchemeId}",
                     model.ComplianceSchemeId,
                     model.ComplianceSchemeId);
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            var response = await _complianceSchemeService.UpdateComplianceSchemeAsync(
+            var response = await complianceSchemeService.UpdateComplianceSchemeAsync(
                 new UpdateSchemeWithUserModel(model, oId));
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation("Compliance scheme id {ModelComplianceSchemeId} selected successfully",
+                logger.LogInformation("Compliance scheme id {ModelComplianceSchemeId} selected successfully",
                     model.ComplianceSchemeId);
                 return new OkObjectResult(response.Content.ReadFromJsonAsync<SelectedSchemeIdModel>().Result);
             }
 
-            _logger.LogError("Updating the compliance scheme to scheme id {ModelComplianceSchemeId} failed",
+            logger.LogError("Updating the compliance scheme to scheme id {ModelComplianceSchemeId} failed",
                 model.ComplianceSchemeId);
 
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Updating compliance scheme failed");
+            logger.LogError(e, "Updating compliance scheme failed");
             return HandleError.Handle(e);
         }
     }
@@ -371,26 +348,26 @@ public class ComplianceSchemesController : ControllerBase
             var uId = User.UserId();
             if (uId == Guid.Empty)
             {
-                _logger.LogError(
+                logger.LogError(
                     "Unable to get the OId for the user when attempting to member details for the organisation id {OrganisationId} and selected scheme id {SelectedSchemeId}",organisationId, selectedSchemeId);
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            var response = await _complianceSchemeService.GetComplianceSchemeMemberDetailsAsync(uId, organisationId, selectedSchemeId);
+            var response = await complianceSchemeService.GetComplianceSchemeMemberDetailsAsync(uId, organisationId, selectedSchemeId);
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation("Members fetched successfully for the compliance scheme organisation id {OrganisationId} and selected scheme id {SelectedSchemeId}", organisationId, selectedSchemeId);
+                logger.LogInformation("Members fetched successfully for the compliance scheme organisation id {OrganisationId} and selected scheme id {SelectedSchemeId}", organisationId, selectedSchemeId);
                 return new OkObjectResult(response.Content.ReadFromJsonWithEnumsAsync<MemberDetailsModel>().Result);
             }
 
-            _logger.LogError("Members fetched successfully for the compliance scheme organisation id {OrganisationId} and selected scheme id {SelectedSchemeId}", organisationId, selectedSchemeId);
+            logger.LogError("Members fetched successfully for the compliance scheme organisation id {OrganisationId} and selected scheme id {SelectedSchemeId}", organisationId, selectedSchemeId);
 
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Fetching member details failed");
+            logger.LogError(e, "Fetching member details failed");
             return HandleError.Handle(e);
         }
     }
@@ -410,20 +387,20 @@ public class ComplianceSchemesController : ControllerBase
             var userId = User.UserId();
             if (userId == Guid.Empty)
             {
-                _logger.LogError("Unable to get the OId for the user when attempting to remove selected scheme id {selectedSchemeId}", selectedSchemeId);
+                logger.LogError("Unable to get the OId for the user when attempting to remove selected scheme id {SelectedSchemeId}", selectedSchemeId);
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            var removalInfoResponse = await _complianceSchemeService.GetInfoForSelectedSchemeRemoval(organisationId, selectedSchemeId, userId);
+            var removalInfoResponse = await complianceSchemeService.GetInfoForSelectedSchemeRemoval(organisationId, selectedSchemeId, userId);
             if (removalInfoResponse != null)
             {
-                var removeResponse = await _complianceSchemeService.RemoveComplianceSchemeMember(organisationId, selectedSchemeId, userId, model);
+                var removeResponse = await complianceSchemeService.RemoveComplianceSchemeMember(organisationId, selectedSchemeId, userId, model);
 
-                _logger.LogInformation("Selected compliance scheme id {selectedSchemeId} removed successfully", selectedSchemeId);
+                logger.LogInformation("Selected compliance scheme id {SelectedSchemeId} removed successfully", selectedSchemeId);
 
-                if (await _featureManager.IsEnabledAsync(nameof(FeatureFlags.SendDissociationNotificationEmail)))
+                if (await featureManager.IsEnabledAsync(nameof(FeatureFlags.SendDissociationNotificationEmail)))
                 {
-                    _messagingService.SendMemberDissociationRegulatorsNotification(new MemberDissociationRegulatorsEmailInput
+                    messagingService.SendMemberDissociationRegulatorsNotification(new MemberDissociationRegulatorsEmailInput
                     {
                         UserId = userId,
                         ComplianceSchemeName = removalInfoResponse.ComplianceSchemeName,
@@ -432,7 +409,7 @@ public class ComplianceSchemesController : ControllerBase
                         OrganisationNation = removalInfoResponse.OrganisationNation,
                         OrganisationNumber = removalInfoResponse.OrganisationNumber.ToReferenceNumberFormat()
                     });
-                    _messagingService.SendMemberDissociationProducersNotification(new NotifyComplianceSchemeProducerEmailInput
+                    messagingService.SendMemberDissociationProducersNotification(new NotifyComplianceSchemeProducerEmailInput
                     {
                         Recipients = removalInfoResponse.RemovalNotificationRecipients,
                         OrganisationId = removalInfoResponse.OrganisationNumber.ToReferenceNumberFormat(),
@@ -444,12 +421,12 @@ public class ComplianceSchemesController : ControllerBase
                 return Ok(removeResponse);
             }
 
-            _logger.LogError("Removing the selected scheme id {selectedSchemeId} failed", selectedSchemeId);
+            logger.LogError("Removing the selected scheme id {SelectedSchemeId} failed", selectedSchemeId);
             return HandleError.HandleErrorWithStatusCode(HttpStatusCode.BadRequest);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Removing selected scheme id {selectedSchemeId} failed", selectedSchemeId);
+            logger.LogError(e, "Removing selected scheme id {SelectedSchemeId} failed", selectedSchemeId);
             return HandleError.Handle(e);
         }
     }
@@ -466,15 +443,13 @@ public class ComplianceSchemesController : ControllerBase
     {
         var userId = User.UserId();
 
-        var complianceSchemeSubsidiaries = await _complianceSchemeService.ExportComplianceSchemeSubsidiaries(userId, organisationId, complianceSchemeId);
+        var complianceSchemeSubsidiaries = await complianceSchemeService.ExportComplianceSchemeSubsidiaries(userId, organisationId, complianceSchemeId);
 
         if (complianceSchemeSubsidiaries != null)
         {
             return Ok(complianceSchemeSubsidiaries);
         }
-        else
-        {
-            return NoContent();
-        }
+
+        return NoContent();
     }
 }

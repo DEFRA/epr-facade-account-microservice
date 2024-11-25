@@ -9,17 +9,16 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <!-- SonarCloud does not recognise file-scoped namespaces in current version. -->
-        <NoWarn>S3903</NoWarn>
+        <NoWarn>s2139, S6967</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Azure.Identity" Version="1.12.0" />
+        <PackageReference Include="Azure.Identity" Version="1.13.1" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Identity.Web" Version="3.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+        <PackageReference Include="Microsoft.Identity.Web" Version="3.3.1" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,8 +32,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Update="Microsoft.CodeAnalysis.CSharp" Version="4.10.0" />
-      <PackageReference Update="SonarAnalyzer.CSharp" Version="9.30.0.95878" />
+      <PackageReference Update="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+      <PackageReference Update="SonarAnalyzer.CSharp" Version="9.32.0.97167" />
     </ItemGroup>
 
 </Project>

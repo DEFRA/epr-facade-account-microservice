@@ -5,9 +5,14 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FacadeAccountCreation.API", "FacadeAccountCreation.API\FacadeAccountCreation.API.csproj", "{FC8B941D-E81F-4A81-8927-D9DE1A24D71E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacadeAccountCreation.Core", "FacadeAccountCreation.Core\FacadeAccountCreation.Core.csproj", "{9D9618F0-998C-4821-AE07-73C98CD93096}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FacadeAccountCreation.Core", "FacadeAccountCreation.Core\FacadeAccountCreation.Core.csproj", "{9D9618F0-998C-4821-AE07-73C98CD93096}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacadeAccountCreation.UnitTests", "FacadeAccountCreation.UnitTests\FacadeAccountCreation.UnitTests.csproj", "{52067F36-4200-4EF2-8EDB-6CB28440EA44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FacadeAccountCreation.UnitTests", "FacadeAccountCreation.UnitTests\FacadeAccountCreation.UnitTests.csproj", "{52067F36-4200-4EF2-8EDB-6CB28440EA44}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{11AFAEA3-0DAD-4D01-85F0-67217FC17AB6}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

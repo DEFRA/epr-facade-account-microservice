@@ -1,25 +1,19 @@
 using FacadeAccountCreation.Core.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FacadeAccountCreation.API.Controllers;
 
-public class ErrorsController : ControllerBase
+#pragma warning disable S6931
+public class ErrorsController(ILogger<ErrorsController> logger) : ControllerBase
+#pragma warning restore S6931
 {
-    private readonly ILogger<ErrorsController> _logger;
-
-    public ErrorsController(ILogger<ErrorsController> logger)
-    {
-        _logger = logger;
-    }
-
     [Route("/error")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult HandleError([FromServices] IHostEnvironment hostEnvironment)
     {
         var exceptionHandlerFeature = HttpContext.Features.Get<IExceptionHandlerFeature>()!;
 
-        _logger.LogError(exceptionHandlerFeature.Error, "Unhandled exception has occurred");
+        logger.LogError(exceptionHandlerFeature.Error, "Unhandled exception has occurred");
 
         if (exceptionHandlerFeature.Error is ProblemResponseException exception)
         {

@@ -1,12 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace FacadeAccountCreation.Core.Attributes;
 
-namespace FacadeAccountCreation.Core.Attributes;
-
-public class NotDefaultAttribute : ValidationAttribute
+public class NotDefaultAttribute() : ValidationAttribute(DefaultErrorMessage)
 {
     private const string DefaultErrorMessage = "The {0} field must not have the default value";
-    public NotDefaultAttribute() : base(DefaultErrorMessage) { }
-    
+
     public override bool IsValid(object? value)
     {
         //NotDefault doesn't necessarily mean required

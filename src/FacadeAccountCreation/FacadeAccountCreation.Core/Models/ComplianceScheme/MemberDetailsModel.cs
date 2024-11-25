@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using FacadeAccountCreation.Core.Models.CreateAccount;
-
-namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
+﻿namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
 
 [ExcludeFromCodeCoverage]
 public class MemberDetailsModel

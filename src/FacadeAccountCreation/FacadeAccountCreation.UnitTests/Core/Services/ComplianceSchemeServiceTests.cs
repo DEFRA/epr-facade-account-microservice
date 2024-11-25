@@ -1,23 +1,15 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
+using System.Net.Http.Json;
+using System.Text;
 using EPR.Common.Logging.Constants;
 using EPR.Common.Logging.Models;
 using EPR.Common.Logging.Services;
 using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
-using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
-using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Net.Http.Json;
-using System.Text;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
@@ -88,8 +80,8 @@ public class ComplianceSchemeServiceTests
         var selectedSchemeId = Guid.NewGuid();
         var userId = Guid.NewGuid();
         var query = string.Empty;
-        int pageSize = 10;
-        int page = 1;
+        var pageSize = 10;
+        var page = 1;
 
         var items = _fixture.Build<List<ComplianceSchemeMemberDto>>().Create();
         var pagedResult = _fixture
@@ -128,7 +120,7 @@ public class ComplianceSchemeServiceTests
 
         var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
-        HttpResponseMessage? response = await sut.GetComplianceSchemeMembersAsync(userId, organisationId, selectedSchemeId, query, pageSize, page);
+        var response = await sut.GetComplianceSchemeMembersAsync(userId, organisationId, selectedSchemeId, query, pageSize, page, false);
 
         response.Should().BeEquivalentTo(apiResponse);
 
@@ -163,7 +155,7 @@ public class ComplianceSchemeServiceTests
         var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
-        HttpResponseMessage response = await sut.GetAllComplianceSchemesAsync();
+        var response = await sut.GetAllComplianceSchemesAsync();
 
         // Assert
         response.Should().BeEquivalentTo(apiResponse);
@@ -193,7 +185,7 @@ public class ComplianceSchemeServiceTests
         var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
-        HttpResponseMessage response = await sut.GetAllComplianceSchemesAsync();
+        var response = await sut.GetAllComplianceSchemesAsync();
 
         // Assert
         response.Should().BeEquivalentTo(apiResponse);
@@ -225,37 +217,7 @@ public class ComplianceSchemeServiceTests
         var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
-        HttpResponseMessage? response = await sut.GetComplianceSchemeForProducerAsync(organisationId, userOid);
-
-        // Assert
-        response.Should().BeEquivalentTo(apiResponse);
-    }
-
-    [TestMethod]
-    public async Task GetComplianceSchemeForProducer_ThrowsException_OnInternalServerError()
-    {
-        // Arrange
-        var apiResponse = _fixture
-            .Build<HttpResponseMessage>()
-            .With(x => x.StatusCode, HttpStatusCode.InternalServerError)
-            .Create();
-
-        var expectedUrl = $"{BaseAddress}/{GetAllComplianceSchemesEndPoint}";
-
-        _httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync",
-                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(apiResponse)
-            .Verifiable();
-
-        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
-        httpClient.BaseAddress = new Uri(BaseAddress);
-
-        var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
-
-        // Act
-        HttpResponseMessage response = await sut.GetAllComplianceSchemesAsync();
+        var response = await sut.GetComplianceSchemeForProducerAsync(organisationId, userOid);
 
         // Assert
         response.Should().BeEquivalentTo(apiResponse);
@@ -452,7 +414,7 @@ public class ComplianceSchemeServiceTests
         var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
         
         // Act
-        HttpResponseMessage response = await sut.GetComplianceSchemesForOperatorAsync(organisationId);
+        var response = await sut.GetComplianceSchemesForOperatorAsync(organisationId);
 
         // Assert
         response.Should().BeEquivalentTo(apiResponse);
@@ -604,7 +566,7 @@ public class ComplianceSchemeServiceTests
         var sut = new ComplianceSchemeService(httpClient, _logger, _loggingServiceMock.Object, _correlationIdProviderMock.Object, _configuration);
 
         // Act
-        HttpResponseMessage response = await sut.GetAllReasonsForRemovalsAsync();
+        var response = await sut.GetAllReasonsForRemovalsAsync();
 
         // Assert
         response.Should().BeEquivalentTo(apiResponse);
@@ -619,7 +581,7 @@ public class ComplianceSchemeServiceTests
         var userId = Guid.NewGuid();
         var req = _fixture.Create<RemoveComplianceSchemeMemberModel>();
 
-        var removedComplianceSchemeMemberResponse = new RemoveComplianceSchemeMemberResponse()
+        var removedComplianceSchemeMemberResponse = new RemoveComplianceSchemeMemberResponse
         {
             OrganisationName = "Compliance Scheme Member Name",
         };
@@ -660,7 +622,7 @@ public class ComplianceSchemeServiceTests
         var userId = Guid.NewGuid();
         var req = _fixture.Create<RemoveComplianceSchemeMemberModel>();
 
-        var removedComplianceSchemeMemberResponse = new RemoveComplianceSchemeMemberResponse()
+        var removedComplianceSchemeMemberResponse = new RemoveComplianceSchemeMemberResponse
         {
             OrganisationName = "Compliance Scheme Member Name",
         };
@@ -717,7 +679,7 @@ public class ComplianceSchemeServiceTests
                 It.IsAny<Guid>(), It.IsAny<ProtectiveMonitoringEvent>()))
             .Throws(new Exception());
 
-        var removedComplianceSchemeMemberResponse = new RemoveComplianceSchemeMemberResponse()
+        var removedComplianceSchemeMemberResponse = new RemoveComplianceSchemeMemberResponse
         {
             OrganisationName = "Compliance Scheme Member Name",
         };

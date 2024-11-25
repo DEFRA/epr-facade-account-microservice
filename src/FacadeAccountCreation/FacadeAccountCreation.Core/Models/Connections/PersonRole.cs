@@ -1,8 +1,7 @@
-﻿namespace FacadeAccountCreation.Core.Models.Connections
+﻿namespace FacadeAccountCreation.Core.Models.Connections;
+
+public enum PersonRole
 {
-    public enum PersonRole
-    {
-        Admin = 1,
-        Employee = 2
-    }
+    Admin = 1,
+    Employee = 2
 }

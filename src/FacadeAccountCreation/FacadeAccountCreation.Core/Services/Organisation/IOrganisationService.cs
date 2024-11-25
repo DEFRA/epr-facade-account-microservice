@@ -1,8 +1,4 @@
-﻿using FacadeAccountCreation.Core.Models.CompaniesHouse;
-using FacadeAccountCreation.Core.Models.Organisations;
-using FacadeAccountCreation.Core.Models.Subsidiary;
-
-namespace FacadeAccountCreation.Core.Services.Organisation;
+﻿namespace FacadeAccountCreation.Core.Services.Organisation;
 
 public interface IOrganisationService
 {
@@ -38,4 +34,6 @@ public interface IOrganisationService
     Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId);
 
     Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId);
+
+    Task<string> GetOrganisationNationCodeByExternalIdAsync(Guid organisationExternalId);
 }

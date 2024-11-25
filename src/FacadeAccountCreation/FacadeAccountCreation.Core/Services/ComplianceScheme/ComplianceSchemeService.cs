@@ -1,99 +1,79 @@
 using EPR.Common.Logging.Constants;
 using EPR.Common.Logging.Models;
 using EPR.Common.Logging.Services;
-using FacadeAccountCreation.Core.Extensions;
 using FacadeAccountCreation.Core.Helpers;
-using FacadeAccountCreation.Core.Models.ComplianceScheme;
-using FacadeAccountCreation.Core.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System.Net.Http.Json;
-using FacadeAccountCreation.Core.Models.Subsidiary;
-using System.Web;
 
 namespace FacadeAccountCreation.Core.Services.ComplianceScheme;
 
-public class ComplianceSchemeService : IComplianceSchemeService
+public class ComplianceSchemeService(
+    HttpClient httpClient,
+    ILogger<ComplianceSchemeService> logger,
+    ILoggingService loggingService,
+    ICorrelationIdProvider correlationIdProvider,
+    IConfiguration config)
+    : IComplianceSchemeService
 {
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<ComplianceSchemeService> _logger;
-    private readonly IConfiguration _config;
-    private readonly ILoggingService _loggingService;
-    private readonly ICorrelationIdProvider _correlationIdProvider;
     private const string XEprUserHeader = "X-EPR-User";
-
-    public ComplianceSchemeService(
-        HttpClient httpClient,
-        ILogger<ComplianceSchemeService> logger,
-        ILoggingService loggingService,
-        ICorrelationIdProvider correlationIdProvider,
-        IConfiguration config)
-    {
-        _httpClient = httpClient;
-        _logger = logger;
-        _loggingService = loggingService;
-        _correlationIdProvider = correlationIdProvider;
-        _config = config;
-    }
 
     public async Task<HttpResponseMessage> GetAllComplianceSchemesAsync()
     {
-        var endpoint = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("Get").Value}";
+        var endpoint = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("Get").Value}";
         
         try
         {
-            _logger.LogInformation($"Attempting to call {nameof(GetAllComplianceSchemesAsync)}");
-            return await _httpClient.GetAsync(endpoint);
+            logger.LogInformation($"Attempting to call {nameof(GetAllComplianceSchemesAsync)}");
+            return await httpClient.GetAsync(endpoint);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, $"Failed to call {nameof(GetAllComplianceSchemesAsync)}");
+            logger.LogError(e, $"Failed to call {nameof(GetAllComplianceSchemesAsync)}");
             throw;
         }
     }
     
     public async Task<HttpResponseMessage> GetComplianceSchemeForProducerAsync(Guid organisationId, Guid userOid)
     {
-        var endpoint = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeForProducer").Value}";
+        var endpoint = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeForProducer").Value}";
         
         try
         {
-            _logger.LogInformation("Attempting to get the compliance scheme for the organisation id : '{organisationId}'", organisationId);
+            logger.LogInformation("Attempting to get the compliance scheme for the organisation id : '{OrganisationId}'", organisationId);
             
-            return await _httpClient.GetAsync( $"{endpoint}?organisationId={organisationId}&userOid={userOid}");
+            return await httpClient.GetAsync( $"{endpoint}?organisationId={organisationId}&userOid={userOid}");
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get compliance scheme for the organisation id: '{organisationId}'", organisationId);
+            logger.LogError(e, "Failed to get compliance scheme for the organisation id: '{OrganisationId}'", organisationId);
             throw;
         }
     }
 
-    public async Task<HttpResponseMessage> GetComplianceSchemeMembersAsync(Guid userId, Guid organisationId, Guid selectedSchemeId, string? query, int pageSize, int page)
+    public async Task<HttpResponseMessage> GetComplianceSchemeMembersAsync(Guid userId, Guid organisationId, Guid selectedSchemeId, string? query, int pageSize, int page, bool hideNoSubsidiaries)
     {
-        HttpResponseMessage result = null;
+        HttpResponseMessage result;
 
-        var endpointConfigValue = _config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMembers").Value;
-        var uriBuilder = new UriBuilder(string.Format(endpointConfigValue, organisationId, selectedSchemeId, pageSize, page, query));
+        var endpointConfigValue = config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMembers").Value;
+        var uriBuilder = new UriBuilder(string.Format(endpointConfigValue, organisationId, selectedSchemeId, pageSize, page, query, hideNoSubsidiaries));
 
-        string endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
+        var endpoint = uriBuilder.Host + uriBuilder.Path + uriBuilder.Query;
 
         try
         {
-            _logger.LogInformation("Attempting to get the compliance schemes members for organisation id : '{organisationId}'", organisationId);
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
-            result = await _httpClient.GetAsync(endpoint);
+            logger.LogInformation("Attempting to get the compliance schemes members for organisation id : '{OrganisationId}'", organisationId);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
+            result = await httpClient.GetAsync(endpoint);
 
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get compliance scheme members for organisation id: '{organisationId}'", organisationId);
+            logger.LogError(e, "Failed to get compliance scheme members for organisation id: '{OrganisationId}'", organisationId);
             throw;
         }
         finally
         {
-            _httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Clear();
         }
 
         return result;
@@ -102,21 +82,20 @@ public class ComplianceSchemeService : IComplianceSchemeService
 
     public async Task<HttpResponseMessage> GetComplianceSchemesForOperatorAsync(Guid operatorOrganisationId)
     {
-        var endpoint =
-            $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemesForOperator").Value}";
+        var endpoint = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemesForOperator").Value}";
 
         try
         {
-            _logger.LogInformation(
-                "Attempting to get the compliance schemes for operator with the organisation id : '{operatorOrganisationId}'",
+            logger.LogInformation(
+                "Attempting to get the compliance schemes for operator with the organisation id : '{OperatorOrganisationId}'",
                 operatorOrganisationId);
 
-            return await _httpClient.GetAsync($"{endpoint}?organisationId={operatorOrganisationId}");
+            return await httpClient.GetAsync($"{endpoint}?organisationId={operatorOrganisationId}");
         }
         catch (Exception e)
         {
-            _logger.LogError(e,
-                "Failed to get compliance schemes for operator with the organisation id: '{operatorOrganisationId}'",
+            logger.LogError(e,
+                "Failed to get compliance schemes for operator with the organisation id: '{OperatorOrganisationId}'",
                 operatorOrganisationId);
             throw;
         }
@@ -124,14 +103,14 @@ public class ComplianceSchemeService : IComplianceSchemeService
 
     public async Task<ComplianceSchemeSummary> GetComplianceSchemesSummary(Guid complianceSchemeId, Guid organisationId, Guid userId)
     {
-        _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
-        _httpClient.DefaultRequestHeaders.Add("X-EPR-Organisation", organisationId.ToString());
+        httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
+        httpClient.DefaultRequestHeaders.Add("X-EPR-Organisation", organisationId.ToString());
 
         var endpoint = string.Format(
-            _config.GetSection("ComplianceSchemeEndpoints").GetSection("ComplianceSchemeSummaryPath").Value, 
+            config.GetSection("ComplianceSchemeEndpoints").GetSection("ComplianceSchemeSummaryPath").Value, 
             complianceSchemeId);
             
-        var response = await _httpClient.GetAsync(endpoint);
+        var response = await httpClient.GetAsync(endpoint);
 
         response.EnsureSuccessStatusCode();
 
@@ -140,31 +119,31 @@ public class ComplianceSchemeService : IComplianceSchemeService
 
     public async Task<HttpResponseMessage> RemoveComplianceScheme(RemoveComplianceSchemeModel model)
     {
-        var endpoint = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("remove").Value}";
+        var endpoint = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("remove").Value}";
 
         try
         {
-            _logger.LogInformation("Attempting to remove the selected compliance scheme id '{selectedSchemeId}' from the backend", model.SelectedSchemeId);
-            return await _httpClient.PostAsJsonAsync(endpoint, model);
+            logger.LogInformation("Attempting to remove the selected compliance scheme id '{SelectedSchemeId}' from the backend", model.SelectedSchemeId);
+            return await httpClient.PostAsJsonAsync(endpoint, model);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Request failed to remove selected compliance scheme id '{selectedSchemeId}'", model.SelectedSchemeId);
+            logger.LogError(e, "Request failed to remove selected compliance scheme id '{SelectedSchemeId}'", model.SelectedSchemeId);
             throw;
         }
     }
     
     public async Task<HttpResponseMessage> SelectComplianceSchemeAsync(SelectSchemeWithUserModel model)
     {
-        var endpoint = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("select").Value}";
+        var endpoint = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("select").Value}";
 
         try
         {
-            return await _httpClient.PostAsJsonAsync(endpoint, model);
+            return await httpClient.PostAsJsonAsync(endpoint, model);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Request failed to add selected compliance scheme id '{ModelComplianceSchemeId}'", model.ComplianceSchemeId);
+            logger.LogError(e, "Request failed to add selected compliance scheme id '{ModelComplianceSchemeId}'", model.ComplianceSchemeId);
 
             throw;
         }
@@ -172,15 +151,15 @@ public class ComplianceSchemeService : IComplianceSchemeService
     
     public async Task<HttpResponseMessage> UpdateComplianceSchemeAsync(UpdateSchemeWithUserModel model)
     {
-        var endpoint = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("update").Value}";
+        var endpoint = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("update").Value}";
 
         try
         {
-            return await _httpClient.PostAsJsonAsync(endpoint, model);
+            return await httpClient.PostAsJsonAsync(endpoint, model);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Request failed to update selected compliance scheme id '{ModelComplianceSchemeId}'", model.ComplianceSchemeId);
+            logger.LogError(e, "Request failed to update selected compliance scheme id '{ModelComplianceSchemeId}'", model.ComplianceSchemeId);
 
             throw;
         }
@@ -188,34 +167,34 @@ public class ComplianceSchemeService : IComplianceSchemeService
 
     public async Task<HttpResponseMessage> GetComplianceSchemeMemberDetailsAsync(Guid userId ,Guid organisationId, Guid selectedSchemeId)
     {
-        var endpoint = string.Format(_config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMemberDetails").Value, organisationId, selectedSchemeId);
+        var endpoint = string.Format(config.GetSection("ComplianceSchemeEndpoints").GetSection("GetComplianceSchemeMemberDetails").Value, organisationId, selectedSchemeId);
         
         try
         {
-            _logger.LogInformation("Attempting to get the compliance scheme for the organisation id : '{organisationId}' and selected scheme id : '{selectedSchemeId}'", organisationId, selectedSchemeId);
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
-            return await _httpClient.GetAsync( $"{endpoint}");
+            logger.LogInformation("Attempting to get the compliance scheme for the organisation id : '{OrganisationId}' and selected scheme id : '{SelectedSchemeId}'", organisationId, selectedSchemeId);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
+            return await httpClient.GetAsync( $"{endpoint}");
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to get compliance scheme for the organisation id: '{organisationId}' and selected scheme id : '{selectedSchemeId}'", organisationId, selectedSchemeId);
+            logger.LogError(e, "Failed to get compliance scheme for the organisation id: '{OrganisationId}' and selected scheme id : '{SelectedSchemeId}'", organisationId, selectedSchemeId);
             throw;
         }
     }
     
     public async Task<InfoForSelectedSchemeRemovalResponse> GetInfoForSelectedSchemeRemoval(Guid organisationId, Guid selectedSchemeId, Guid userId)
     {
-        var endpointConfigValue =  $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("GetInfoForSelectedSchemeRemoval").Value}";
+        var endpointConfigValue =  $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetInfoForSelectedSchemeRemoval").Value}";
         var endpoint = string.Format(endpointConfigValue, organisationId, selectedSchemeId);
 
         try
         {
-            _logger.LogInformation("Attempting to retrieve details for selected scheme id: '{selectedSchemeId}'", selectedSchemeId);
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
+            logger.LogInformation("Attempting to retrieve details for selected scheme id: '{SelectedSchemeId}'", selectedSchemeId);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
             
-            var response  = await _httpClient.GetAsync(endpoint);
+            var response  = await httpClient.GetAsync(endpoint);
             
             response.EnsureSuccessStatusCode();
             
@@ -223,37 +202,37 @@ public class ComplianceSchemeService : IComplianceSchemeService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to retrieve details for selected scheme id: '{selectedSchemeId}'", selectedSchemeId);
+            logger.LogError(e, "Failed to retrieve details for selected scheme id: '{SelectedSchemeId}'", selectedSchemeId);
             throw;
         }
         finally
         {
-            _httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Clear();
         }
     }
 
     public async Task<RemoveComplianceSchemeMemberResponse> RemoveComplianceSchemeMember(Guid organisationId, Guid selectedSchemeId, Guid userId, RemoveComplianceSchemeMemberModel model)
     {
-        var endpointConfigValue =  $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("RemoveComplianceSchemeMember").Value}";
+        var endpointConfigValue =  $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("RemoveComplianceSchemeMember").Value}";
         var endpoint = string.Format(endpointConfigValue, organisationId, selectedSchemeId);
 
         try
         {
-            _logger.LogInformation("Attempting to remove selected scheme id : '{selectedSchemeId}'", selectedSchemeId);
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
+            logger.LogInformation("Attempting to remove selected scheme id : '{SelectedSchemeId}'", selectedSchemeId);
+            httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
             
-            var response  = await _httpClient.PostAsJsonAsync(endpoint, model);
+            var response  = await httpClient.PostAsJsonAsync(endpoint, model);
 
             // Specific try catch here for logging protective monitoring event
             // as we don't want failure if protective monitoring call fails
             try
             {
-                await ProtectiveMonitoringLogAsync(organisationId, selectedSchemeId, userId, _correlationIdProvider.GetHttpRequestCorrelationIdOrNew());
+                await ProtectiveMonitoringLogAsync(organisationId, selectedSchemeId, userId, correlationIdProvider.GetHttpRequestCorrelationIdOrNew());
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "An error occurred creating the protective monitoring event");
+                logger.LogError(exception, "An error occurred creating the protective monitoring event");
             }
 
             response.EnsureSuccessStatusCode();
@@ -263,18 +242,18 @@ public class ComplianceSchemeService : IComplianceSchemeService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to remove selected scheme id: '{selectedSchemeId}'", selectedSchemeId);
+            logger.LogError(e, "Failed to remove selected scheme id: '{SelectedSchemeId}'", selectedSchemeId);
             throw;
         }
         finally
         {
-            _httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Clear();
         }
     }
 
     private async Task ProtectiveMonitoringLogAsync(Guid organisationId, Guid selectedSchemeId, Guid userId, Guid correlationId)
     {
-        await _loggingService.SendEventAsync(
+        await loggingService.SendEventAsync(
             userId,
             new ProtectiveMonitoringEvent(
                 SessionId: correlationId,
@@ -288,42 +267,42 @@ public class ComplianceSchemeService : IComplianceSchemeService
        
     public async Task<HttpResponseMessage> GetAllReasonsForRemovalsAsync()
     {
-        var endpoint = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("GetAllReasonsForRemovals").Value}";
+        var endpoint = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetAllReasonsForRemovals").Value}";
 
         try
         {
-            _logger.LogInformation($"Attempting to call {nameof(GetAllReasonsForRemovalsAsync)}");
-            return await _httpClient.GetAsync(endpoint);
+            logger.LogInformation($"Attempting to call {nameof(GetAllReasonsForRemovalsAsync)}");
+            return await httpClient.GetAsync(endpoint);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, $"Failed to call {nameof(GetAllReasonsForRemovalsAsync)}");
+            logger.LogError(e, $"Failed to call {nameof(GetAllReasonsForRemovalsAsync)}");
             throw;
         }
     }
 
     public async Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportComplianceSchemeSubsidiaries(Guid userId, Guid organisationId, Guid complianceSchemeId)
     {
-        var endpointConfigValue = $"{_config.GetSection("ComplianceSchemeEndpoints").GetSection("ExportComplianceSchemeSubsidiaries").Value}";
+        var endpointConfigValue = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("ExportComplianceSchemeSubsidiaries").Value}";
         var endpoint = string.Format(endpointConfigValue, organisationId, complianceSchemeId);
 
         try
         {
-            _logger.LogInformation("Attempting to Export the Compliance Scheme Subsidiaries for Organisation Id : '{OrganisationId}'", organisationId);
-            _httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
+            logger.LogInformation("Attempting to Export the Compliance Scheme Subsidiaries for Organisation Id : '{OrganisationId}'", organisationId);
+            httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
 
-            var response = await _httpClient.GetAsync(endpoint); 
+            var response = await httpClient.GetAsync(endpoint); 
 
             return await response.Content.ReadFromJsonWithEnumsAsync<List<ExportOrganisationSubsidiariesResponseModel>>();
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to Export the Compliance Scheme Subsidiaries for Organisation Id : '{OrganisationId}'", organisationId);
+            logger.LogError(e, "Failed to Export the Compliance Scheme Subsidiaries for Organisation Id : '{OrganisationId}'", organisationId);
             throw;
         }
         finally
         {
-            _httpClient.DefaultRequestHeaders.Clear();
+            httpClient.DefaultRequestHeaders.Clear();
         }
     }
 }

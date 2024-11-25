@@ -1,14 +1,7 @@
-using FacadeAccountCreation.API.Controllers;
 using FacadeAccountCreation.Core.Exceptions;
-using FluentAssertions;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using System.Net;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

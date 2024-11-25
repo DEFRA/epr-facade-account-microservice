@@ -1,30 +1,20 @@
 ﻿using FacadeAccountCreation.Core.Models.Notifications;
-using Microsoft.Extensions.Logging;
-using System.Net;
-using System.Net.Http.Json;
 
-namespace FacadeAccountCreation.Core.Services.Connection;
+namespace FacadeAccountCreation.Core.Services.Notification;
 
-public class NotificationsService : INotificationsService
+public class NotificationsService(HttpClient httpClient, ILogger<NotificationsService> logger)
+    : INotificationsService
 {
     private const string NotificationsUri = "api/notifications";
-    private readonly HttpClient _httpClient;
-    private readonly ILogger<NotificationsService> _logger;
-
-    public NotificationsService(HttpClient httpClient, ILogger<NotificationsService> logger)
-    {
-        _httpClient = httpClient;
-        _logger = logger;
-    }
 
     public async Task<NotificationsResponse?> GetNotificationsForServiceAsync(Guid userId, Guid organisationId, string serviceKey)
     {
-        _logger.LogInformation("Attempting to get the notifications for userId {userId} in organisation {organisationId} for service {serviceKey}", userId, organisationId, serviceKey);
+        logger.LogInformation("Attempting to get the notifications for userId {UserId} in organisation {OrganisationId} for service {ServiceKey}", userId, organisationId, serviceKey);
 
-        _httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
-        _httpClient.DefaultRequestHeaders.Add("X-EPR-Organisation", organisationId.ToString());
+        httpClient.DefaultRequestHeaders.Add("X-EPR-User", userId.ToString());
+        httpClient.DefaultRequestHeaders.Add("X-EPR-Organisation", organisationId.ToString());
 
-        var response = await _httpClient.GetAsync($"{NotificationsUri}?serviceKey={serviceKey}");
+        var response = await httpClient.GetAsync($"{NotificationsUri}?serviceKey={serviceKey}");
         if (response.StatusCode == HttpStatusCode.NoContent)
         {
             return null;

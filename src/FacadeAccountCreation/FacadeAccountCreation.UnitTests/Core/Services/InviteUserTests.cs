@@ -1,13 +1,5 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
 using FacadeAccountCreation.Core.Configs;
-using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Services.CreateAccount;
-using FluentAssertions;
-using Microsoft.Extensions.Options;
-using Moq;
-using Moq.Protected;
-using System.Net;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -22,14 +14,14 @@ public class InviteUserTests
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
     private readonly AccountInvitationModel _requestModel = new()
     {
-        InvitedUser = new InvitedUserModel()
+        InvitedUser = new InvitedUserModel
         {
             Email = "test-invited-user@test.com",
             PersonRoleId = 2,
             ServiceRoleId = 3,
             OrganisationId = Guid.NewGuid()
         },
-        InvitingUser = new InvitingUserModel()
+        InvitingUser = new InvitingUserModel
         {
             Email = "test-inviter@test.com",
             UserId = Guid.NewGuid()
@@ -134,7 +126,7 @@ public class InviteUserTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var accountsEndpointsOptions = Options.Create(new AccountsEndpointsConfig()
+        var accountsEndpointsOptions = Options.Create(new AccountsEndpointsConfig
         {
             Accounts = "api/producer-accounts",
             Organisations = "api/organisations",

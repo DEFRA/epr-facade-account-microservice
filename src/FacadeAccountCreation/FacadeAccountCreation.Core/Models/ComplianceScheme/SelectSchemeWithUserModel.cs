@@ -1,17 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
 
-namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
 [ExcludeFromCodeCoverage]
-public class SelectSchemeWithUserModel
+public class SelectSchemeWithUserModel(SelectSchemeModel model, Guid oId)
 {
-    public SelectSchemeWithUserModel(SelectSchemeModel model, Guid oId)
-    {
-        ProducerOrganisationId = model.OrganisationId;
-        ComplianceSchemeId = model.ComplianceSchemeId;
-        UserOId = oId;
-    }
-    
-    public Guid ProducerOrganisationId { get; set; }
-    public Guid ComplianceSchemeId { get; set; }
-    public Guid UserOId { get; set; }
+    public Guid ProducerOrganisationId { get; set; } = model.OrganisationId;
+    public Guid ComplianceSchemeId { get; set; } = model.ComplianceSchemeId;
+    public Guid UserOId { get; set; } = oId;
 }

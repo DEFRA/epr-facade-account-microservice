@@ -1,22 +1,10 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.Core.Exceptions;
+﻿using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
-using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services.Organisation;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Net.Http;
-using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -34,6 +22,7 @@ public class OrganisationServiceTests
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetRelationshipUri = "api/organisations";
     private const string OrganisationByReferenceNumberUrl = "api/organisations/organisation-by-reference-number";
+    private const string OrganisationNationUrl = "api/organisations/nation-code";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<OrganisationService> _logger = new();
@@ -301,8 +290,8 @@ public class OrganisationServiceTests
     public async Task Get_GetRegulatorOrganisationByNationId_ShouldReturnEmptyResponse()
     {
         // Arrange
-        int nationId = 1;
-        string nationName = "England";
+        var nationId = 1;
+        var nationName = "England";
 
         var expectedUrl =
             $"{BaseAddress}/{GetOrganisationIdFromNationEndpoint}{nationName}";
@@ -334,8 +323,8 @@ public class OrganisationServiceTests
     {
         // Arrange
         var apiResponse = _fixture.Create<ProblemDetails>();
-        int nationId = 1;
-        string nationName = "England";
+        var nationId = 1;
+        var nationName = "England";
 
         var expectedUrl =
             $"{BaseAddress}/{GetOrganisationIdFromNationEndpoint}{nationName}";
@@ -672,16 +661,12 @@ public class OrganisationServiceTests
         // Arrange
         var userId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
-        var organisation = new OrganisationUpdateDto
-        {
-        };
+        var organisation = new OrganisationUpdateDto();
 
         var expectedUrl =
             $"{BaseAddress}/{UpdateOrganisationEndPoint}/{organisationId}";
 
-        var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-        };
+        var expectedResponse = new HttpResponseMessage(HttpStatusCode.OK);
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -824,5 +809,151 @@ public class OrganisationServiceTests
 
         // Assert
         await act.Should().ThrowAsync<ProblemResponseException>();
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationNationByExternalIdAsync_When_APIReturns_Return_200_Successful_Response()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var expectedUrl = $"{BaseAddress}/{OrganisationNationUrl}?organisationId={organisationId}";
+
+        var apiResponse = "GB-ENG";
+
+        _httpMessageHandlerMock.Protected()
+           .Setup<Task<HttpResponseMessage>>("SendAsync",
+               ItExpr.Is<HttpRequestMessage>(
+                   req => req.RequestUri != null &&
+                          req.RequestUri.ToString() == expectedUrl),
+               ItExpr.IsAny<CancellationToken>())
+           .ReturnsAsync(new HttpResponseMessage
+           {
+               StatusCode = HttpStatusCode.OK,
+               Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+           });
+
+        _httpMessageHandlerMock.Verify();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        //Act
+       var result =  await sut.GetOrganisationNationCodeByExternalIdAsync(organisationId);
+
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+
+        result.Should().NotBeNull();
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationNationByExternalIdAsync_When_APIReturns_404_NoFound_ReturnsNullResponse()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var expectedUrl = $"{BaseAddress}/{OrganisationNationUrl}?organisationId={organisationId}";
+
+        _httpMessageHandlerMock.Protected()
+                   .Setup<Task<HttpResponseMessage>>("SendAsync",
+                       ItExpr.Is<HttpRequestMessage>(
+                           req => req.Method == HttpMethod.Get &&
+                                  req.RequestUri != null &&
+                                  req.RequestUri.ToString() == expectedUrl),
+                       ItExpr.IsAny<CancellationToken>())
+                   .ReturnsAsync(new HttpResponseMessage
+                   {
+                       StatusCode = HttpStatusCode.NotFound,
+                       Content = null
+                   }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        //Act
+        var result = await sut.GetOrganisationNationCodeByExternalIdAsync(organisationId);
+
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+     ItExpr.Is<HttpRequestMessage>(
+         req => req.Method == HttpMethod.Get &&
+                req.RequestUri != null &&
+                req.RequestUri.ToString() == expectedUrl),
+     ItExpr.IsAny<CancellationToken>());
+
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationNationByExternalIdAsync_When_APIReturns_500_InternalServerError_ReturnsExeption()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var expectedUrl = $"{BaseAddress}/{OrganisationNationUrl}?organisationId={organisationId}";
+
+        _httpMessageHandlerMock.Protected()
+                   .Setup<Task<HttpResponseMessage>>("SendAsync",
+                       ItExpr.Is<HttpRequestMessage>(
+                           req => req.Method == HttpMethod.Get &&
+                                  req.RequestUri != null &&
+                                  req.RequestUri.ToString() == expectedUrl),
+                       ItExpr.IsAny<CancellationToken>())
+                   .ReturnsAsync(new HttpResponseMessage
+                   {
+                       StatusCode = HttpStatusCode.InternalServerError,
+                       Content = null
+                   }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        //Act
+        var ex = await Assert.ThrowsExceptionAsync<HttpRequestException>(()=> sut.GetOrganisationNationCodeByExternalIdAsync(organisationId));
+
+        // Assert
+        ex.Should().NotBeNull();
+        ex.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationNationByExternalIdAsync_When_API_ThrowsException()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var loggerMock = new Mock<ILogger<OrganisationService>>();
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, loggerMock.Object, _configuration);
+
+        // Act
+        Func<Task> act = async () => await sut.GetOrganisationNationCodeByExternalIdAsync(organisationId);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+
+        Assert.IsNotNull(act);
+
+        loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get Organisation nation for Organisation Id: '{OrganisationExternalId}'", organisationId));
     }
 }

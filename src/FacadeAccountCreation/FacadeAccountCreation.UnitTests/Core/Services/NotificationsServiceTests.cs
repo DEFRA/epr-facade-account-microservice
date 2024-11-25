@@ -1,13 +1,5 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.Core.Models.Notifications;
-using FacadeAccountCreation.Core.Services.Connection;
-using FluentAssertions;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Text.Json;
+﻿using FacadeAccountCreation.Core.Models.Notifications;
+using FacadeAccountCreation.Core.Services.Notification;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

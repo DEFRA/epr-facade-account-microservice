@@ -1,13 +1,6 @@
-﻿using FacadeAccountCreation.API.Configs;
-using FacadeAccountCreation.Core.Configs;
+﻿using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Helpers;
-using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
-using FacadeAccountCreation.Core.Services.Messaging;
-using FacadeAccountCreation.Core.Services.Organisation;
-using FacadeAccountCreation.Core.Services.Person;
-using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
-using Microsoft.FeatureManagement;
 using Notify.Client;
 using Notify.Interfaces;
 

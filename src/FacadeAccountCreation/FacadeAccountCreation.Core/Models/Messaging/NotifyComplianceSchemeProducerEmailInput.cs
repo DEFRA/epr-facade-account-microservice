@@ -1,7 +1,6 @@
-﻿using FacadeAccountCreation.Core.Models.ComplianceScheme;
+﻿namespace FacadeAccountCreation.Core.Models.Messaging;
 
-namespace FacadeAccountCreation.Core.Models.Messaging;
-
+[ExcludeFromCodeCoverage]
 public class NotifyComplianceSchemeProducerEmailInput
 {
     public Guid UserId { get; set; }

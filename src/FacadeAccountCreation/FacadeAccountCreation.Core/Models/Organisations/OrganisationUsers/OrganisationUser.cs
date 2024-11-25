@@ -1,5 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 
+[ExcludeFromCodeCoverage]
 public class OrganisationUser
 {
     public string FirstName { get; set; }

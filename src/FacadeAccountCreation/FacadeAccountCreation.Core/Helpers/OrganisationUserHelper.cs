@@ -1,5 +1,4 @@
 ﻿using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
-using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 
 namespace FacadeAccountCreation.Core.Helpers;
 

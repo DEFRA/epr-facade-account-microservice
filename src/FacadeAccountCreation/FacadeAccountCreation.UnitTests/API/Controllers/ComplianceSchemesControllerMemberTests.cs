@@ -1,21 +1,6 @@
-using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.API.Controllers;
-using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
-using FacadeAccountCreation.Core.Models.Messaging;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
-using FacadeAccountCreation.Core.Services.Messaging;
-using FacadeAccountCreation.UnitTests.TestHelpers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
-using Moq;
-using System.Net;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -29,12 +14,10 @@ public class ComplianceSchemesControllerMemberTests
     private readonly Mock<IFeatureManager> _featureManager = new();
     private ComplianceSchemesController _sut = null!;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
-    private Mock<HttpContext>? _httpContextMock;
 
     [TestInitialize]
     public void Setup()
     {
-        _httpContextMock = new Mock<HttpContext>();
         _sut = new ComplianceSchemesController(_mockComplianceSchemeServiceMock.Object, _nullLogger,_messageService.Object, _featureManager.Object);
         _sut.AddDefaultContextWithOid(Oid, "TestAuth");
     }
@@ -50,10 +33,10 @@ public class ComplianceSchemesControllerMemberTests
         .Create();
 
         _mockComplianceSchemeServiceMock
-            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(serviceResponse);
 
-        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, "", 1);
+        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10);
 
         result.Should().BeOfType<StatusCodeResult>();
         var obj = result as OkObjectResult;
@@ -69,10 +52,10 @@ public class ComplianceSchemesControllerMemberTests
                 .With(x => x.StatusCode, HttpStatusCode.NotFound).Create();
 
         _mockComplianceSchemeServiceMock
-            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(serviceResponse);
 
-        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, "", 1);
+        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10);
 
         result.Should().BeOfType<NotFoundResult>();
     }
@@ -82,7 +65,7 @@ public class ComplianceSchemesControllerMemberTests
     {
         var sut = new ComplianceSchemesController(_mockComplianceSchemeServiceMock.Object, _nullLogger,_messageService.Object, _featureManager.Object);
 
-        var result = await sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, "", 1);
+        var result = await sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10);
 
         result.Should().BeOfType<StatusCodeResult>();
         var statusCodeResult = result as StatusCodeResult;
@@ -93,10 +76,10 @@ public class ComplianceSchemesControllerMemberTests
     public async Task GetComplianceSchemeMembersAsync_ShouldReturnInternalServerErrorStatus_WhenServiceArguementException()
     {
         _mockComplianceSchemeServiceMock
-            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(x => x.GetComplianceSchemeMembersAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
             .Throws<ArgumentException>();
 
-        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, "", 1);
+        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10);
 
         result.Should().BeOfType<StatusCodeResult>();
         var statusCodeResult = result as StatusCodeResult;
@@ -106,8 +89,8 @@ public class ComplianceSchemesControllerMemberTests
     [TestMethod]
     public async Task GetComplianceSchemeMembersAsync_ShouldReturnBadRequestStatus_WhenQueryTooLong()
     {
-        string longString = new string('*', 300);
-        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, longString, 1);
+        var longString = new string('*', 300);
+        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, longString);
 
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;
@@ -119,7 +102,7 @@ public class ComplianceSchemesControllerMemberTests
     {
         _sut.AddDefaultContextWithOid(Guid.Empty, "TestAuth");
 
-        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10, "", 1);
+        var result = await _sut.GetComplianceSchemeMembers(Guid.NewGuid(), Guid.NewGuid(), 10);
 
         result.Should().BeOfType<ObjectResult>();
         var objectResult = result as ObjectResult;

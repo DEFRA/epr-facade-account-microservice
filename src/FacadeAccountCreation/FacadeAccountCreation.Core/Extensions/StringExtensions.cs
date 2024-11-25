@@ -10,7 +10,7 @@ public static class StringExtensions
         }
         str = str.Replace(" ", "");
 
-        int i = str.Length - 3;
+        var i = str.Length - 3;
         while (i > 0)
         {
             str = str.Insert(i, " ");

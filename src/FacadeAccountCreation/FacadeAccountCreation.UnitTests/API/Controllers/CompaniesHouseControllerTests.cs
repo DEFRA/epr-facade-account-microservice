@@ -1,13 +1,6 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.API.Controllers;
-using FacadeAccountCreation.Core.Models.CompaniesHouse;
-using FacadeAccountCreation.Core.Models.CreateAccount;
+﻿using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Services.CompaniesHouse;
 using FacadeAccountCreation.Core.Services.CreateAccount;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -75,9 +68,6 @@ public class CompaniesHouseControllerTests
     [TestMethod]
     public async Task Should_return_nocontent_when_companyhouse()
     {
-        // Arrange
-        var handlerResponse = _fixture.Create<CompaniesHouseResponse>();
-
         _mockCompaniesHouseLookupServiceMock
             .Setup(x => x.GetCompaniesHouseResponseAsync(It.Is<string>(pc => pc == ValidCompanyId)));
 

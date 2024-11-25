@@ -1,6 +1,3 @@
-using FacadeAccountCreation.Core.Models.ComplianceScheme;
-using FacadeAccountCreation.Core.Models.Subsidiary;
-
 namespace FacadeAccountCreation.Core.Services.ComplianceScheme;
 
 public interface IComplianceSchemeService
@@ -11,7 +8,7 @@ public interface IComplianceSchemeService
     Task<HttpResponseMessage> GetAllComplianceSchemesAsync();
     Task<HttpResponseMessage> GetComplianceSchemeForProducerAsync(Guid organisationId, Guid userOid);
     Task<HttpResponseMessage> GetComplianceSchemesForOperatorAsync(Guid operatorOrganisationId);
-    Task<HttpResponseMessage> GetComplianceSchemeMembersAsync(Guid userId, Guid organisationId, Guid selectedSchemeId, string? query, int pageSize, int page);
+    Task<HttpResponseMessage> GetComplianceSchemeMembersAsync(Guid userId, Guid organisationId, Guid selectedSchemeId, string? query, int pageSize, int page, bool hideNoSubsidiaries);
     Task<HttpResponseMessage> GetComplianceSchemeMemberDetailsAsync(Guid userId, Guid organisationId, Guid selectedSchemeId);
     Task<ComplianceSchemeSummary?> GetComplianceSchemesSummary(Guid complianceSchemeId, Guid organisationId, Guid userId);
     Task<HttpResponseMessage> GetAllReasonsForRemovalsAsync();

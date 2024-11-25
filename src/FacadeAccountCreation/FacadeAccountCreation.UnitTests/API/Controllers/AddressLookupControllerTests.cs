@@ -1,11 +1,5 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.API.Controllers;
-using FacadeAccountCreation.Core.Models.AddressLookup;
+﻿using FacadeAccountCreation.Core.Models.AddressLookup;
 using FacadeAccountCreation.Core.Services.AddressLookup;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -68,8 +62,6 @@ public class AddressLookupControllerTests
     public async Task Should_return_NoContent_when_no_address()
     {
         // Arrange
-        var handlerResponse = _fixture.Create<AddressLookupResponseDto>();
-
         _addressLookupServiceMock
             .Setup(x => x.GetAddressLookupResponseAsync(It.Is<string>(pc => pc == ValidPostcode)));
 

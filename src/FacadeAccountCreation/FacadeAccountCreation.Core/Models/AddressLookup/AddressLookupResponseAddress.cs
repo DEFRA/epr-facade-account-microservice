@@ -1,5 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.AddressLookup;
 
+[ExcludeFromCodeCoverage]
 public class AddressLookupResponseAddress
 {
     public string? AddressLine { get; set; }

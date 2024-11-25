@@ -1,7 +1,4 @@
 using FacadeAccountCreation.Core.Models.Connections;
-using FacadeAccountCreation.Core.Models.Messaging;
-using FluentAssertions;
-using Moq;
 using Notify.Exceptions;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests;
@@ -21,7 +18,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = expected});
+            null, null)).Returns(new EmailNotificationResponse {id = expected});
 
         _sut = GetServiceUnderTest();
 
@@ -46,7 +43,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
 
         // Act
         _ = _sut.SendAccountCreationConfirmation(Guid.NewGuid(), firstName, lastName, recipient, organisationId,
-            new Guid());
+            Guid.NewGuid());
     }
 
     [TestMethod]
@@ -77,13 +74,13 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
     [TestMethod]
     public void SendDelegatedUserNomination_WhenValidParameters_ItShouldReturnCorrectId()
     {
-        string expectedId = "P123456";
+        var expectedId = "P123456";
         _notificationClientMock.Setup(nc => nc.SendEmail(
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = expectedId });
+            null, null)).Returns(new EmailNotificationResponse { id = expectedId });
 
         _sut = GetServiceUnderTest();
 
@@ -298,7 +295,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -322,7 +319,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -346,7 +343,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -370,7 +367,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -394,7 +391,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -417,7 +414,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -441,7 +438,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -465,7 +462,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -489,7 +486,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -513,7 +510,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "p12356"});
+            null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
         
         //Act
@@ -555,7 +552,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _ = _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
            null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p12356" });
+            null, null)).Returns(new EmailNotificationResponse { id = "p12356" });
         _sut = GetServiceUnderTest();
 
         //Act
@@ -578,7 +575,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
            null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() { id = "p78655" });
+            null, null)).Returns(new EmailNotificationResponse { id = "p78655" });
         _sut = GetServiceUnderTest();
 
         //Act

@@ -1,7 +1,7 @@
-﻿namespace FacadeAccountCreation.Core.Models.Connections
+﻿namespace FacadeAccountCreation.Core.Models.Connections;
+
+[ExcludeFromCodeCoverage]
+public class UpdatePersonRoleResponse
 {
-    public class UpdatePersonRoleResponse
-    {
-        public List<RemovedServiceRole> RemovedServiceRoles { get; set; }
-    }
+    public List<RemovedServiceRole> RemovedServiceRoles { get; set; }
 }

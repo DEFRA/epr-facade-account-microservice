@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-
 namespace FacadeAccountCreation.API.Shared;
 
 public static class HandleError

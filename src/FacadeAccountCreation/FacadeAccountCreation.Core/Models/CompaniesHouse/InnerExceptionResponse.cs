@@ -1,7 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Net;
+﻿namespace FacadeAccountCreation.Core.Models.CompaniesHouse;
 
-namespace FacadeAccountCreation.Core.Models.CompaniesHouse;
 [ExcludeFromCodeCoverage]
 public class InnerExceptionResponse
 {

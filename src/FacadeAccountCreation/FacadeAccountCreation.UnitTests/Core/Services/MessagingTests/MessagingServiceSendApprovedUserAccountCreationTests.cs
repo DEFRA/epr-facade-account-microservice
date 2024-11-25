@@ -1,7 +1,3 @@
-using FacadeAccountCreation.Core.Models.Connections;
-using FacadeAccountCreation.Core.Models.Messaging;
-using FluentAssertions;
-using Moq;
 using Notify.Exceptions;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests;
@@ -21,7 +17,7 @@ public class MessagingServiceSendApprovedUserAccountCreationTests : BaseMessagin
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
-            null, null)).Returns(new Notify.Models.Responses.EmailNotificationResponse() {id = "C123456"});
+            null, null)).Returns(new EmailNotificationResponse {id = "C123456"});
 
         _sut = GetServiceUnderTest();
 

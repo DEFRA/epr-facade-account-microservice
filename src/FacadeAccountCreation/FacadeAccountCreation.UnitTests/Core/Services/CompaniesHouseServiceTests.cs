@@ -1,12 +1,5 @@
-﻿using AutoFixture;
-using AutoFixture.AutoMoq;
-using FacadeAccountCreation.Core.Models.CompaniesHouse;
+﻿using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Services.CompaniesHouse;
-using FluentAssertions;
-using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Text.Json;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

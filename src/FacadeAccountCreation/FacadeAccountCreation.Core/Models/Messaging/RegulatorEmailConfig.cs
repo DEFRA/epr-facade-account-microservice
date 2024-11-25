@@ -1,5 +1,6 @@
 namespace FacadeAccountCreation.Core.Models.Messaging;
 
+[ExcludeFromCodeCoverage]
 public class RegulatorEmailConfig
 {
     public const string SectionName = "RegulatorEmailConfig";

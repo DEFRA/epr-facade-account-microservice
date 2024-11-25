@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace FacadeAccountCreation.Core.Models.Messaging;
+﻿namespace FacadeAccountCreation.Core.Models.Messaging;
 
 [ExcludeFromCodeCoverage]
 public class UserDetailsChangeNotificationEmailInput

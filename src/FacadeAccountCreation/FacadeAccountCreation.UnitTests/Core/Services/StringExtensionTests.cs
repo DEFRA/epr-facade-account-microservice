@@ -1,5 +1,4 @@
 using FacadeAccountCreation.Core.Extensions;
-using FluentAssertions;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 

@@ -3,6 +3,7 @@ using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
 
 namespace FacadeAccountCreation.UnitTests.Core.Models;
+
 [TestClass]
 public class OrganisationUsersMapperTests
 {
@@ -22,14 +23,14 @@ public class OrganisationUsersMapperTests
                 PersonId = personId,
                 PersonRoleId = 2,
                 ConnectionId = connectionId,
-                Enrolments = new List<OrganisationUserEnrolment>
-                {
+                Enrolments =
+                [
                     new()
                     {
                         ServiceRoleId = 3,
                         EnrolmentStatus = EnrolmentStatus.Enrolled
                     }
-                }
+                ]
             }
         };
         var rolesLookup = new List<ServiceRolesLookupModel>
@@ -45,7 +46,7 @@ public class OrganisationUsersMapperTests
             }
         };
 
-        var expectedOrganiseUserModel = new OrganisationUserModel()
+        var expectedOrganiseUserModel = new OrganisationUserModel
         {
             ConnectionId = connectionId,
             Email = "test@test.com",

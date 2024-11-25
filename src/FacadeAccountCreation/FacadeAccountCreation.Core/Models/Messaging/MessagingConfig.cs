@@ -1,5 +1,6 @@
 namespace FacadeAccountCreation.Core.Models.Messaging;
 
+[ExcludeFromCodeCoverage]
 public class MessagingConfig
 {
     public const string SectionName = "MessagingConfig";

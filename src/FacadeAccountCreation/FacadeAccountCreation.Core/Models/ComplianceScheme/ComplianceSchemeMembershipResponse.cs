@@ -1,6 +1,6 @@
 ﻿using FacadeAccountCreation.Core.Services;
-using System;
-using System.Diagnostics.CodeAnalysis;
+
+namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
 
 namespace FacadeAccountCreation.Core.Models.ComplianceScheme
 {
