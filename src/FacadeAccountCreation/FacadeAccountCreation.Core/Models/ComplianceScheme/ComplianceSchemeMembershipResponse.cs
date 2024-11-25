@@ -2,6 +2,7 @@
 
 namespace FacadeAccountCreation.Core.Models.ComplianceScheme;
 
+
 [ExcludeFromCodeCoverage]
 public class ComplianceSchemeMembershipResponse
 {
@@ -9,4 +10,6 @@ public class ComplianceSchemeMembershipResponse
     public string SchemeName { get; set; }
     public DateTimeOffset? LastUpdated { get; set; }
     public int LinkedOrganisationCount { get; set; }
+    public int SubsidiariesCount { get; set; }
 }
+
