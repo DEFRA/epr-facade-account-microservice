@@ -11,6 +11,7 @@ public class PaymentCalculationServiceTests
 {
     private const string BaseAddress = "http://localhost";
     private const string ProducerRegistrationFeesUri = "/api/V1/producer/registration-fee";
+    private const string ComplianceSchemeRegistrationFeesUri = "/api/V1/compliance-scheme/registration-fee";
     private const string PaymentInitiationUrl = "/api/V1/online-payments";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -30,6 +31,34 @@ public class PaymentCalculationServiceTests
         SubmissionDate = DateTime.UtcNow
     };
 
+    private readonly ComplianceSchemePaymentCalculationRequest _complianceSchemePaymentCalculationRequest = new ComplianceSchemePaymentCalculationRequest
+    {
+        ApplicationReferenceNumber = "CSTest",
+        Regulator = "CSRegulator",
+        SubmissionDate = DateTime.UtcNow,
+        ComplianceSchemeMembers = new List<ComplianceSchemePaymentCalculationRequestMember> {
+            new ComplianceSchemePaymentCalculationRequestMember
+            {
+                IsLateFeeApplicable = false,
+                MemberId = "1",
+                IsOnlineMarketplace = true,
+                MemberType = "MType",
+                NoOfSubsidiariesOnlineMarketplace = 5,
+                NumberOfSubsidiaries = 4
+            },
+            new ComplianceSchemePaymentCalculationRequestMember
+            {
+                IsLateFeeApplicable = false,
+                MemberId = "2",
+                IsOnlineMarketplace = true,
+                MemberType = "MType2",
+                NoOfSubsidiariesOnlineMarketplace = 53,
+                NumberOfSubsidiaries = 42
+            }
+        }
+    };
+
+
     private PaymentCalculationService _service = null!;
 
     [TestInitialize]
@@ -44,6 +73,7 @@ public class PaymentCalculationServiceTests
         _service = new PaymentCalculationService(_httpClient, _loggerMock.Object);
     }
 
+    #region Producer Registration Fees Tests
     [TestMethod]
     public async Task ProducerRegistrationFees_ShouldReturnCorrectResponse()
     {
@@ -106,6 +136,72 @@ public class PaymentCalculationServiceTests
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
     }
+    #endregion
+
+    #region Compliance Scheme Registration Fees Tests
+    [TestMethod]
+    public async Task ComplianceSchemeRegistrationFees_ShouldReturnCorrectResponse()
+    {
+        // Arrange
+        _service.ReturnFakeData = false;
+
+        var apiResponse = _fixture.Create<PaymentCalculationResponse>();
+        var expectedUrl = $"{BaseAddress}{ComplianceSchemeRegistrationFeesUri}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        //Act
+        await _service.ComplianceSchemeRegistrationFees(_complianceSchemePaymentCalculationRequest);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Post &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [TestMethod]
+    public async Task ComplianceSchemeRegistrationFees_ShouldReturnUnsuccessfulResponse()
+    {
+        // Arrange
+        _service.ReturnFakeData = false;
+
+        var apiResponse = _fixture.Create<HttpRequestException>();
+        var expectedUrl = $"{BaseAddress}{ComplianceSchemeRegistrationFeesUri}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.InternalServerError,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        //Act
+        var act = async () => await _service.ComplianceSchemeRegistrationFees(_complianceSchemePaymentCalculationRequest);
+
+        // Assert
+        await act.Should().ThrowAsync<HttpRequestException>();
+    }
+    #endregion
 
     [TestMethod]
     public async Task PaymentInitiation_ShouldReturnRedirectUrl_WhenHtmlContainsRedirectUrl()
@@ -138,7 +234,7 @@ public class PaymentCalculationServiceTests
 
         // Assert
         result.Should().Be(expectedReturnUrl);
-            
+
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Information,
@@ -193,7 +289,7 @@ public class PaymentCalculationServiceTests
     {
         // Arrange
         _service.ReturnFakeData = false;
-        
+
         var requestUrl = $"{BaseAddress}{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
 
@@ -217,7 +313,7 @@ public class PaymentCalculationServiceTests
 
         // Assert
         result.Should().BeNull();
-            
+
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Warning,
@@ -233,7 +329,7 @@ public class PaymentCalculationServiceTests
     {
         // Arrange
         _service.ReturnFakeData = false;
-        
+
         var requestUrl = $"{BaseAddress}{PaymentInitiationUrl}";
         var request = new PaymentInitiationRequest { Reference = "TestRef" };
 
@@ -269,10 +365,10 @@ public class PaymentCalculationServiceTests
         // Arrange
         const string pattern = @"window\.location\.href\s*=\s*'(?<url>.*?)';";
         var htmlContent = "<script>window.location.href = 'https://example.com/redirect';</script>";
-    
+
         // Act
         var match = Regex.Match(htmlContent, pattern);
-    
+
         // Assert
         match.Success.Should().BeTrue();
         match.Groups["url"].Value.Should().Be("https://example.com/redirect");
@@ -376,7 +472,7 @@ public class PaymentCalculationServiceTests
 
         // Assert
         result.Should().Be(expectedReturnUrl);
-            
+
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Information,

@@ -9,9 +9,11 @@ public class PaymentCalculationControllerTests
 {
     private Mock<ILogger<PaymentCalculationController>> _loggerMock = null!;
     private Mock<IPaymentCalculationService> _paymentCalculationServiceMock = null!;
+
     private PaymentCalculationController _controller = null!;
 
     private PaymentCalculationRequest _paymentCalculationRequest = null!;
+    private ComplianceSchemePaymentCalculationRequest _complianceSchemePaymentCalculationRequest = null!;
 
     [TestInitialize]
     public void Setup()
@@ -21,6 +23,7 @@ public class PaymentCalculationControllerTests
         _controller = new PaymentCalculationController(_loggerMock.Object, _paymentCalculationServiceMock.Object);
     }
 
+    #region Producer Registration Fees
     [TestMethod]
     public async Task ProducerRegistrationFees_ReturnsNoContent_WhenResultIsNull()
     {
@@ -73,6 +76,62 @@ public class PaymentCalculationControllerTests
         result.Should().BeOfType<OkObjectResult>();
         result!.StatusCode.Should().Be((int)HttpStatusCode.OK);
     }
+    #endregion
+
+    #region Compliance Scheme Registration Fees
+    [TestMethod]
+    public async Task ComplianceSchemeRegistrationFees_ReturnsNoContent_WhenResultIsNull()
+    {
+        // Arrange
+        _paymentCalculationServiceMock.Setup(x =>
+                x.ComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .ReturnsAsync((ComplianceSchemePaymentCalculationResponse)null!);
+
+        // Act
+        var result = await _controller.ComplianceSchemeRegistrationFees(_complianceSchemePaymentCalculationRequest);
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+    }
+
+    [TestMethod]
+    public async Task ComplianceSchemeRegistrationFees_Returns500Error_WhenErrorIsThrown()
+    {
+        // Arrange
+        _complianceSchemePaymentCalculationRequest = new ComplianceSchemePaymentCalculationRequest { ApplicationReferenceNumber = "1234" };
+        _paymentCalculationServiceMock.Setup(x =>
+                x.ComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+          .ThrowsAsync(new Exception());
+
+        // Act
+        var result = await _controller.ComplianceSchemeRegistrationFees(_complianceSchemePaymentCalculationRequest) as StatusCodeResult;
+
+        // Assert
+        result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
+    }
+
+    [TestMethod]
+    public async Task ComplianceSchemeRegistrationFees_ShouldReturnCorrectResponse_OnSuccessfulRequest()
+    {
+        // Arrange
+        var response = new ComplianceSchemePaymentCalculationResponse
+        {
+            ComplianceSchemeRegistrationFee = 20000,
+            TotalFee = 15000
+        };
+
+        _paymentCalculationServiceMock.Setup(x =>
+            x.ComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _controller.ComplianceSchemeRegistrationFees(_complianceSchemePaymentCalculationRequest) as ObjectResult;
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        result.StatusCode.Should().Be((int)HttpStatusCode.OK);
+    }
+    #endregion
 
     [TestMethod]
     public async Task PaymentInitiation_ShouldReturnOk_WhenServiceReturnsResponse()
