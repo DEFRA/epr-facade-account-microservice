@@ -35,6 +35,30 @@ public class PaymentCalculationController(
     }
 
     [HttpPost]
+    [Route("compliance-scheme-registration-fees")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ComplianceSchemeRegistrationFees(ComplianceSchemePaymentCalculationRequest request)
+    {
+        try
+        {
+            var response = await paymentCalculationService.ComplianceSchemeRegistrationFees(request);
+            if (response == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(response);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(exception, "Error calculating CS registration fee for application {Reference}", request.ApplicationReferenceNumber);
+            return HandleError.Handle(exception);
+        }
+    }
+
+    [HttpPost]
     [Route("Initiate-Payment")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
