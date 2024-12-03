@@ -1,21 +1,24 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
+using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Models.PaymentCalculation;
+using Microsoft.Identity.Web;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace FacadeAccountCreation.Core.Services.PaymentCalculation;
 
 public class PaymentCalculationService(
     HttpClient httpClient,
+    ITokenAcquisition tokenAcquisition,
+    IOptions<PaymentFacadeApiConfig> paymentFacadeApiOptions,
     ILogger<PaymentCalculationService> logger)
     : IPaymentCalculationService
 {
-    private const string ProducerRegistrationFeesUri = "/api/V1/producer/registration-fee";
-    private const string ComplianceSchemeRegistrationFeesUri = "/api/V1/compliance-scheme/registration-fee";
-
     private const string PaymentInitiationUrl = "/api/V1/online-payments";
     private readonly JsonSerializerOptions _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public bool ReturnFakeData { get; set; } = true;
+    public bool ReturnFakeData { get; set; } = false;
 
     public async Task<PaymentCalculationResponse?> ProducerRegistrationFees(PaymentCalculationRequest paymentCalculationRequest)
     {
@@ -26,7 +29,9 @@ public class PaymentCalculationService(
 
             logger.LogInformation(message: "Attempting to calculate producer registration fee for {Reference}", paymentCalculationRequest.ApplicationReferenceNumber);
 
-            var response = await httpClient.PostAsJsonAsync(ProducerRegistrationFeesUri, paymentCalculationRequest);
+            await SetAuthorisationHeaderAsync();
+
+            var response = await httpClient.PostAsJsonAsync(paymentFacadeApiOptions.Value.Endpoints["GetCompliancePaymentDetailsPath"], paymentCalculationRequest);
 
             if (response.StatusCode == HttpStatusCode.NotFound) return null;
 
@@ -133,7 +138,7 @@ public class PaymentCalculationService(
 
             logger.LogInformation(message: "Attempting to calculate compliance scheme registration fee for {Reference}", paymentCalculationRequest.ApplicationReferenceNumber);
 
-            var response = await httpClient.PostAsJsonAsync(ComplianceSchemeRegistrationFeesUri, paymentCalculationRequest);
+            var response = await httpClient.PostAsJsonAsync(paymentFacadeApiOptions.Value.Endpoints["GetCompliancePaymentDetailsPath"], paymentCalculationRequest);
 
             if (response.StatusCode == HttpStatusCode.NotFound) return null;
 
@@ -188,6 +193,16 @@ public class PaymentCalculationService(
         {
             httpClient.DefaultRequestHeaders.Clear();
         }
+    }
+    private async Task SetAuthorisationHeaderAsync()
+    {
+        if (httpClient.BaseAddress == null)
+        {
+            httpClient.BaseAddress = new Uri(paymentFacadeApiOptions.Value.BaseUrl);
+        }
+        
+        string accessToken = await tokenAcquisition.GetAccessTokenForUserAsync([paymentFacadeApiOptions.Value.DownstreamScope]);
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Microsoft.Identity.Web.Constants.Bearer, accessToken);
     }
 
     private static string RemoveDecimalValues(string jsonString)

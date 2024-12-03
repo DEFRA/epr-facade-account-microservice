@@ -1,6 +1,7 @@
 ﻿using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Helpers;
 using FacadeAccountCreation.Core.Models.ServiceRolesLookup;
+using Microsoft.Identity.Web;
 using Notify.Client;
 using Notify.Interfaces;
 
@@ -23,6 +24,7 @@ public static class ServiceCollectionExtension
         services.Configure<ConnectionsEndpointsConfig>(configuration.GetSection(ConnectionsEndpointsConfig.SectionName));
         services.Configure<RegulatorEmailConfig>(configuration.GetSection(RegulatorEmailConfig.SectionName));
         services.Configure<EprPackagingRegulatorEmailConfig>(configuration.GetSection(EprPackagingRegulatorEmailConfig.SectionName));
+        services.Configure<PaymentFacadeApiConfig>(configuration.GetSection(PaymentFacadeApiConfig.ConfigSection));
     }
 
     private static void RegisterServices(this IServiceCollection services, IConfiguration configuration)
