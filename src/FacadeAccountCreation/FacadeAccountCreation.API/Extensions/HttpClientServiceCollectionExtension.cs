@@ -24,7 +24,7 @@ public static class HttpClientServiceCollectionExtension
             client.BaseAddress = new Uri(config.AddressLookupBaseUrl);
             client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         })
-        .ConfigurePrimaryHttpMessageHandler(GetClientCertificateHandler);
+        .AddHttpMessageHandler<ClientSecretCredentialHandler>();
 
         services.AddHttpClient<ICompaniesHouseLookupService, CompaniesHouseLookupService>((sp, client) =>
         {
@@ -33,7 +33,7 @@ public static class HttpClientServiceCollectionExtension
             client.BaseAddress = new Uri(config.CompaniesHouseLookupBaseUrl);
             client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         })
-        .ConfigurePrimaryHttpMessageHandler(GetClientCertificateHandler);
+        .AddHttpMessageHandler<ClientSecretCredentialHandler>();
 
         services.AddHttpClient<IComplianceSchemeService, ComplianceSchemeService>((sp, client) =>
         {
