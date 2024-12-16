@@ -92,6 +92,27 @@ public class PersonsControllerTests
     }
 
     [TestMethod]
+    public async Task GetAllPerson_WhenExistingUser_ShouldReturnOK()
+    {
+        // arrange
+        var handlerResponse = _fixture.Create<PersonResponseModel>();
+
+        _mockPersonService
+            .Setup(x => x.GetAllPersonByUserIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(handlerResponse);
+
+        // act
+        var result = await _sut.GetAllPerson(_userId);
+
+        // assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult?.Value.Should().BeEquivalentTo(handlerResponse);
+        okResult?.StatusCode.Should().Be((int)HttpStatusCode.OK);
+    }
+
+    [TestMethod]
     public async Task GetPerson_WhenNotExistingUser_ShouldReturnNoContent()
     {
         // arrange
@@ -103,6 +124,26 @@ public class PersonsControllerTests
 
         // act
         var result = await _sut.GetPerson(_userId);
+
+        // assert
+        result.Should().BeOfType<NotFoundResult>();
+        var notFoundResult = result as NotFoundResult;
+        notFoundResult.Should().NotBeNull();
+        notFoundResult?.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
+    }
+
+    [TestMethod]
+    public async Task GetAllPerson_WhenNotExistingUser_ShouldReturnNoContent()
+    {
+        // arrange
+        var handlerResponse = (PersonResponseModel?)null;
+
+        _mockPersonService
+            .Setup(x => x.GetAllPersonByUserIdAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(handlerResponse);
+
+        // act
+        var result = await _sut.GetAllPerson(_userId);
 
         // assert
         result.Should().BeOfType<NotFoundResult>();

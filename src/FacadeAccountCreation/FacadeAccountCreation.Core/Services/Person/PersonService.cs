@@ -7,20 +7,18 @@ public class PersonService(
     HttpClient httpClient) : IPersonService
 {
     private const string PersonsUri = "api/persons";
+    private const string AllPersonsUri = $"{PersonsUri}/allpersons";
     private const string PersonsWithExternalIdUri = "api/persons/person-by-externalId";
     private const string PersonsByInviteToken = "api/persons/person-by-invite-token";
 
     public async Task<PersonResponseModel?> GetPersonByUserIdAsync(Guid userId)
     {
-        var response = await httpClient.GetAsync($"{PersonsUri}?userId={userId}");
-        if (response.StatusCode == HttpStatusCode.NoContent)
-        {
-            return null;
-        }
+        return await GetPersonByUserIdWithUrlAsync(userId, PersonsUri);
+    }
 
-        response.EnsureSuccessStatusCode();
-
-        return await response.Content.ReadFromJsonWithEnumsAsync<PersonResponseModel>();
+    public async Task<PersonResponseModel?> GetAllPersonByUserIdAsync(Guid userId)
+    {
+        return await GetPersonByUserIdWithUrlAsync(userId, AllPersonsUri);
     }
 
     public async Task<PersonResponseModel?> GetPersonByExternalIdAsync(Guid externalId)
@@ -67,5 +65,18 @@ public class PersonService(
         response.EnsureSuccessStatusCode();
         var serviceRoleId = response.Content.ReadFromJsonWithEnumsAsync<InviteApprovedUserModel>();
         return serviceRoleId.Result;
+    }
+
+    private async Task<PersonResponseModel?> GetPersonByUserIdWithUrlAsync(Guid userId, string url)
+    {
+        var response = await httpClient.GetAsync($"{url}?userId={userId}");
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonWithEnumsAsync<PersonResponseModel>();
     }
 }

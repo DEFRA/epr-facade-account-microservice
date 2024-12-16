@@ -9,6 +9,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services;
 public class PersonServiceTests
 {
     private const string PersonEndpoint = "api/persons";
+    private const string AllPersonEndpoint = $"{PersonEndpoint}/allpersons";
     private const string BaseAddress = "http://localhost";
     private const string ExternalIdEndpoint = "api/persons/person-by-externalId";
     private const string PersonsByInviteToken = "api/persons/person-by-invite-token";
@@ -52,6 +53,42 @@ public class PersonServiceTests
     }
 
     [TestMethod]
+    public async Task GetAllPersonByUserIdAsync_WhenValidUserId_ShouldReturnPersonResponse()
+    {
+        var userId = Guid.NewGuid();
+        var expectedUrl = $"{BaseAddress}/{AllPersonEndpoint}?userId={userId}";
+        var apiResponse = _fixture.Create<PersonResponseModel>();
+
+        _httpMessageHandlerMock.Protected()
+             .Setup<Task<HttpResponseMessage>>("SendAsync",
+                 ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                 ItExpr.IsAny<CancellationToken>())
+             .ReturnsAsync(new HttpResponseMessage
+             {
+                 StatusCode = HttpStatusCode.OK,
+                 Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+             }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new PersonService(httpClient);
+
+        // Act
+        var result = await sut.GetAllPersonByUserIdAsync(userId);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+
+        result.Should().BeOfType<PersonResponseModel>();
+    }
+
+    [TestMethod]
     public async Task GetPersonByUserIdAsync_WhenInvalidUserId_ShouldReturnNull()
     {
         var userId = Guid.NewGuid();
@@ -73,6 +110,40 @@ public class PersonServiceTests
 
         // Act
         var result = await sut.GetPersonByUserIdAsync(userId);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+
+        result.Should().BeNull();
+    }
+
+    [TestMethod]
+    public async Task GetAllPersonByUserIdAsync_WhenInvalidUserId_ShouldReturnNull()
+    {
+        var userId = Guid.NewGuid();
+        var expectedUrl = $"{BaseAddress}/{AllPersonEndpoint}?userId={userId}";
+
+        _httpMessageHandlerMock.Protected()
+             .Setup<Task<HttpResponseMessage>>("SendAsync",
+                 ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                 ItExpr.IsAny<CancellationToken>())
+             .ReturnsAsync(new HttpResponseMessage
+             {
+                 StatusCode = HttpStatusCode.NoContent
+             }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new PersonService(httpClient);
+
+        // Act
+        var result = await sut.GetAllPersonByUserIdAsync(userId);
 
         // Assert
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),

@@ -12,4 +12,6 @@ public class PersonResponseModel
     public string ContactEmail { get; set; } = null!;
 
     public string TelephoneNumber { get; set; } = null!;
+
+    public bool IsDeleted { get; set; }
 }
