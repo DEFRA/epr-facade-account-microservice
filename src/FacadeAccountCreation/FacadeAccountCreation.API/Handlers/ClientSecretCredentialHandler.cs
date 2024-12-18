@@ -9,7 +9,7 @@ public class ClientSecretCredentialHandler : DelegatingHandler
     private readonly TokenRequestContext _tokenRequestContext;
     private readonly ClientSecretCredential _credentials;
 
-    public ClientSecretCredentialHandler(IOptions<BoomiApiConfig> options)
+    public ClientSecretCredentialHandler(IOptions<ApiConfig> options)
     {
         var clientApiOptions = options.Value;
         _tokenRequestContext = new TokenRequestContext(new[] { clientApiOptions.Scope });

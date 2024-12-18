@@ -17,6 +17,8 @@ public static class HttpClientServiceCollectionExtension
     {
         services.AddTransient<AccountServiceAuthorisationHandler>();
 
+        services.AddTransient<ClientSecretCredentialHandler>();
+
         services.AddHttpClient<IAddressLookupService, AddressLookupService>((sp, client) =>
         {
             var config = sp.GetRequiredService<IOptions<ApiConfig>>().Value;
