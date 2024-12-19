@@ -18,4 +18,14 @@ public class ApiConfig
     public string Certificate { get; set; } = null!;
 
     public int Timeout { get; set; }
+
+    public string TenantId { get; set; }
+
+    public string AddressLookupScope { get; set; }
+
+    public string CompaniesHouseScope { get; set; }
+
+    public string ClientId { get; set; }
+
+    public string ClientSecret { get; set; }
 }
