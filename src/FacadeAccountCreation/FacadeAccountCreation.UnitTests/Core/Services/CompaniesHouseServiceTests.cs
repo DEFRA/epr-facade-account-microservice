@@ -6,7 +6,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services;
 [TestClass]
 public class CompaniesHouseServiceTests
 {
-    private const string CompaniesHouseEndpoint = "CompaniesHouse/companies";
+    private const string CompaniesHouseEndpoint = "companies";
     private const string CompaniesHouseNumber = "DummyCompaniesHouseNumber";
     private const string BaseAddress = "http://localhost";
     private const string ExpectedUrl = $"{BaseAddress}/{CompaniesHouseEndpoint}/{CompaniesHouseNumber}";
