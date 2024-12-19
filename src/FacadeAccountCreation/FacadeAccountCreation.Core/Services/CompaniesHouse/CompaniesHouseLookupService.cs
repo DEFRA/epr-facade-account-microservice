@@ -2,14 +2,13 @@
 
 public class CompaniesHouseLookupService(HttpClient httpClient) : ICompaniesHouseLookupService
 {
-    private const string CompaniesHouseEndpoint = "CompaniesHouse/companies";
+    private const string CompaniesHouseEndpoint = "companies";
 
     public async Task<CompaniesHouseResponse?> GetCompaniesHouseResponseAsync(string id)
     {
-        var uriBuilder = new UriBuilder($"{CompaniesHouseEndpoint}/{Uri.EscapeDataString(id)}");
-        var endpoint = "CompaniesHouse" + uriBuilder.Path;
+        var path = $"{CompaniesHouseEndpoint}/{Uri.EscapeDataString(id)}";
 
-        var response = await httpClient.GetAsync(endpoint);
+        var response = await httpClient.GetAsync(path);
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {        
