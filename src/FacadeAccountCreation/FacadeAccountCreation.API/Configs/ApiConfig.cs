@@ -21,7 +21,9 @@ public class ApiConfig
 
     public string TenantId { get; set; }
 
-    public string Scope { get; set; }
+    public string AddressLookupScope { get; set; }
+
+    public string CompaniesHouseScope { get; set; }
 
     public string ClientId { get; set; }
 

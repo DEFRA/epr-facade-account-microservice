@@ -4,15 +4,15 @@ using System.Net.Http.Headers;
 
 namespace FacadeAccountCreation.API.Handlers;
 
-public class ClientSecretCredentialHandler : DelegatingHandler
+public class AddressLookupCredentialHandler : DelegatingHandler
 {
     private readonly TokenRequestContext _tokenRequestContext;
     private readonly ClientSecretCredential _credentials;
 
-    public ClientSecretCredentialHandler(IOptions<ApiConfig> options)
+    public AddressLookupCredentialHandler(IOptions<ApiConfig> options)
     {
         var clientApiOptions = options.Value;
-        _tokenRequestContext = new TokenRequestContext(new[] { clientApiOptions.Scope });
+        _tokenRequestContext = new TokenRequestContext(new[] { clientApiOptions.AddressLookupScope });
         _credentials = new ClientSecretCredential(clientApiOptions.TenantId, clientApiOptions.ClientId, clientApiOptions.ClientSecret);
     }
 

@@ -16,8 +16,8 @@ public static class HttpClientServiceCollectionExtension
     public static IServiceCollection AddServicesAndHttpClients(this IServiceCollection services)
     {
         services.AddTransient<AccountServiceAuthorisationHandler>();
-
-        services.AddTransient<ClientSecretCredentialHandler>();
+        services.AddTransient<AddressLookupCredentialHandler>();
+        services.AddTransient<CompaniesHouseCredentialHandler>();
 
         services.AddHttpClient<IAddressLookupService, AddressLookupService>((sp, client) =>
         {
@@ -26,7 +26,7 @@ public static class HttpClientServiceCollectionExtension
             client.BaseAddress = new Uri(config.AddressLookupBaseUrl);
             client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         })
-        .AddHttpMessageHandler<ClientSecretCredentialHandler>();
+        .AddHttpMessageHandler<AddressLookupCredentialHandler>();
 
         services.AddHttpClient<ICompaniesHouseLookupService, CompaniesHouseLookupService>((sp, client) =>
         {
@@ -35,7 +35,7 @@ public static class HttpClientServiceCollectionExtension
             client.BaseAddress = new Uri(config.CompaniesHouseLookupBaseUrl);
             client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         })
-        .AddHttpMessageHandler<ClientSecretCredentialHandler>();
+        .AddHttpMessageHandler<CompaniesHouseCredentialHandler>();
 
         services.AddHttpClient<IComplianceSchemeService, ComplianceSchemeService>((sp, client) =>
         {
