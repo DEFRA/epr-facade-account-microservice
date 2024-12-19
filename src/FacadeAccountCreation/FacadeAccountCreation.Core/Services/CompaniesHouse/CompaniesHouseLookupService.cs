@@ -24,3 +24,4 @@ public class CompaniesHouseLookupService(HttpClient httpClient) : ICompaniesHous
         return await response.Content.ReadFromJsonAsync<CompaniesHouseResponse>();
     }
 }
+ 
