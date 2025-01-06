@@ -1,6 +1,4 @@
-﻿using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
-using FacadeAccountCreation.API.Handlers;
+﻿using FacadeAccountCreation.API.Handlers;
 using FacadeAccountCreation.Core.Services.AddressLookup;
 using FacadeAccountCreation.Core.Services.CompaniesHouse;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
@@ -110,23 +108,5 @@ public static class HttpClientServiceCollectionExtension
         .AddHttpMessageHandler<AccountServiceAuthorisationHandler>();
 
         return services;
-    }
-
-    private static HttpMessageHandler GetClientCertificateHandler(IServiceProvider sp)
-    {
-        if (sp == null)
-        {
-            throw new ArgumentException("ServiceProvider must not be null");
-        }
-
-        var handler = new HttpClientHandler();
-        handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-        handler.SslProtocols = SslProtocols.Tls12;
-        handler.ClientCertificates
-            .Add(new X509Certificate2(
-                Convert.FromBase64String(sp.GetRequiredService<IOptions<ApiConfig>>().Value.Certificate))
-            );
-
-        return handler;
     }
 }

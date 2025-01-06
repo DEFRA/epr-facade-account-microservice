@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 
 namespace FacadeAccountCreation.API.Handlers;
 
+[ExcludeFromCodeCoverage]
 public class CompaniesHouseCredentialHandler : DelegatingHandler
 {
     private readonly TokenRequestContext _tokenRequestContext;
