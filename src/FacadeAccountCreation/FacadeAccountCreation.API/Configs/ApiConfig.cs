@@ -15,6 +15,8 @@ public class ApiConfig
 
     public string AccountServiceClientId { get; set; } = null!;
 
+    public string Certificate { get; set; } = null!;
+
     public int Timeout { get; set; }
 
     public string TenantId { get; set; }

@@ -1,18 +1,31 @@
-﻿using FacadeAccountCreation.Core.Models.CompaniesHouse;
+﻿using FacadeAccountCreation.Core.Constants;
+using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Services.CompaniesHouse;
+using Microsoft.FeatureManagement;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
 [TestClass]
 public class CompaniesHouseServiceTests
 {
-    private const string CompaniesHouseEndpoint = "companies";
+    private const string CompaniesHouseEndpointForOAuth = "companies";
+    private const string CompaniesHouseEndpointForCertificateAuth = "CompaniesHouse/companies";
     private const string CompaniesHouseNumber = "DummyCompaniesHouseNumber";
     private const string BaseAddress = "http://localhost";
-    private const string ExpectedUrl = $"{BaseAddress}/{CompaniesHouseEndpoint}/{CompaniesHouseNumber}";
+    private const string ExpectedUrl = $"{BaseAddress}/{CompaniesHouseEndpointForOAuth}/{CompaniesHouseNumber}";
+    private const string ExpectedUrlForCertificateAuth = $"{BaseAddress}/{CompaniesHouseEndpointForCertificateAuth}/{CompaniesHouseNumber}";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
+    private readonly Mock<IFeatureManager> _featureManagerMock = new();
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
+
+    [TestInitialize]
+    public void TestInitialize()
+    {
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.UseBoomiOAuth))
+            .ReturnsAsync(true);
+    }
 
     [TestMethod]
     public async Task Should_return_correct_companies_house_lookup_response()
@@ -33,7 +46,7 @@ public class CompaniesHouseServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new CompaniesHouseLookupService(httpClient);
+        var sut = new CompaniesHouseLookupService(httpClient, _featureManagerMock.Object);
 
         // Act
         var result = await sut.GetCompaniesHouseResponseAsync(CompaniesHouseNumber);
@@ -44,6 +57,45 @@ public class CompaniesHouseServiceTests
                 req => req.Method == HttpMethod.Get &&
                        req.RequestUri != null &&
                        req.RequestUri.ToString() == ExpectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+
+        result.Should().BeOfType<CompaniesHouseResponse>();
+    }
+
+    [TestMethod]
+    public async Task Should_return_correct_companies_house_lookup_response_when_feature_flag_is_on()
+    {
+        // Arrange
+        var apiResponse = _fixture.Create<CompaniesHouseResponse>();
+
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.UseBoomiOAuth))
+            .ReturnsAsync(false);
+
+        _httpMessageHandlerMock.Protected()
+             .Setup<Task<HttpResponseMessage>>("SendAsync",
+                 ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == ExpectedUrlForCertificateAuth),
+                 ItExpr.IsAny<CancellationToken>())
+             .ReturnsAsync(new HttpResponseMessage
+             {
+                 StatusCode = HttpStatusCode.OK,
+                 Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+             }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new CompaniesHouseLookupService(httpClient, _featureManagerMock.Object);
+
+        // Act
+        var result = await sut.GetCompaniesHouseResponseAsync(CompaniesHouseNumber);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == ExpectedUrlForCertificateAuth),
             ItExpr.IsAny<CancellationToken>());
 
         result.Should().BeOfType<CompaniesHouseResponse>();
@@ -77,7 +129,7 @@ public class CompaniesHouseServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new CompaniesHouseLookupService(httpClient);
+        var sut = new CompaniesHouseLookupService(httpClient, _featureManagerMock.Object);
 
         // Act
         var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => sut.GetCompaniesHouseResponseAsync(CompaniesHouseNumber));
@@ -117,7 +169,7 @@ public class CompaniesHouseServiceTests
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new CompaniesHouseLookupService(httpClient);
+        var sut = new CompaniesHouseLookupService(httpClient, _featureManagerMock.Object);
 
         // Act
         var result = await sut.GetCompaniesHouseResponseAsync(CompaniesHouseNumber);
