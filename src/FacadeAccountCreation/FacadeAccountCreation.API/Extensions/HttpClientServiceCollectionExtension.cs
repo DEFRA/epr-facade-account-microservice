@@ -1,6 +1,5 @@
-﻿using System.Security.Authentication;
-using System.Security.Cryptography.X509Certificates;
-using FacadeAccountCreation.API.Handlers;
+﻿using FacadeAccountCreation.API.Handlers;
+using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Services.AddressLookup;
 using FacadeAccountCreation.Core.Services.CompaniesHouse;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
@@ -8,6 +7,9 @@ using FacadeAccountCreation.Core.Services.Enrolments;
 using FacadeAccountCreation.Core.Services.Notification;
 using FacadeAccountCreation.Core.Services.RoleManagement;
 using FacadeAccountCreation.Core.Services.User;
+using Microsoft.FeatureManagement;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace FacadeAccountCreation.API.Extensions;
 
@@ -15,7 +17,14 @@ public static class HttpClientServiceCollectionExtension
 {
     public static IServiceCollection AddServicesAndHttpClients(this IServiceCollection services)
     {
+        var serviceProvider = services.BuildServiceProvider();
+
+        var featureManager = serviceProvider.GetRequiredService<IFeatureManager>();
+        var useBoomiOAuth = featureManager.IsEnabledAsync(FeatureFlags.UseBoomiOAuth).GetAwaiter().GetResult();
+
         services.AddTransient<AccountServiceAuthorisationHandler>();
+        services.AddTransient<AddressLookupCredentialHandler>();
+        services.AddTransient<CompaniesHouseCredentialHandler>();
 
         services.AddHttpClient<IAddressLookupService, AddressLookupService>((sp, client) =>
         {
@@ -24,7 +33,7 @@ public static class HttpClientServiceCollectionExtension
             client.BaseAddress = new Uri(config.AddressLookupBaseUrl);
             client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         })
-        .ConfigurePrimaryHttpMessageHandler(GetClientCertificateHandler);
+        .AddAddressLookupCredentialHandler(useBoomiOAuth);
 
         services.AddHttpClient<ICompaniesHouseLookupService, CompaniesHouseLookupService>((sp, client) =>
         {
@@ -33,7 +42,7 @@ public static class HttpClientServiceCollectionExtension
             client.BaseAddress = new Uri(config.CompaniesHouseLookupBaseUrl);
             client.Timeout = TimeSpan.FromSeconds(config.Timeout);
         })
-        .ConfigurePrimaryHttpMessageHandler(GetClientCertificateHandler);
+            .AddCompaniesHouseCredentialHandler(useBoomiOAuth);
 
         services.AddHttpClient<IComplianceSchemeService, ComplianceSchemeService>((sp, client) =>
         {
@@ -108,6 +117,34 @@ public static class HttpClientServiceCollectionExtension
         .AddHttpMessageHandler<AccountServiceAuthorisationHandler>();
 
         return services;
+    }
+
+    public static IHttpClientBuilder AddAddressLookupCredentialHandler(this IHttpClientBuilder builder, bool useBoomiOAuth)
+    {
+        if (useBoomiOAuth)
+        {
+            builder.AddHttpMessageHandler<AddressLookupCredentialHandler>();
+        }
+        else
+        {
+            builder.ConfigurePrimaryHttpMessageHandler(GetClientCertificateHandler);
+        }
+
+        return builder;
+    }
+
+    public static IHttpClientBuilder AddCompaniesHouseCredentialHandler(this IHttpClientBuilder builder, bool useBoomiOAuth)
+    {
+        if (useBoomiOAuth)
+        {
+            builder.AddHttpMessageHandler<CompaniesHouseCredentialHandler>();
+        }
+        else
+        {
+            builder.ConfigurePrimaryHttpMessageHandler(GetClientCertificateHandler);
+        }
+
+        return builder;
     }
 
     private static HttpMessageHandler GetClientCertificateHandler(IServiceProvider sp)
