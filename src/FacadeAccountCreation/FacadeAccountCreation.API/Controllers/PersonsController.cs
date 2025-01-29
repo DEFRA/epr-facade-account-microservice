@@ -39,6 +39,18 @@ public class PersonsController(
     }
 
     [HttpGet]
+    [Route("all-persons")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PersonResponseModel))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetAllPerson([FromQuery] Guid userId)
+    {
+        var personResponse = await personService.GetAllPersonByUserIdAsync(userId);
+
+        return personResponse == null ? NotFound() : Ok(personResponse);
+    }
+
+    [HttpGet]
     [Route("person-by-externalId")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PersonResponseModel))]
