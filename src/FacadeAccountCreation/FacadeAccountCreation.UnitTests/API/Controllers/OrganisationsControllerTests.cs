@@ -6,6 +6,7 @@ using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
+using System.Globalization;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -358,9 +359,10 @@ public class OrganisationsControllerTests
     {
         // Arrange
         var organisationId = Guid.NewGuid();
-        var mockResponse = new List<ExportOrganisationSubsidiariesResponseModel> {
-        new ExportOrganisationSubsidiariesResponseModel { OrganisationId = "1", SubsidiaryId = null, OrganisationName = "ABC", CompaniesHouseNumber = "CH1"},
-        new ExportOrganisationSubsidiariesResponseModel { OrganisationId = "1", SubsidiaryId = "2", OrganisationName = "ABC", CompaniesHouseNumber = "CH2"}
+        var mockResponse = new List<ExportOrganisationSubsidiariesResponseModel>
+        {
+            new() { OrganisationId = "1", SubsidiaryId = null, OrganisationName = "ABC", CompaniesHouseNumber = "CH1", JoinerDate = null, ReportingType = null },
+            new() { OrganisationId = "1", SubsidiaryId = "2", OrganisationName = "ABC", CompaniesHouseNumber = "CH2", JoinerDate = DateTime.Parse("2025-02-01", CultureInfo.InvariantCulture), ReportingType = "Individual" }
         };
 
         _mockOrganisationService
