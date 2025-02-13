@@ -1,26 +1,26 @@
 ﻿using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using System.Net;
 using System.Net.Http.Json;
+using FacadeAccountCreation.Core.Constants;
+using Microsoft.FeatureManagement;
 
 namespace FacadeAccountCreation.Core.Services.CompaniesHouse;
 
-public class CompaniesHouseLookupService : ICompaniesHouseLookupService
+public class CompaniesHouseLookupService(
+    HttpClient httpClient,
+    IFeatureManager featureManager) : ICompaniesHouseLookupService
 {
-    private const string CompaniesHouseEndpoint = "CompaniesHouse/companies";
+    private string CompaniesHouseEndpoint { get; } = 
+        featureManager.IsEnabledAsync(FeatureFlags.UseBoomiOAuth).GetAwaiter().GetResult()
+            ? "companies"
+            : "CompaniesHouse/companies";
 
-    private readonly HttpClient _httpClient;
-
-    public CompaniesHouseLookupService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
 
     public async Task<CompaniesHouseResponse?> GetCompaniesHouseResponseAsync(string id)
     {
-        var uriBuilder = new UriBuilder($"{CompaniesHouseEndpoint}/{Uri.EscapeDataString(id)}");
-        string endpoint = "CompaniesHouse" + uriBuilder.Path;
+        var path = $"{CompaniesHouseEndpoint}/{Uri.EscapeDataString(id)}";
 
-        var response = await _httpClient.GetAsync(endpoint);
+        var response = await httpClient.GetAsync(path);
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
         {        
@@ -36,3 +36,4 @@ public class CompaniesHouseLookupService : ICompaniesHouseLookupService
         return await response.Content.ReadFromJsonAsync<CompaniesHouseResponse>();
     }
 }
+ 
