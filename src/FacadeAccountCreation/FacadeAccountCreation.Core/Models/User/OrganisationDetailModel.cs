@@ -42,4 +42,8 @@ public class OrganisationDetailModel
     public string? JobTitle { get; set; }
 
 	public int? NationId { get; set; }
+
+    public DateTime? JoinerDate { get; set; }
+
+    public string? ReportingType { get; set; }
 }
