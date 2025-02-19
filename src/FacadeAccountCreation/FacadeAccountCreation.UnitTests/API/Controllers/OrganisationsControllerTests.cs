@@ -337,6 +337,39 @@ public class OrganisationsControllerTests
         Assert.AreEqual(mockResponse, okResult.Value);
     }
 
+
+    [TestMethod]
+    public async Task GetOrganisationRelationshipsByOrganisationIdAsync_ValidInputWithData_ReturnsOkResultWithJoinerDateAndReportingType()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var mockResponse = new OrganisationRelationshipModel
+        {
+            Organisation = new OrganisationDetailModel { OrganisationNumber = "12345", OrganisationType = "Producer" },
+            Relationships =
+            [
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Test1", OrganisationNumber = "2345", RelationshipType = "Parent",
+                    CompaniesHouseNumber = "CH123455", JoinerDate =  new DateTime(2024, 12, 17), ReportingType = "Self" 
+                }
+            ]
+        };
+
+        _mockOrganisationService
+            .Setup(service => service.GetOrganisationRelationshipsByOrganisationId(organisationId))
+            .ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.GetOrganisationRelationshipsByOrganisationIdAsync(organisationId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(mockResponse, okResult.Value);
+    }
+
     [TestMethod]
     public async Task GetOrganisationRelationshipsByOrganisationIdAsync_ValidInputWithNoData_ReturnsNoContentResult()
     {
