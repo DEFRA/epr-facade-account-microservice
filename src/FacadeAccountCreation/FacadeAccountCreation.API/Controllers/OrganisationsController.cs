@@ -259,5 +259,16 @@ public class OrganisationsController(
             logger.LogError(e, "Error updating the nation Id for organisation {Id}", id);
             return HandleError.Handle(e);
         }
-    }
+	}
+
+	[HttpGet]
+	[Route("v1/child-organisation-external-ids")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	public async Task<IActionResult> GetChildOrganisationExternalIdsAsync([BindRequired, FromQuery] Guid organisationId, Guid? complianceSchemeId)
+	{
+        var externalIds = await organisationService.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+		return externalIds.Count == 0 ? NoContent() : Ok(externalIds);
+	}
 }

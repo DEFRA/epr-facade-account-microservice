@@ -36,4 +36,6 @@ public interface IOrganisationService
     Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId);
 
     Task<string> GetOrganisationNationCodeByExternalIdAsync(Guid organisationExternalId);
+
+	Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId);
 }
