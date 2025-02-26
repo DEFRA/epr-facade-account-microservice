@@ -302,7 +302,6 @@ public class OrganisationService(
 			logger.LogInformation(message: "Attempting to fetch the list of external id's for organisation id {OrganisationId} from the backend", organisationId);
 
 			var response = await httpClient.GetAsync(url);
-
             response.EnsureSuccessStatusCode();
 
 			return await response.Content.ReadFromJsonAsync<List<Guid>>();
@@ -316,7 +315,5 @@ public class OrganisationService(
 		{
 			httpClient.DefaultRequestHeaders.Clear();
 		}
-
-		return null;
 	}
 }
