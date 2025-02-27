@@ -18,8 +18,9 @@ public class OrganisationService(
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
     private const string OrganisationNationUrl = "api/organisations/nation-code";
+	private const string OrganisationChildExternalIdsUrl = "api/organisations/v1/child-organisation-external-ids?organisationId={0}&complianceSchemeId={1}";
 
-    public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
+	public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
     {
         var url = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetOrganisationUsers").Value}?userId={userId}&organisationId={organisationId}&serviceRoleId={serviceRoleId}";
         
@@ -290,5 +291,29 @@ public class OrganisationService(
         }
 
         return null;
-    }
+	}
+
+	public async Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId)
+	{
+        var url = string.Format(OrganisationChildExternalIdsUrl, organisationId, complianceSchemeId);
+
+		try
+		{
+			logger.LogInformation(message: "Attempting to fetch the list of external id's for organisation id {OrganisationId} from the backend", organisationId);
+
+			var response = await httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+			return await response.Content.ReadFromJsonAsync<List<Guid>>();
+		}
+		catch (Exception e)
+		{
+			logger.LogError(e, "Failed to get child external ids for Organisation Id: '{OrganisationId}'", organisationId);
+			throw;
+		}
+		finally
+		{
+			httpClient.DefaultRequestHeaders.Clear();
+		}
+	}
 }

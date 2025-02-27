@@ -601,4 +601,66 @@ public class OrganisationsControllerTests
                 It.IsAny<Guid>()),
             Times.Once);
     }
+
+	[TestMethod]
+	public async Task GetChildOrganisationExternalIdsAsync_ValidInputForProducer_ReturnsOkResult()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+        var complianceSchemeId = (Guid?)null;
+		var externalIds = _fixture.CreateMany<Guid>().ToList();
+
+		_mockOrganisationService
+			.Setup(service => service.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId))
+			.ReturnsAsync(externalIds);
+
+		// Act
+		var result = await _sut.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		result.Should().BeOfType<OkObjectResult>();
+		var okResult = result as OkObjectResult;
+        okResult.Should().NotBeNull();
+        okResult.Value.Should().BeEquivalentTo(externalIds);
+	}
+
+	[TestMethod]
+	public async Task GetChildOrganisationExternalIdsAsync_ValidInputForComplianceScheme_ReturnsOkResult()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeId = Guid.NewGuid();
+		var externalIds = _fixture.CreateMany<Guid>().ToList();
+
+		_mockOrganisationService
+			.Setup(service => service.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId))
+			.ReturnsAsync(externalIds);
+
+		// Act
+		var result = await _sut.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		result.Should().BeOfType<OkObjectResult>();
+		var okResult = result as OkObjectResult;
+		okResult.Should().NotBeNull();
+		okResult.Value.Should().BeEquivalentTo(externalIds);
+	}
+
+	[TestMethod]
+	public async Task GetChildOrganisationExternalIdsAsync_ValidInputWithNoData_ReturnsNoContentResult()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeid = (Guid?)null;
+
+		_mockOrganisationService
+			.Setup(service => service.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeid))
+			.ReturnsAsync([]);
+
+        // Act
+        var result = await _sut.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeid);
+
+		// Assert
+		Assert.IsInstanceOfType(result, typeof(NoContentResult));
+	}
 }
