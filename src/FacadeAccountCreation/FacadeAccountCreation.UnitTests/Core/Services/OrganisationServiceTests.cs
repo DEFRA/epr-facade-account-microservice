@@ -956,4 +956,30 @@ public class OrganisationServiceTests
 
         loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get Organisation nation for Organisation Id: '{OrganisationExternalId}'", organisationId));
     }
+
+    [TestMethod]
+    public async Task GetOrganisationRelationshipsByOrganisationId_WhenApiReturnsNoContent_ShouldReturnNull()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NoContent
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        var result = await sut.GetOrganisationRelationshipsByOrganisationId(organisationId);
+
+        // Assert
+        result.Should().BeNull();
+    }
 }
