@@ -1,6 +1,7 @@
 ﻿using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FacadeAccountCreation.API.Controllers;
 
@@ -172,6 +173,7 @@ public class OrganisationsController(
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> TerminateSubsidiary(SubsidiaryTerminateModel subsidiaryTerminateModel)
     {
         try

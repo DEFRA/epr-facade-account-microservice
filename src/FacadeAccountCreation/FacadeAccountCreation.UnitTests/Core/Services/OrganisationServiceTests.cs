@@ -435,7 +435,7 @@ public class OrganisationServiceTests
     {
         // Arrange
         const string expectedUrl = $"{BaseAddress}/{OrganisationTerminateSubsidiaryUri}";
-        var apiResponse = _fixture.Create<string>();
+        var apiResponse = StatusCodes.Status200OK.ToString();
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -497,11 +497,54 @@ public class OrganisationServiceTests
 
         var sut = new OrganisationService(httpClient, _logger, _configuration);
 
-        //Act
-        var act = async () => await sut.TerminateSubsidiaryAsync(It.IsAny<SubsidiaryTerminateModel>());
+        await sut.TerminateSubsidiaryAsync(It.IsAny<SubsidiaryTerminateModel>());
 
         // Assert
-        await act.Should().ThrowAsync<ProblemResponseException>();
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Post &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [TestMethod]
+    public async Task TerminateSubsidiaryAsync_WhenApiReturnsNoContent_ShouldReturnNull()
+    {
+        // Arrange
+        const string expectedUrl = $"{BaseAddress}/{OrganisationTerminateSubsidiaryUri}";
+
+        var organisationId = Guid.NewGuid();
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NotFound,
+                Content = null
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        await sut.TerminateSubsidiaryAsync(It.IsAny<SubsidiaryTerminateModel>());
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Post &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
     }
 
     [TestMethod]
@@ -736,7 +779,6 @@ public class OrganisationServiceTests
                        req.RequestUri.ToString() == expectedUrl),
             ItExpr.IsAny<CancellationToken>());
     }
-
 
     [TestMethod]
     public async Task GetOrganisationByReferenceNumber_WhenApiReturnsNoContent_ReturnsNullResponse()

@@ -186,6 +186,11 @@ public class OrganisationService(
     {
         var response = await httpClient.PostAsJsonAsync(OrganisationTerminateSubsidiaryUri, subsidiaryTerminateModel);
 
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
         if (!response.IsSuccessStatusCode)
         {
             var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();

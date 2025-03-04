@@ -1,3 +1,4 @@
+using Azure.Core;
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
@@ -267,12 +268,23 @@ public class OrganisationsControllerTests
     public async Task TerminateSubsidiary_Should_return_Success()
     {
         // Arrange
-
         // Act
-        var result = await _sut.TerminateSubsidiary(new SubsidiaryTerminateModel()) as OkResult;
+        var result = await _sut.TerminateSubsidiary(new SubsidiaryTerminateModel());
 
         // Assert
         result.Should().BeOfType<OkResult>();
+    }
+
+
+    [TestMethod]
+    public async Task TerminateSubsidiary_Should_return_SuccessTest()
+    {
+        // Arrange
+        // Act
+        var result = await _sut.TerminateSubsidiary(new SubsidiaryTerminateModel()) as StatusCodeResult;
+
+        // Assert
+        result.StatusCode.Should().Be((int)HttpStatusCode.OK);
     }
 
     [TestMethod]
