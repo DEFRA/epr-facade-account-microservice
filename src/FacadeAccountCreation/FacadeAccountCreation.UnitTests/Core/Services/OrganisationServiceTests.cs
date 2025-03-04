@@ -23,8 +23,9 @@ public class OrganisationServiceTests
     private const string OrganisationGetRelationshipUri = "api/organisations";
     private const string OrganisationByReferenceNumberUrl = "api/organisations/organisation-by-reference-number";
     private const string OrganisationNationUrl = "api/organisations/nation-code";
+	private const string OrganisationChildExternalIdsUrl = "api/organisations/v1/child-organisation-external-ids?organisationId={0}&complianceSchemeId={1}";
 
-    private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
+	private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<OrganisationService> _logger = new();
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
     private readonly IConfiguration _configuration = GetConfig();
@@ -956,4 +957,123 @@ public class OrganisationServiceTests
 
         loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get Organisation nation for Organisation Id: '{OrganisationExternalId}'", organisationId));
     }
+
+	[TestMethod]
+	public async Task GetChildOrganisationExternalIdsAsync_Returns_ExternalIdsForProducer_OnSuccess()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+
+		var expectedExternalIds = _fixture.CreateMany<Guid>();
+
+		var endpoint = string.Format(OrganisationChildExternalIdsUrl, organisationId, null);
+		var expectedUrl = $"{BaseAddress}/{endpoint}";
+
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>("SendAsync",
+				ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+				ItExpr.IsAny<CancellationToken>())
+			.ReturnsAsync(new HttpResponseMessage
+			{
+				StatusCode = HttpStatusCode.OK,
+				Content = new StringContent(JsonSerializer.Serialize(expectedExternalIds))
+			}).Verifiable();
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri(BaseAddress)
+		};
+
+		var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+		// Act
+		var result = await sut.GetChildOrganisationExternalIdsAsync(organisationId, null);
+
+        // Assert
+        result.Should().NotBeNull();
+		result.Should().BeEquivalentTo(expectedExternalIds);
+	}
+
+	[TestMethod]
+	public async Task GetChildOrganisationExternalIdsAsync_Returns_ExternalIdsForComplianceScheme_OnSuccess()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeId = Guid.NewGuid();
+
+		var expectedExternalIds = _fixture.CreateMany<Guid>();
+
+		var endpoint = string.Format(OrganisationChildExternalIdsUrl, organisationId, complianceSchemeId);
+		var expectedUrl = $"{BaseAddress}/{endpoint}";
+
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>("SendAsync",
+				ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+				ItExpr.IsAny<CancellationToken>())
+			.ReturnsAsync(new HttpResponseMessage
+			{
+				StatusCode = HttpStatusCode.OK,
+				Content = new StringContent(JsonSerializer.Serialize(expectedExternalIds))
+			}).Verifiable();
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri(BaseAddress)
+		};
+
+		var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+		// Act
+		var result = await sut.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().BeEquivalentTo(expectedExternalIds);
+	}
+
+	[TestMethod]
+	public async Task GetChildOrganisationExternalIdsAsync_ThrowsException_OnFailure()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeId = Guid.NewGuid();
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri(BaseAddress)
+		};
+
+		var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+		// Act
+		Func<Task> act = () => sut.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		await act.Should().ThrowAsync<InvalidOperationException>();
+	}
+
+	[TestMethod]
+	public async Task GetChildOrganisationExternalIdsAsync_LogsError_AndThrowsException_OnFailure()
+	{
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri(BaseAddress)
+		};
+
+		var loggerMock = new Mock<ILogger<OrganisationService>>();
+		var sut = new OrganisationService(httpClient, loggerMock.Object, _configuration);
+
+		// Act
+		Func<Task> act = async () => await sut.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		await act.Should().ThrowAsync<InvalidOperationException>();
+		act.Should().NotBeNull();
+
+		loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get child external ids for Organisation Id: '{organisationId}'", organisationId));
+	}
 }
