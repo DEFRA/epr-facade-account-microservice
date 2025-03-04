@@ -295,20 +295,25 @@ public class OrganisationService(
 
 	public async Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId)
 	{
-        var url = string.Format(OrganisationChildExternalIdsUrl, organisationId, complianceSchemeId);
+		var url = string.Format(OrganisationChildExternalIdsUrl, organisationId, complianceSchemeId);
 
 		try
 		{
-			logger.LogInformation(message: "Attempting to fetch the list of external id's for organisation id {OrganisationId} from the backend", organisationId);
+			logger.LogInformation("Attempting to fetch the list of external Id's for organisation ID {OrganisationId} from the backend", organisationId);
 
 			var response = await httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
+			response.EnsureSuccessStatusCode();
 
-			return await response.Content.ReadFromJsonAsync<List<Guid>>();
+			if (response.StatusCode == HttpStatusCode.NoContent)
+			{
+				return [];
+			}
+
+			return await response.Content.ReadFromJsonAsync<List<Guid>>() ?? [];
 		}
 		catch (Exception e)
 		{
-			logger.LogError(e, "Failed to get child external ids for Organisation Id: '{OrganisationId}'", organisationId);
+			logger.LogError(e, "Failed to get child external IDs for Organisation ID: '{OrganisationId}'", organisationId);
 			throw;
 		}
 		finally

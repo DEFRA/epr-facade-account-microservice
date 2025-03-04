@@ -1076,4 +1076,74 @@ public class OrganisationServiceTests
 
 		loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get child external ids for Organisation Id: '{organisationId}'", organisationId));
 	}
+
+	[TestMethod]
+	public async Task GetChildOrganisationExternalIdsAsync_ReturnsEmptyList_WhenNoContent()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeId = Guid.NewGuid();
+
+		var endpoint = string.Format(OrganisationChildExternalIdsUrl, organisationId, complianceSchemeId);
+		var expectedUrl = $"{BaseAddress}/{endpoint}";
+
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>("SendAsync",
+				ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+				ItExpr.IsAny<CancellationToken>())
+			.ReturnsAsync(new HttpResponseMessage
+			{
+				StatusCode = HttpStatusCode.NoContent
+			}).Verifiable();
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri(BaseAddress)
+		};
+
+		var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+		// Act
+		var result = await sut.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().BeEmpty();
+	}
+
+	[TestMethod]
+	public async Task GetChildOrganisationExternalIdsAsync_ThrowsJsonException_WhenResponseIsMalformedJson()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeId = Guid.NewGuid();
+
+		var endpoint = string.Format(OrganisationChildExternalIdsUrl, organisationId, complianceSchemeId);
+		var expectedUrl = $"{BaseAddress}/{endpoint}";
+
+		var malformedJson = "{[invalidJson}";
+
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>("SendAsync",
+				ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+				ItExpr.IsAny<CancellationToken>())
+			.ReturnsAsync(new HttpResponseMessage
+			{
+				StatusCode = HttpStatusCode.OK,
+				Content = new StringContent(malformedJson)
+			}).Verifiable();
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri(BaseAddress)
+		};
+
+		var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+		// Act
+		Func<Task> act = async () => await sut.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		await act.Should().ThrowAsync<JsonException>();
+	}
 }
