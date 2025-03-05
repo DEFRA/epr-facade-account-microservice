@@ -172,6 +172,7 @@ public class OrganisationsController(
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> TerminateSubsidiary(SubsidiaryTerminateModel subsidiaryTerminateModel)
     {
         try
