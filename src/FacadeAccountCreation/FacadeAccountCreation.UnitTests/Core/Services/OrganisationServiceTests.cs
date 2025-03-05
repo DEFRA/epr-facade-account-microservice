@@ -1074,7 +1074,7 @@ public class OrganisationServiceTests
 		await act.Should().ThrowAsync<InvalidOperationException>();
 		act.Should().NotBeNull();
 
-		loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get child external ids for Organisation Id: '{organisationId}'", organisationId));
+		loggerMock.VerifyLog(logger => logger.LogError(It.IsAny<Exception>(), "Failed to get child external id's for Organisation id: '{organisationId}'", organisationId));
 	}
 
 	[TestMethod]
