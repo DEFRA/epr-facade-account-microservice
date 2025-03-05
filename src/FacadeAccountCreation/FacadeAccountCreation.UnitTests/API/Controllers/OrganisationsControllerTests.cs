@@ -647,7 +647,7 @@ public class OrganisationsControllerTests
 	}
 
 	[TestMethod]
-	public async Task GetChildOrganisationExternalIdsAsync_ValidInputWithNoData_ReturnsNoContentResult()
+	public async Task GetChildOrganisationExternalIdsAsync_ValidInputWithNoData_ReturnsOkWithEmptyResult()
 	{
 		// Arrange
 		var organisationId = Guid.NewGuid();
@@ -661,6 +661,8 @@ public class OrganisationsControllerTests
         var result = await _sut.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeid);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(NoContentResult));
+		result.Should().BeOfType<OkObjectResult>();
+		var okResult = result as OkObjectResult;
+		okResult.Should().NotBeNull();
 	}
 }
