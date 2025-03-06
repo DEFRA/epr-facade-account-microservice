@@ -211,6 +211,11 @@ public class OrganisationService(
 
             var response = await httpClient.GetAsync(endpoint);
 
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
             return await response.Content.ReadFromJsonWithEnumsAsync<OrganisationRelationshipModel>();
         }
         catch (Exception e)
