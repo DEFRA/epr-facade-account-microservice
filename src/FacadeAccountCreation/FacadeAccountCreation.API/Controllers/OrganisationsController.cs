@@ -188,7 +188,6 @@ public class OrganisationsController(
         }
     }
 
-
     [HttpGet]
     [Route("{organisationId:guid}/organisationRelationships")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -204,6 +203,25 @@ public class OrganisationsController(
         }
 
         return NoContent();
+    }
+
+    [HttpGet]
+    [Route("~/api/v2/organisations/{organisationId:guid}/organisationRelationships")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetPagedOrganisationRelationshipsByOrganisationIdAsyncV2(
+        Guid organisationId,
+        Guid? complianceSchemeId,
+        [Required] int? page,
+        [Required] int? showPerPage)
+    {
+        var result = await organisationService.GetPagedOrganisationRelationshipsByOrganisationId(
+            organisationId,
+            complianceSchemeId,
+            page.Value,
+            showPerPage.Value);
+
+        return Ok(result);
     }
 
     [HttpGet]
