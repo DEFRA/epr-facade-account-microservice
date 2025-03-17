@@ -31,7 +31,7 @@ public interface IOrganisationService
 
     Task TerminateSubsidiaryAsync(SubsidiaryTerminateModel subsidiaryTerminateModel);
 
-    Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationRelationshipsByOrganisationId(Guid organisationExternalId, Guid? complianceSchemeId, int page, int showPerPage);
+    Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationRelationships(int page, int showPerPage);
 
     Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId);
 

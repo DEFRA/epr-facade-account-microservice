@@ -17,7 +17,6 @@ public class OrganisationService(
     private const string OrganisationAddSubsidiaryUri = "api/organisations/add-subsidiary";
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
-    private const string OrganisationGetSubsidiaryUriV2 = "api/v2/organisations";
     private const string OrganisationNationUrl = "api/organisations/nation-code";
 	
 	public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
@@ -202,22 +201,13 @@ public class OrganisationService(
         }
     }
 
-    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationRelationshipsByOrganisationId(
-        Guid organisationExternalId,
-        Guid? complianceSchemeId,
-        int page,
-        int showPerPage)
+    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationRelationships(int page, int showPerPage)
     {
-        var endpoint = $"{OrganisationGetSubsidiaryUriV2}/{organisationExternalId}/organisationRelationships?page={page}&showPerPage={showPerPage}";
-
-        if (complianceSchemeId != null)
-        {
-            endpoint += $"&complianceSchemeId={complianceSchemeId}";
-        }
+        var endpoint = $"{OrganisationGetSubsidiaryUri}/organisationRelationships?page={page}&showPerPage={showPerPage}";
 
         try
         {
-            logger.LogInformation("Attempting to get the paged Organisation Relationships for Organisation Id : '{OrganisationId}'", organisationExternalId);
+            logger.LogInformation("Attempting to get the paged Organisation Relationships");
 
             var response = await httpClient.GetAsync(endpoint);
 
@@ -227,7 +217,7 @@ public class OrganisationService(
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed to get the paged Organisation Relationships for Organisation Id: '{OrganisationId}'", organisationExternalId);
+            logger.LogError(e, "Failed to get the paged Organisation Relationships");
             throw;
         }
         finally
