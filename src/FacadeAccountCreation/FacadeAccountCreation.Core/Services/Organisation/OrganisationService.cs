@@ -201,6 +201,31 @@ public class OrganisationService(
         }
     }
 
+    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationRelationships(int page, int showPerPage)
+    {
+        var endpoint = $"{OrganisationGetSubsidiaryUri}/organisationRelationships?page={page}&showPerPage={showPerPage}";
+
+        try
+        {
+            logger.LogInformation("Attempting to get the paged Organisation Relationships");
+
+            var response = await httpClient.GetAsync(endpoint);
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonWithEnumsAsync<PaginatedResponse<RelationshipResponseModel>>();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to get the paged Organisation Relationships");
+            throw;
+        }
+        finally
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+        }
+    }
+
     public async Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId)
     {
         var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/organisationRelationships";
