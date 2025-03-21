@@ -217,6 +217,16 @@ public class OrganisationsController(
     }
 
     [HttpGet]
+    [Route("organisationRelationshipsWithoutPaging")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetUnpagedOrganisationRelationshipsAsync()
+    {
+        var result = await organisationService.GetUnpagedOrganisationRelationships();
+
+        return Ok(result);
+    }
+    [HttpGet]
     [Route("{organisationId:guid}/export-subsidiaries")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
