@@ -31,6 +31,10 @@ public interface IOrganisationService
 
     Task TerminateSubsidiaryAsync(SubsidiaryTerminateModel subsidiaryTerminateModel);
 
+    Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationRelationships(int page, int showPerPage);
+
+    Task<List<RelationshipResponseModel>> GetUnpagedOrganisationRelationships();
+
     Task<OrganisationRelationshipModel> GetOrganisationRelationshipsByOrganisationId(Guid organisationExternalId);
 
     Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId);
