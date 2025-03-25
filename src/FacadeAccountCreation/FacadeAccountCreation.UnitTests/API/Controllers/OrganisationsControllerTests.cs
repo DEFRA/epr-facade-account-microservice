@@ -360,6 +360,49 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
+    public async Task GetUnpagedOrganisationRelationshipsAsync_ValidInputWithData_ReturnsOkResult()
+    {
+        // Arrange
+        var mockResponse = new List<RelationshipResponseModel>
+            {
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Organisation 1",
+                    OrganisationNumber = "12",
+                    CompaniesHouseNumber = "CH123455"
+                },
+
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Organisation 2",
+                    OrganisationNumber = "34",
+                    CompaniesHouseNumber = "CH123455"
+                },
+
+
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Organisation 3",
+                    OrganisationNumber = "56",
+                    CompaniesHouseNumber = "CH123455"
+                }
+            };
+
+        _mockOrganisationService
+            .Setup(service => service.GetUnpagedOrganisationRelationships())
+            .ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.GetUnpagedOrganisationRelationshipsAsync();
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(mockResponse, okResult.Value);
+    }
+
+    [TestMethod]
     public async Task GetOrganisationRelationshipsByOrganisationIdAsync_ValidInputWithData_ReturnsOkResult()
     {
         // Arrange
