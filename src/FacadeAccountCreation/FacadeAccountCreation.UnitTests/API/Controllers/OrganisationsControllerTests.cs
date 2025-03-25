@@ -5,6 +5,7 @@ using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Models.User;
+using FacadeAccountCreation.Core.Services;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
 using System.Globalization;
@@ -318,6 +319,87 @@ public class OrganisationsControllerTests
         result.Should().NotBeNull();
         result.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         resultValue.Detail.Should().Be("Failed to add subsidiary");
+    }
+
+    [TestMethod]
+    public async Task GetPagedOrganisationRelationshipsAsync_ValidInputWithData_ReturnsOkResult()
+    {
+        // Arrange
+        var page = 1;
+        var showPerPage = 20;
+
+        var mockResponse = new PaginatedResponse<RelationshipResponseModel>
+        {
+            CurrentPage = 1,
+            TotalItems = 1,
+            PageSize = 20,
+            Items = new List<RelationshipResponseModel>
+            {
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Test1",
+                    OrganisationNumber = "2345",
+                    RelationshipType = "Parent",
+                    CompaniesHouseNumber = "CH123455"
+                }
+            }
+        };
+
+        _mockOrganisationService
+            .Setup(service => service.GetPagedOrganisationRelationships(page, showPerPage))
+            .ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.GetPagedOrganisationRelationshipsAsync(page, showPerPage);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(mockResponse, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task GetUnpagedOrganisationRelationshipsAsync_ValidInputWithData_ReturnsOkResult()
+    {
+        // Arrange
+        var mockResponse = new List<RelationshipResponseModel>
+            {
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Organisation 1",
+                    OrganisationNumber = "12",
+                    CompaniesHouseNumber = "CH123455"
+                },
+
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Organisation 2",
+                    OrganisationNumber = "34",
+                    CompaniesHouseNumber = "CH123455"
+                },
+
+
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Organisation 3",
+                    OrganisationNumber = "56",
+                    CompaniesHouseNumber = "CH123455"
+                }
+            };
+
+        _mockOrganisationService
+            .Setup(service => service.GetUnpagedOrganisationRelationships())
+            .ReturnsAsync(mockResponse);
+
+        // Act
+        var result = await _sut.GetUnpagedOrganisationRelationshipsAsync();
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        Assert.IsNotNull(okResult);
+        Assert.AreEqual(mockResponse, okResult.Value);
     }
 
     [TestMethod]
