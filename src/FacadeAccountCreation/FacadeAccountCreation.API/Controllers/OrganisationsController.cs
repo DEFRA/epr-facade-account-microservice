@@ -209,9 +209,9 @@ public class OrganisationsController(
     [Route("organisationRelationships")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetPagedOrganisationRelationshipsAsync([Required] int? page, [Required] int? showPerPage)
+    public async Task<IActionResult> GetPagedOrganisationRelationshipsAsync([Required] int? page, [Required] int? showPerPage, string search = null)
     {
-        var result = await organisationService.GetPagedOrganisationRelationships(page.Value, showPerPage.Value);
+        var result = await organisationService.GetPagedOrganisationRelationships(page.Value, showPerPage.Value, search);
 
         return Ok(result);
     }
