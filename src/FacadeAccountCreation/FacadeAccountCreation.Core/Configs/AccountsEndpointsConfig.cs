@@ -10,4 +10,5 @@ public class AccountsEndpointsConfig
     public string EnrolInvitedUser { get; set; }
     public string DeleteUser { get; set; }
     public string ApprovedUserAccounts { get; set; }
+    public string ReprocessorExporterAccounts { get; set; }
 }
