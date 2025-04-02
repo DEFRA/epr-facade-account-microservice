@@ -30,6 +30,28 @@ public class AccountService(HttpClient httpClient, IOptions<AccountsEndpointsCon
         return result;
     }
 
+    //todo: should we send a AccountWithUserModel with empty entities, or just accept a per
+    public async Task<CreateAccountResponse?> AddReExAccountAsync(AccountWithUserModel accountWithUser)
+    {
+        var response = await httpClient.PostAsJsonAsync(_accountsEndpointsConfig.Accounts, accountWithUser);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<CreateAccountResponse>();
+
+        return result;
+    }
+
     public async Task<CreateAccountResponse?> AddApprovedUserAccountAsync(AccountModel approvedUser )
     {
         
