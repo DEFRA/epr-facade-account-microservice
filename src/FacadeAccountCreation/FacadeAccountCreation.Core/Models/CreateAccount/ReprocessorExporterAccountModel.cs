@@ -7,5 +7,5 @@ public class ReprocessorExporterAccountModel
     public PersonModel Person { get; set; } = null!;
 
     //todo: why nullable / not required? (currently matching AccountModel)
-    public Guid? UserId { get; set; }
+    //public Guid? UserId { get; set; }
 }
