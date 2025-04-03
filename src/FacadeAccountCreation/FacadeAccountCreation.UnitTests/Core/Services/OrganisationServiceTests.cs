@@ -2,6 +2,7 @@
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Subsidiary;
+using FacadeAccountCreation.Core.Services;
 using FacadeAccountCreation.Core.Services.Organisation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -545,6 +546,107 @@ public class OrganisationServiceTests
                        req.RequestUri != null &&
                        req.RequestUri.ToString() == expectedUrl),
             ItExpr.IsAny<CancellationToken>());
+    }
+
+    [TestMethod]
+    public async Task GetPagedOrganisationRelationships_Returns_OrganisationRelationshipModel_OnSuccess()
+    {
+        // Arrange
+        var page = 1;
+        var showPerPage = 20;
+
+        var expectedModel = _fixture.Create<PaginatedResponse<RelationshipResponseModel>>();
+
+        var expectedUrl =
+            $"{BaseAddress}/{OrganisationGetRelationshipUri}/organisationRelationships?page={page}&showPerPage={showPerPage}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(expectedModel))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        var result = await sut.GetPagedOrganisationRelationships(page, showPerPage);
+
+        // Assert
+        Assert.IsNotNull(result);
+        result.Should().BeEquivalentTo(expectedModel);
+    }
+
+    [TestMethod]
+    public async Task GetUnpagedOrganisationRelationships_Returns_OrganisationRelationshipModel_OnSuccess()
+    {
+        // Arrange
+
+        var expectedModel = _fixture.Create<List<RelationshipResponseModel>>();
+
+        var expectedUrl =
+            $"{BaseAddress}/{OrganisationGetRelationshipUri}/organisationRelationshipsWithoutPaging";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(expectedModel))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        var result = await sut.GetUnpagedOrganisationRelationships();
+
+        // Assert
+        Assert.IsNotNull(result);
+        result.Should().BeEquivalentTo(expectedModel);
+    }
+
+
+    [TestMethod]
+    public async Task GetPagedOrganisationRelationships_ThrowsException_OnFailure()
+    {
+        // Arrange
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        Func<Task> act = () => sut.GetPagedOrganisationRelationships(1, 20);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [TestMethod]
+    public async Task GetUnpagedOrganisationRelationships_ThrowsException_OnFailure()
+    {
+        // Arrange
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        Func<Task> act = () => sut.GetUnpagedOrganisationRelationships();
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
     [TestMethod]
