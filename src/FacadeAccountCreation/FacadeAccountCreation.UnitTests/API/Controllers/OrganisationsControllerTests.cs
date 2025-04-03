@@ -329,7 +329,7 @@ public class OrganisationsControllerTests
         var showPerPage = 20;
         var search = "test";
 
-        var mockResponse = new PaginatedResponse<RelationshipResponseModel>
+        var mockResponse = new PagedOrganisationRelationshipsModel
         {
             CurrentPage = 1,
             TotalItems = 1,
@@ -343,7 +343,8 @@ public class OrganisationsControllerTests
                     RelationshipType = "Parent",
                     CompaniesHouseNumber = "CH123455"
                 }
-            }
+            },
+            SearchTerms = new List<string>()
         };
 
         _mockOrganisationService

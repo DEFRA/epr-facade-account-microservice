@@ -202,7 +202,7 @@ public class OrganisationService(
         }
     }
 
-    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationRelationships(int page, int showPerPage, string search = null)
+    public async Task<PagedOrganisationRelationshipsModel> GetPagedOrganisationRelationships(int page, int showPerPage, string search = null)
     {
         var endpoint = $"{OrganisationGetSubsidiaryUri}/organisationRelationships?page={page}&showPerPage={showPerPage}";
 
@@ -219,7 +219,7 @@ public class OrganisationService(
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonWithEnumsAsync<PaginatedResponse<RelationshipResponseModel>>();
+            return await response.Content.ReadFromJsonWithEnumsAsync<PagedOrganisationRelationshipsModel>();
         }
         catch (Exception e)
         {
