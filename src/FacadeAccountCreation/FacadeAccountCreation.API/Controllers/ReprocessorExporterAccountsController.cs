@@ -37,6 +37,15 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
             Email = User.Email()
         });
 
+        //todo: for testing only
+        //var accountWithUser = new ReprocessorExporterAccountWithUserModel(account, new UserModel
+        //{
+        //    UserId = Guid.NewGuid(),
+        //    Email = account.Person.ContactEmail
+        //});
+
+        //todo: we could assert User.Email() == person.email
+
         //todo: if issue, what happens and do we need to return a Problem?
         await accountService.AddReprocessorExporterAccountAsync(accountWithUser);
 
