@@ -1,7 +1,6 @@
 ﻿namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
-//todo: singular, singular - spec has plural for re
 [Route("api/v1/reprocessor-exporter-accounts")]
 public class ReprocessorExporterAccountsController(IAccountService accountService, IMessagingService messagingService)
     : ControllerBase
