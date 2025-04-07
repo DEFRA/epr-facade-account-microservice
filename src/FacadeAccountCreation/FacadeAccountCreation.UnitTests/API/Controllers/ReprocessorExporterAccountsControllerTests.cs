@@ -39,6 +39,7 @@ public class ReprocessorExporterAccountsControllerTests
         var result = await _sut!.CreateAccount(account);
 
         // Assert
+        result.Should().NotBeNull();
         result.Should().BeOfType<OkResult>();
     }
 
@@ -53,9 +54,10 @@ public class ReprocessorExporterAccountsControllerTests
             .Setup(x => x.AddReprocessorExporterAccountAsync(It.IsAny<ReprocessorExporterAccountWithUserModel>()));
 
         // Act
-        var result = await _sut!.CreateAccount(account);
+        await _sut!.CreateAccount(account);
 
         // Assert
+        //todo: check correct model passed
         _mockAccountServiceMock.Verify(x => x.AddReprocessorExporterAccountAsync(It.IsAny<ReprocessorExporterAccountWithUserModel>()), Times.Once);
     }
 }
