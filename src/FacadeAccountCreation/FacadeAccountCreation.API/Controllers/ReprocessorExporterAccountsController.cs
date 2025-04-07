@@ -2,8 +2,7 @@
 
 [ApiController]
 //todo: singular, singular - spec has plural for re
-//todo: v1?
-[Route("api/reprocessor-exporter-accounts")]
+[Route("api/v1/reprocessor-exporter-accounts")]
 public class ReprocessorExporterAccountsController(IAccountService accountService, IMessagingService messagingService)
     : ControllerBase
 {
