@@ -18,14 +18,7 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
             Email = User.Email()
         });
 
-        //todo: if issue, what happens and do we need to return a Problem?
         await accountService.AddReprocessorExporterAccountAsync(accountWithUser);
-
-        //if (createAccountResponse == null)
-        //{
-        //    //todo: pass root issue, so consumers don't have to dig through logs?
-        //    return Problem("Failed to create reprocessor/exporter account", statusCode: StatusCodes.Status500InternalServerError);
-        //}
 
         //todo: there will be a future story to send a notification to the user
         //messagingService.SendReprocessorExporterAccountCreationConfirmation(

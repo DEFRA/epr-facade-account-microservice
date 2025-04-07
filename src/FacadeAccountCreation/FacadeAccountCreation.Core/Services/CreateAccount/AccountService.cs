@@ -30,7 +30,6 @@ public class AccountService(HttpClient httpClient, IOptions<AccountsEndpointsCon
         return result;
     }
 
-    //todo: do we need to return Task<HttpResponseMessage> ?
     public async Task AddReprocessorExporterAccountAsync(ReprocessorExporterAccountWithUserModel accountWithUser)
     {
         var response = await httpClient.PostAsJsonAsync(_accountsEndpointsConfig.ReprocessorExporterAccounts, accountWithUser);
