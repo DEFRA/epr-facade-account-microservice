@@ -30,12 +30,7 @@ public class AccountService(HttpClient httpClient, IOptions<AccountsEndpointsCon
         return result;
     }
 
-    //todo: should we send a AccountWithUserModel with empty entities, or just accept a per
-    //todo: have here, or create a ReprocessorExporterAccountService?
     //todo: do we need to return Task<HttpResponseMessage> ?
-    //public async Task<CreateAccountResponse?> AddReprocessorExporterAccountAsync(AccountWithUserModel accountWithUser)
-    //public async Task AddReprocessorExporterAccountAsync(AccountWithUserModel accountWithUser)
-    //public async Task AddReprocessorExporterAccountAsync(ReprocessorExporterAccountModel account)
     public async Task AddReprocessorExporterAccountAsync(ReprocessorExporterAccountWithUserModel accountWithUser)
     {
         var response = await httpClient.PostAsJsonAsync(_accountsEndpointsConfig.ReprocessorExporterAccounts, accountWithUser);
@@ -51,12 +46,6 @@ public class AccountService(HttpClient httpClient, IOptions<AccountsEndpointsCon
 
             response.EnsureSuccessStatusCode();
         }
-
-        //response.EnsureSuccessStatusCode();
-
-        //var result = await response.Content.ReadFromJsonAsync<CreateAccountResponse>();
-
-        //return result;
     }
 
     public async Task<CreateAccountResponse?> AddApprovedUserAccountAsync(AccountModel approvedUser )

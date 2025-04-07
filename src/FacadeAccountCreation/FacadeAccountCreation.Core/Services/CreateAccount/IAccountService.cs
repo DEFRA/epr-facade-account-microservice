@@ -3,7 +3,6 @@ namespace FacadeAccountCreation.Core.Services.CreateAccount;
 public interface IAccountService
 {
     Task<CreateAccountResponse?> AddAccountAsync(AccountWithUserModel accountWithUser);
-    //Task AddReprocessorExporterAccountAsync(ReprocessorExporterAccountModel account);
     Task AddReprocessorExporterAccountAsync(ReprocessorExporterAccountWithUserModel accountWithUser);
     Task<IReadOnlyCollection<OrganisationResponseModel>?> GetOrganisationsByCompanyHouseNumberAsync(string companiesHouseNumber);
     Task<HttpResponseMessage> SaveInviteAsync(AccountInvitationModel accountInvitation);
