@@ -1,4 +1,5 @@
-﻿namespace FacadeAccountCreation.API.Controllers;
+﻿
+namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
 [Route("api/v1/reprocessor-exporter-accounts")]
@@ -11,22 +12,11 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> CreateAccount(ReprocessorExporterAccountModel account)
     {
-        // we could just send down the user id guid, rather than an user, as the email is currently always the same as the person email and the other fields are not populated
-        // but we follow the existing account creation pattern, which sends down a User
         var accountWithUser = new ReprocessorExporterAccountWithUserModel(account, new UserModel
         {
             UserId = User.UserId(),
             Email = User.Email()
         });
-
-        //todo: for testing only
-        //var accountWithUser = new ReprocessorExporterAccountWithUserModel(account, new UserModel
-        //{
-        //    UserId = Guid.NewGuid(),
-        //    Email = account.Person.ContactEmail
-        //});
-
-        //todo: we could assert User.Email() == person.email
 
         //todo: if issue, what happens and do we need to return a Problem?
         await accountService.AddReprocessorExporterAccountAsync(accountWithUser);
