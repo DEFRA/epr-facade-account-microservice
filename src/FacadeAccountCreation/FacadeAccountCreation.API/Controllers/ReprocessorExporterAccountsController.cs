@@ -39,15 +39,12 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
         //    return Problem("Failed to create reprocessor/exporter account", statusCode: StatusCodes.Status500InternalServerError);
         //}
 
-        //todo: we need to send a confirmation, but we don't have an email template yet
-        //messagingService.SendAccountCreationConfirmation(
+        //todo: there will be a future story to send a notification to the user
+        //messagingService.SendReprocessorExporterAccountCreationConfirmation(
         //    accountWithUser.User.UserId.GetValueOrDefault(),
         //    account.Person.FirstName,
         //    account.Person.LastName,
-        //    account.Person.ContactEmail,
-        //    createAccountResponse.ReferenceNumber.ToReferenceNumberFormat(),
-        //    createAccountResponse.OrganisationId,
-        //    account.Organisation.IsComplianceScheme);
+        //    account.Person.ContactEmail);
 
         return Ok();
     }
