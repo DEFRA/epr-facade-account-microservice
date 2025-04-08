@@ -214,7 +214,31 @@ public class AccountServiceTests
         Assert.AreEqual(apiResponse.Type, exception.ProblemDetails.Type);
     }
 
-    //todo: check other error response, eg 500
+    [TestMethod]
+    public async Task AddReprocessorExporterAccountAsync_CreateReprocessorExporterAccountReturnsNonConflictError_500HttpRequestExceptionExceptionThrown()
+    {
+        // Arrange
+        var apiRequest = _fixture.Create<ReprocessorExporterAccountWithUserModel>();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.InternalServerError,
+                Content = new StringContent("")
+            }).Verifiable();
+
+        var sut = GetAccountService();
+
+        // Act & Assert
+        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest));
+        Assert.AreEqual(HttpStatusCode.InternalServerError, exception.StatusCode);
+    }
 
     [TestMethod]
     public async Task Should_successfully_post_to_enrol_invited_user_endpoint()

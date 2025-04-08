@@ -36,7 +36,17 @@ public class AccountService(HttpClient httpClient, IOptions<AccountsEndpointsCon
 
         if (!response.IsSuccessStatusCode)
         {
-            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+            ProblemDetails? problemDetails = null;
+            try
+            {
+                problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+            }
+            catch (JsonException e)
+            {
+                // if the response isn't a valid ProblemDetails, either this exception is thrown,
+                // or in some circumstances, null is returned.
+                // we handle both scenarios next
+            }
 
             if (problemDetails != null)
             {
