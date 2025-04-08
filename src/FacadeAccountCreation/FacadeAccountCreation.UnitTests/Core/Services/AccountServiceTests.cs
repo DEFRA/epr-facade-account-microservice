@@ -145,13 +145,10 @@ public class AccountServiceTests
 
         var sut = GetAccountService();
 
-        // Act
-        await sut.AddReprocessorExporterAccountAsync(apiRequest);
+        Func<Task> act = async () => await sut.AddReprocessorExporterAccountAsync(apiRequest);
 
-        // Assert
-
-        //todo: this fails sonar
-        // the test passes if no exception is thrown (MSTest doesn't have explicit support for checking no exception thrown)
+        // Act & Assert
+        await act.Should().NotThrowAsync();
     }
 
     [TestMethod]
