@@ -9,11 +9,13 @@ public class AccountServiceTests
 {
     private const string OrganisationEndpoint = "api/organisations";
     private const string AccountsEndpoint = "api/producer-accounts";
+    private const string ReprocessorExporterAccountsEndpoint = "api/v1/reprocessor-exporter-user-accounts";
     private const string CompaniesHouseNumber = "88888888";
     private const string BaseAddress = "http://localhost";
     private const string ExpectedUrl = $"{BaseAddress}/{OrganisationEndpoint}?companiesHouseNumber={CompaniesHouseNumber}";
     private const string EnrolInvitedUserEndpoint = "api/accounts-management/enrol-invited-user";
     private const string AddAccountPostUrl = $"{BaseAddress}/{AccountsEndpoint}";
+    private const string AddReprocessorExporterAccountPostUrl = $"{BaseAddress}/{ReprocessorExporterAccountsEndpoint}";
     private const string EnrolInvitedUserUri = $"{BaseAddress}/{EnrolInvitedUserEndpoint}";
     private const string AddApprovedUserUri = $"{BaseAddress}/api/producer-accounts/ApprovedUser";
 
@@ -121,7 +123,42 @@ public class AccountServiceTests
                        req.RequestUri.ToString() == AddAccountPostUrl),
             ItExpr.IsAny<CancellationToken>());
     }
-    
+
+    [TestMethod]
+    public async Task AddReprocessorExporterAccountAsync_todo_todo()
+    {
+        // Arrange
+        var apiRequest = _fixture.Create<ReprocessorExporterAccountWithUserModel>();
+        //var apiResponse = _fixture.Create<CreateAccountResponse>();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK
+                //,
+                //Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        var sut = GetAccountService();
+
+        // Act
+        await sut.AddReprocessorExporterAccountAsync(apiRequest);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Post &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
     [TestMethod]
     public async Task Should_successfully_post_to_enrol_invited_user_endpoint()
     {
@@ -170,7 +207,8 @@ public class AccountServiceTests
             Organisations = "api/organisations",
             InviteUser = "api/accounts-management/invite-user",
             EnrolInvitedUser = "api/accounts-management/enrol-invited-user",
-            ApprovedUserAccounts = "/api/producer-accounts/ApprovedUser"
+            ApprovedUserAccounts = "/api/producer-accounts/ApprovedUser",
+            ReprocessorExporterAccounts = "api/v1/reprocessor-exporter-user-accounts"
         });
         
         var sut = new AccountService(httpClient, accountsEndpointsOptions);
