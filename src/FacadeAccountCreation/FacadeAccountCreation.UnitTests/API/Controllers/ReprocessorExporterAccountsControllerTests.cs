@@ -6,6 +6,8 @@ namespace FacadeAccountCreation.UnitTests.API.Controllers;
 public class ReprocessorExporterAccountsControllerTests
 {
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
+    private Guid _userId;
+    private string _userEmail;
     private readonly Mock<IAccountService> _mockAccountServiceMock = new();
     private readonly Mock<IMessagingService> _mockMessagingService = new();
     private readonly Mock<HttpContext> _httpContextMock = new();
@@ -22,10 +24,13 @@ public class ReprocessorExporterAccountsControllerTests
             }
         };
 
+        _userId = _fixture.Create<Guid>();
+        _userEmail = "email@example.com";
+
         _httpContextMock.Setup(x => x.User.Claims).Returns(new List<Claim>
         {
-            new ("emails", "abc@efg.com"),
-            new (ClaimConstants.ObjectId, _fixture.Create<Guid>().ToString())
+            new ("emails", _userEmail),
+            new (ClaimConstants.ObjectId, _userId.ToString())
         }.AsEnumerable());
     }
 
@@ -34,6 +39,7 @@ public class ReprocessorExporterAccountsControllerTests
     {
         // Arrange
         var account = _fixture.Create<ReprocessorExporterAccountModel>();
+        account.Person.ContactEmail = _userEmail;
 
         // Act
         var result = await _sut!.CreateAccount(account);
@@ -57,7 +63,16 @@ public class ReprocessorExporterAccountsControllerTests
         await _sut!.CreateAccount(account);
 
         // Assert
-        //todo: check correct model passed
-        _mockAccountServiceMock.Verify(x => x.AddReprocessorExporterAccountAsync(It.IsAny<ReprocessorExporterAccountWithUserModel>()), Times.Once);
+        _mockAccountServiceMock.Verify(x =>
+                x.AddReprocessorExporterAccountAsync(It.Is<ReprocessorExporterAccountWithUserModel>(a =>
+                    a.User.UserId == _userId
+                    && a.User.Email == _userEmail
+                    && a.User.ExternalIdpUserId == null
+                    && a.User.ExternalIdpId == null
+                    && a.Person.FirstName == account.Person.FirstName
+                    && a.Person.LastName == account.Person.LastName
+                    && a.Person.TelephoneNumber == account.Person.TelephoneNumber
+                    && a.Person.ContactEmail == account.Person.ContactEmail)),
+            Times.Once);
     }
 }
