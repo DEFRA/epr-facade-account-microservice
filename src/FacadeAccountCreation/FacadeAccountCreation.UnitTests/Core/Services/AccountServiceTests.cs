@@ -1,6 +1,7 @@
-using System.Collections.ObjectModel;
 using FacadeAccountCreation.Core.Configs;
+using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Services.CreateAccount;
+using System.Collections.ObjectModel;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -125,11 +126,10 @@ public class AccountServiceTests
     }
 
     [TestMethod]
-    public async Task AddReprocessorExporterAccountAsync_todo_todo()
+    public async Task AddReprocessorExporterAccountAsync_HappyPath_ReturnsSuccessByNotThrowing()
     {
         // Arrange
         var apiRequest = _fixture.Create<ReprocessorExporterAccountWithUserModel>();
-        //var apiResponse = _fixture.Create<CreateAccountResponse>();
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -141,8 +141,34 @@ public class AccountServiceTests
             .ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK
-                //,
-                //Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        var sut = GetAccountService();
+
+        // Act
+        await sut.AddReprocessorExporterAccountAsync(apiRequest);
+
+        // Assert
+
+        // the test passes if no exception is thrown (MSTest doesn't have explicit support for checking no exception thrown)
+    }
+
+    [TestMethod]
+    public async Task AddReprocessorExporterAccountAsync_HappyPath_CreateReprocessorExporterAccountEndpointCalled()
+    {
+        // Arrange
+        var apiRequest = _fixture.Create<ReprocessorExporterAccountWithUserModel>();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK
             }).Verifiable();
 
         var sut = GetAccountService();
@@ -158,6 +184,35 @@ public class AccountServiceTests
                        req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
             ItExpr.IsAny<CancellationToken>());
     }
+
+    [TestMethod]
+    public async Task AddReprocessorExporterAccountAsync_CreateReprocessorExporterAccountReturnsProblem_ProblemExceptionThrown()
+    {
+        // Arrange
+        var apiRequest = _fixture.Create<ReprocessorExporterAccountWithUserModel>();
+        var apiResponse = _fixture.Create<ProblemDetails>();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Post &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.Conflict,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            }).Verifiable();
+
+        var sut = GetAccountService();
+
+        // Act & Assert
+        //todo: check exception response
+        await Assert.ThrowsExceptionAsync<ProblemResponseException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest));
+    }
+
+    //todo: check other error response, eg 500
 
     [TestMethod]
     public async Task Should_successfully_post_to_enrol_invited_user_endpoint()
