@@ -186,7 +186,7 @@ public class AccountServiceTests
     }
 
     [TestMethod]
-    public async Task AddReprocessorExporterAccountAsync_CreateReprocessorExporterAccountReturnsProblem_ProblemExceptionThrown()
+    public async Task AddReprocessorExporterAccountAsync_CreateReprocessorExporterAccountReturnsConflict_ProblemExceptionThrown()
     {
         // Arrange
         var apiRequest = _fixture.Create<ReprocessorExporterAccountWithUserModel>();
@@ -208,8 +208,10 @@ public class AccountServiceTests
         var sut = GetAccountService();
 
         // Act & Assert
-        //todo: check exception response
-        await Assert.ThrowsExceptionAsync<ProblemResponseException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest));
+        var exception = await Assert.ThrowsExceptionAsync<ProblemResponseException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest));
+        Assert.IsNotNull(exception.ProblemDetails);
+        Assert.AreEqual(apiResponse.Detail, exception.ProblemDetails.Detail);
+        Assert.AreEqual(apiResponse.Type, exception.ProblemDetails.Type);
     }
 
     //todo: check other error response, eg 500
