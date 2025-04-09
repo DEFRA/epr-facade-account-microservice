@@ -9,14 +9,13 @@ public class ReprocessorExporterAccountsControllerTests
     private Guid _userId;
     private string _userEmail;
     private readonly Mock<IAccountService> _mockAccountServiceMock = new();
-    private readonly Mock<IMessagingService> _mockMessagingService = new();
     private readonly Mock<HttpContext> _httpContextMock = new();
     private ReprocessorExporterAccountsController? _sut;
 
     [TestInitialize]
     public void Setup()
     {
-        _sut = new ReprocessorExporterAccountsController(_mockAccountServiceMock.Object, _mockMessagingService.Object)
+        _sut = new ReprocessorExporterAccountsController(_mockAccountServiceMock.Object)
         {
             ControllerContext =
             {

@@ -3,7 +3,7 @@ namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
 [Route("api/v1/reprocessor-exporter-accounts")]
-public class ReprocessorExporterAccountsController(IAccountService accountService, IMessagingService messagingService)
+public class ReprocessorExporterAccountsController(IAccountService accountService)
     : ControllerBase
 {
     [HttpPost]
@@ -19,8 +19,6 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
         });
 
         await accountService.AddReprocessorExporterAccountAsync(accountWithUser);
-
-        //todo: there will be a future story to send a notification to the user
 
         return Ok();
     }
