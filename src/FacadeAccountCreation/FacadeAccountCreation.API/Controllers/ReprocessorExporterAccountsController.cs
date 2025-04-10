@@ -20,6 +20,7 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
 
         await accountService.AddReprocessorExporterAccountAsync(accountWithUser);
 
+        // returning Created would probably be better, but we return OK to be consistent with the existing CreateAccount
         return Ok();
     }
 }
