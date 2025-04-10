@@ -3,5 +3,4 @@
 public static class FeatureFlags
 {
     public const string SendDissociationNotificationEmail = "SendDissociationNotificationEmail";
-    public const string UseBoomiOAuth = "UseBoomiOAuth";
 }
