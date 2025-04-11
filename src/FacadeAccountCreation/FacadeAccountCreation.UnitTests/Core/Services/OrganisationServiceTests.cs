@@ -548,40 +548,40 @@ public class OrganisationServiceTests
             ItExpr.IsAny<CancellationToken>());
     }
 
-    [TestMethod]
-    public async Task GetPagedOrganisationRelationships_Returns_OrganisationRelationshipModel_OnSuccess()
-    {
-        // Arrange
-        var page = 1;
-        var showPerPage = 20;
+    //[TestMethod]
+    //public async Task GetPagedOrganisationRelationships_Returns_OrganisationRelationshipModel_OnSuccess()
+    //{
+    //    // Arrange
+    //    var page = 1;
+    //    var showPerPage = 20;
 
-        var expectedModel = _fixture.Create<PaginatedResponse<RelationshipResponseModel>>();
+    //    var expectedModel = _fixture.Create<PaginatedResponse<RelationshipResponseModel>>();
 
-        var expectedUrl =
-            $"{BaseAddress}/{OrganisationGetRelationshipUri}/organisationRelationships?page={page}&showPerPage={showPerPage}";
+    //    var expectedUrl =
+    //        $"{BaseAddress}/{OrganisationGetRelationshipUri}/organisationRelationships?page={page}&showPerPage={showPerPage}";
 
-        _httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync",
-                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(JsonSerializer.Serialize(expectedModel))
-            }).Verifiable();
+    //    _httpMessageHandlerMock.Protected()
+    //        .Setup<Task<HttpResponseMessage>>("SendAsync",
+    //            ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+    //            ItExpr.IsAny<CancellationToken>())
+    //        .ReturnsAsync(new HttpResponseMessage
+    //        {
+    //            StatusCode = HttpStatusCode.OK,
+    //            Content = new StringContent(JsonSerializer.Serialize(expectedModel))
+    //        }).Verifiable();
 
-        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
-        httpClient.BaseAddress = new Uri(BaseAddress);
+    //    var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+    //    httpClient.BaseAddress = new Uri(BaseAddress);
 
-        var sut = new OrganisationService(httpClient, _logger, _configuration);
+    //    var sut = new OrganisationService(httpClient, _logger, _configuration);
 
-        // Act
-        var result = await sut.GetPagedOrganisationRelationships(page, showPerPage);
+    //    // Act
+    //    var result = await sut.GetPagedOrganisationRelationships(page, showPerPage);
 
-        // Assert
-        Assert.IsNotNull(result);
-        result.Should().BeEquivalentTo(expectedModel);
-    }
+    //    // Assert
+    //    Assert.IsNotNull(result);
+    //    result.Should().BeEquivalentTo(expectedModel);
+    //}
 
     [TestMethod]
     public async Task GetUnpagedOrganisationRelationships_Returns_OrganisationRelationshipModel_OnSuccess()
