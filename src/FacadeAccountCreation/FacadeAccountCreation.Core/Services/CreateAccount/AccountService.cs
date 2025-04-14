@@ -30,6 +30,33 @@ public class AccountService(HttpClient httpClient, IOptions<AccountsEndpointsCon
         return result;
     }
 
+    public async Task AddReprocessorExporterAccountAsync(ReprocessorExporterAccountWithUserModel accountWithUser)
+    {
+        var response = await httpClient.PostAsJsonAsync(_accountsEndpointsConfig.ReprocessorExporterAccounts, accountWithUser);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            ProblemDetails? problemDetails = null;
+            try
+            {
+                problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+            }
+            catch (JsonException e)
+            {
+                // if the response isn't a valid ProblemDetails, either this exception is thrown,
+                // or in some circumstances, null is returned.
+                // we handle both scenarios next
+            }
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+
+            response.EnsureSuccessStatusCode();
+        }
+    }
+
     public async Task<CreateAccountResponse?> AddApprovedUserAccountAsync(AccountModel approvedUser )
     {
         
