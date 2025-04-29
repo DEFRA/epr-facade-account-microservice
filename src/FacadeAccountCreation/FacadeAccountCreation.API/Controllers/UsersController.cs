@@ -42,6 +42,39 @@ public class UsersController(
             return HandleError.Handle(e);
         }
     }
+    
+    [HttpGet]
+    [Consumes("application/json")]
+    [Route("v1/organisations")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetOrganisationsWithRoles([FromQuery] string serviceKey = null)
+    {
+        try
+        {
+            var userId = User.UserId();
+            if (userId == Guid.Empty)
+            {
+                logger.LogError("Unable to get the OId for the user when attempting to get organisation details");
+                return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
+            }
+            var response = await userService.GetUserOrganisations(userId, serviceKey);
+
+            if (response.IsSuccessStatusCode)
+            {
+                logger.LogInformation("Fetched the organisations list successfully for the user {UserId}", userId);
+                return Ok(await response.Content.ReadFromJsonAsync<UserOrganisationsListModel>());
+            }
+
+            logger.LogError("Failed to fetch the organisations list for the user {UserId}", userId);
+            return HandleError.HandleErrorWithStatusCode(response.StatusCode);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error fetching the organisations list for the user");
+            return HandleError.Handle(e);
+        }
+    }
 
     [HttpPut]
     [Consumes("application/json")]
