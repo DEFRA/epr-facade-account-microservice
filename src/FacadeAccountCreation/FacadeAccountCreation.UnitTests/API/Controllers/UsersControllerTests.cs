@@ -358,4 +358,85 @@ public class UsersControllerTests
         Assert.IsNotNull(okResult);
         Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
     }
+    
+    [TestMethod]
+    public async Task GetOrganisationsWithRoles_ReturnsOk_WhenSuccessful()
+    {
+        // Arrange
+        var userId = _oid;
+        var apiResponse = _fixture.Create<UserOrganisationsListModel>();
+
+        _mockUserService.Setup(s => s.GetUserOrganisations(userId, It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+            });
+
+        // Act
+        var result = await _sut.GetOrganisationsWithRoles();
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult.StatusCode.Should().Be(200);
+        okResult.Value.Should().BeEquivalentTo(apiResponse);
+    }
+    
+    [TestMethod]
+    public async Task GetOrganisationsWithRoles_ReturnsErrorStatus_WhenServiceFails()
+    {
+        // Arrange
+        var userId = _oid;
+
+        _mockUserService.Setup(s => s.GetUserOrganisations(userId, It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.BadRequest
+            });
+
+        // Act
+        var result = await _sut.GetOrganisationsWithRoles();
+
+        // Assert
+        result.Should().BeOfType<BadRequestResult>();
+        var badRequestResult = result as BadRequestResult;
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+    
+    [TestMethod]
+    public async Task GetOrganisationsWithRoles_Returns500_WhenUserIdIsEmpty()
+    {
+        // Arrange
+        _httpContextMock.Setup(x => x.User.Claims).Returns(new List<Claim>
+        {
+            new("emails", "_userEmail"),
+            new(ClaimConstants.ObjectId, Guid.Empty.ToString())
+        }.AsEnumerable());
+        _sut.ControllerContext.HttpContext = _httpContextMock.Object;
+
+        // Act
+        var result = await _sut.GetOrganisationsWithRoles();
+
+        // Assert
+        result.Should().BeOfType<ObjectResult>();
+        var objectResult = result as ObjectResult;
+        objectResult.StatusCode.Should().Be(500);
+    }
+    
+    [TestMethod]
+    public async Task GetOrganisationsWithRoles_Returns500_WhenExceptionThrown()
+    {
+        // Arrange
+        _mockUserService.Setup(s => s.GetUserOrganisations(It.IsAny<Guid>(), It.IsAny<string>()))
+            .ThrowsAsync(new Exception("Test Exception"));
+
+        // Act
+        var result = await _sut.GetOrganisationsWithRoles();
+
+        // Assert
+        var statusResult = result as StatusCodeResult;
+        Assert.IsNotNull(statusResult);
+        Assert.AreEqual(StatusCodes.Status500InternalServerError, statusResult.StatusCode);
+    }
 }
