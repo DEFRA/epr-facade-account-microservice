@@ -55,7 +55,7 @@ public class UsersController(
             var userId = User.UserId();
             if (userId == Guid.Empty)
             {
-                logger.LogError("Unable to get the OId for the user when attempting to get organisation details");
+                logger.LogError("Unable to get the {UserId} for the user when attempting to get organisation details", nameof(userId));
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
             var response = await userService.GetUserOrganisations(userId, serviceKey);

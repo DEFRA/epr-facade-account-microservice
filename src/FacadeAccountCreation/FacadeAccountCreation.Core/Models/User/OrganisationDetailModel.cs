@@ -43,5 +43,5 @@ public class OrganisationDetailModel
 
 	public int? NationId { get; set; }
 	
-	public List<ServiceRoleModel>? ServiceRoles { get; set; }
+	public List<ServiceRoleModel>? Enrolments { get; set; }
 }

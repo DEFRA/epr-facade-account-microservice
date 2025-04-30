@@ -23,7 +23,7 @@ public class UserService(
 
     public async Task<HttpResponseMessage> GetUserOrganisations(Guid userId, string serviceKey)
     {
-        var endpoint = config.GetSection("ComplianceSchemeEndpoints")["GetUserOrganisationsWithServiceRoles"];
+        var endpoint = config.GetValue<string>("ComplianceSchemeEndpoints:GetUserOrganisationsWithServiceRoles");
         if (string.IsNullOrWhiteSpace(endpoint))
         {
             throw new InvalidOperationException("The 'GetUserOrganisationsWithServiceRoles' endpoint is not configured.");
@@ -37,10 +37,12 @@ public class UserService(
 
         var url = $"{endpoint}?{string.Join("&", queryParameters)}";
 
+        var sanitizedServiceKey = serviceKey?.Replace("\r", "").Replace("\n", "");
+
         logger.LogInformation(
             "Attempting to fetch organisations for user id '{UserId}' from the backend{ServiceKeyInfo}",
             userId,
-            string.IsNullOrWhiteSpace(serviceKey) ? "" : $" with service key '{serviceKey}'"
+            string.IsNullOrWhiteSpace(sanitizedServiceKey) ? "" : $" with service key '{sanitizedServiceKey}'"
         );
 
         return await httpClient.GetAsync(url);
