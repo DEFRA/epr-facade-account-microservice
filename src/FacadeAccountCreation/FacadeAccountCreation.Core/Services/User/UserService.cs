@@ -37,10 +37,14 @@ public class UserService(
 
         var url = $"{endpoint}?{string.Join("&", queryParameters)}";
 
+        var sanitizedServiceKey = string.IsNullOrWhiteSpace(serviceKey) 
+            ? "" 
+            : serviceKey.Replace("\n", "").Replace("\r", "");
+
         logger.LogInformation(
             "Attempting to fetch organisations for user id '{UserId}' from the backend{ServiceKeyInfo}",
             userId,
-            string.IsNullOrWhiteSpace(serviceKey) ? "" : $" with service key '{serviceKey}'"
+            string.IsNullOrWhiteSpace(sanitizedServiceKey) ? "" : $" with service key '{sanitizedServiceKey}'"
         );
 
         return await httpClient.GetAsync(url);
