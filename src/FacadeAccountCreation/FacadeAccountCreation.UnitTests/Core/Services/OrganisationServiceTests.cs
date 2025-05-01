@@ -25,8 +25,9 @@ public class OrganisationServiceTests
     private const string OrganisationByReferenceNumberUrl = "api/organisations/organisation-by-reference-number";
     private const string OrganisationNationUrl = "api/organisations/nation-code";
 	private const string OrganisationChildExternalIdsUrl = "api/organisations/v1/child-organisation-external-ids?organisationId={0}&complianceSchemeId={1}";
+    private const string OrganisationByCompanyHouseNumberUrl = "api/organisations/organisation-by-companies-house-number";
 
-	private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
+    private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<OrganisationService> _logger = new();
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
     private readonly IConfiguration _configuration = GetConfig();
@@ -982,7 +983,48 @@ public class OrganisationServiceTests
             ItExpr.IsAny<CancellationToken>());
         result.Should().BeNull();
     }
-    
+
+
+    [TestMethod]
+    public async Task GetOrganisationByCompanyNumber_WhenApiReturnsNoContent_ReturnsNullResponse()
+    {
+        // Arrange
+        const string companiesHouseNumber = "12345678";
+        const string expectedUrl = $"{BaseAddress}/{OrganisationByCompanyHouseNumberUrl}?companiesHouseNumber={companiesHouseNumber}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Get &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NoContent,
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        //Act
+        var result = await sut.GetOrganisationByCompanyHouseNumber(companiesHouseNumber);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+        result.Should().BeNull();
+    }
+
+
     [TestMethod]
     public async Task GetOrganisationByReferenceNumber_WhenApiReturnsNonSuccess_ShouldReturnUnsuccessfulResponse()
     {
