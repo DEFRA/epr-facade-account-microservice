@@ -5,6 +5,7 @@ namespace FacadeAccountCreation.UnitTests.API.Controllers;
 [TestClass]
 public class ReprocessorExporterAccountsControllerTests
 {
+    private const string ServiceKey = "ServiceKey";
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private Guid _userId;
     private string _userEmail;
@@ -41,7 +42,7 @@ public class ReprocessorExporterAccountsControllerTests
         account.Person.ContactEmail = _userEmail;
 
         // Act
-        var result = await _sut!.CreateAccount(account);
+        var result = await _sut!.CreateAccount(account, ServiceKey);
 
         // Assert
         result.Should().NotBeNull();
@@ -56,10 +57,10 @@ public class ReprocessorExporterAccountsControllerTests
         var account = _fixture.Create<ReprocessorExporterAccountModel>();
 
         _mockAccountServiceMock
-            .Setup(x => x.AddReprocessorExporterAccountAsync(It.IsAny<ReprocessorExporterAccountWithUserModel>()));
+            .Setup(x => x.AddReprocessorExporterAccountAsync(It.IsAny<ReprocessorExporterAccountWithUserModel>(), ServiceKey));
 
         // Act
-        await _sut!.CreateAccount(account);
+        await _sut!.CreateAccount(account, ServiceKey);
 
         // Assert
         _mockAccountServiceMock.Verify(x =>
@@ -71,7 +72,8 @@ public class ReprocessorExporterAccountsControllerTests
                     && a.Person.FirstName == account.Person.FirstName
                     && a.Person.LastName == account.Person.LastName
                     && a.Person.TelephoneNumber == account.Person.TelephoneNumber
-                    && a.Person.ContactEmail == account.Person.ContactEmail)),
+                    && a.Person.ContactEmail == account.Person.ContactEmail),
+                    ServiceKey),
             Times.Once);
     }
 }

@@ -10,7 +10,9 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> CreateAccount(ReprocessorExporterAccountModel account)
+    public async Task<ActionResult> CreateAccount(
+        ReprocessorExporterAccountModel account,
+        [BindRequired, FromQuery] string serviceKey)
     {
         var accountWithUser = new ReprocessorExporterAccountWithUserModel(account, new UserModel
         {
@@ -18,7 +20,7 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
             Email = User.Email()
         });
 
-        await accountService.AddReprocessorExporterAccountAsync(accountWithUser);
+        await accountService.AddReprocessorExporterAccountAsync(accountWithUser, serviceKey);
 
         // returning Created would probably be better, but we return OK to be consistent with the existing CreateAccount
         return Ok();

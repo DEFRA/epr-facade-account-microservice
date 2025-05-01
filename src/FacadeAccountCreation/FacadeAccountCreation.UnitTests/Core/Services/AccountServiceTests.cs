@@ -8,6 +8,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services;
 [TestClass]
 public class AccountServiceTests
 {
+    private const string ServiceKey = "ServiceKey";
     private const string OrganisationEndpoint = "api/organisations";
     private const string AccountsEndpoint = "api/producer-accounts";
     private const string ReprocessorExporterAccountsEndpoint = "api/v1/reprocessor-exporter-user-accounts";
@@ -136,7 +137,7 @@ public class AccountServiceTests
                 ItExpr.Is<HttpRequestMessage>(
                     req => req.Method == HttpMethod.Post &&
                            req.RequestUri != null &&
-                           req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+                           req.RequestUri.ToString().StartsWith(AddReprocessorExporterAccountPostUrl)),
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage
             {
@@ -145,7 +146,7 @@ public class AccountServiceTests
 
         var sut = GetAccountService();
 
-        Func<Task> act = async () => await sut.AddReprocessorExporterAccountAsync(apiRequest);
+        Func<Task> act = async () => await sut.AddReprocessorExporterAccountAsync(apiRequest, ServiceKey);
 
         // Act & Assert
         await act.Should().NotThrowAsync();
@@ -162,7 +163,7 @@ public class AccountServiceTests
                 ItExpr.Is<HttpRequestMessage>(
                     req => req.Method == HttpMethod.Post &&
                            req.RequestUri != null &&
-                           req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+                           req.RequestUri.ToString().StartsWith(AddReprocessorExporterAccountPostUrl)),
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage
             {
@@ -172,14 +173,14 @@ public class AccountServiceTests
         var sut = GetAccountService();
 
         // Act
-        await sut.AddReprocessorExporterAccountAsync(apiRequest);
+        await sut.AddReprocessorExporterAccountAsync(apiRequest, ServiceKey);
 
         // Assert
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
             ItExpr.Is<HttpRequestMessage>(
                 req => req.Method == HttpMethod.Post &&
                        req.RequestUri != null &&
-                       req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+                       req.RequestUri.ToString().StartsWith(AddReprocessorExporterAccountPostUrl)),
             ItExpr.IsAny<CancellationToken>());
     }
 
@@ -195,7 +196,7 @@ public class AccountServiceTests
                 ItExpr.Is<HttpRequestMessage>(
                     req => req.Method == HttpMethod.Post &&
                            req.RequestUri != null &&
-                           req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+                           req.RequestUri.ToString().StartsWith(AddReprocessorExporterAccountPostUrl)),
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage
             {
@@ -206,7 +207,7 @@ public class AccountServiceTests
         var sut = GetAccountService();
 
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<ProblemResponseException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest));
+        var exception = await Assert.ThrowsExceptionAsync<ProblemResponseException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest, ServiceKey));
         Assert.IsNotNull(exception.ProblemDetails);
         Assert.AreEqual(apiResponse.Detail, exception.ProblemDetails.Detail);
         Assert.AreEqual(apiResponse.Type, exception.ProblemDetails.Type);
@@ -223,7 +224,7 @@ public class AccountServiceTests
                 ItExpr.Is<HttpRequestMessage>(
                     req => req.Method == HttpMethod.Post &&
                            req.RequestUri != null &&
-                           req.RequestUri.ToString() == AddReprocessorExporterAccountPostUrl),
+                           req.RequestUri.ToString().StartsWith(AddReprocessorExporterAccountPostUrl)),
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage
             {
@@ -234,7 +235,7 @@ public class AccountServiceTests
         var sut = GetAccountService();
 
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest));
+        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest, ServiceKey));
         Assert.AreEqual(HttpStatusCode.InternalServerError, exception.StatusCode);
     }
 
