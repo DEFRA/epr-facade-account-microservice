@@ -19,8 +19,9 @@ public class OrganisationService(
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
     private const string OrganisationNationUrl = "api/organisations/nation-code";
-	
-	public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
+    private const string OrganisationByCompanyHouseNumberUrl = "api/organisations/organisation-by-companies-house-number";
+
+    public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
     {
         var url = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetOrganisationUsers").Value}?userId={userId}&organisationId={organisationId}&serviceRoleId={serviceRoleId}";
         
@@ -83,6 +84,31 @@ public class OrganisationService(
         var organisation = await response.Content.
             ReadFromJsonWithEnumsAsync<OrganisationDto>();
         
+        return organisation;
+    }
+
+    public async Task<OrganisationDto> GetOrganisationByCompanyHouseNumber(string companyHouseNumber)
+    {
+        var response = await httpClient.GetAsync($"{OrganisationByCompanyHouseNumberUrl}?companiesHouseNumber={companyHouseNumber}");
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            return null;
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+        var organisation = await response.Content.
+            ReadFromJsonWithEnumsAsync<OrganisationDto>();
+
         return organisation;
     }
 
