@@ -4,7 +4,7 @@ using FacadeAccountCreation.Core.Services.User;
 namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
-[Route("api/user-accounts")]
+[Route("api")]
 public class UsersController(
     ILogger<UsersController> logger,
     IUserService userService,
@@ -13,6 +13,7 @@ public class UsersController(
 {
     [HttpGet]
     [Consumes("application/json")]
+    [Route("user-accounts")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOrganisation()
@@ -45,7 +46,7 @@ public class UsersController(
     
     [HttpGet]
     [Consumes("application/json")]
-    [Route("v1/organisations")]
+    [Route("v1/user-accounts")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOrganisationsWithRoles([FromQuery] string serviceKey = null)
@@ -78,7 +79,7 @@ public class UsersController(
 
     [HttpPut]
     [Consumes("application/json")]
-    [Route("personal-details")]
+    [Route("user-accounts/personal-details")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdatePersonalDetails(
