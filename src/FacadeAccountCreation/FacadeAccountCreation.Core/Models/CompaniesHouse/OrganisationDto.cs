@@ -18,4 +18,6 @@ public class OrganisationDto
     public int Id { get; set; }
 
     public Guid ExternalId { get; set; }
+
+    public string? ParentCompanyName { get; set; }
 }

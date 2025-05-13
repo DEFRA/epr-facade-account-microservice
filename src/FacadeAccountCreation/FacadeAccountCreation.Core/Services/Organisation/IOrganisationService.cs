@@ -31,7 +31,7 @@ public interface IOrganisationService
 
     Task TerminateSubsidiaryAsync(SubsidiaryTerminateModel subsidiaryTerminateModel);
 
-    Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationRelationships(int page, int showPerPage);
+    Task<PagedOrganisationRelationshipsModel> GetPagedOrganisationRelationships(int page, int showPerPage, string search = null);
 
     Task<List<RelationshipResponseModel>> GetUnpagedOrganisationRelationships();
 
@@ -42,4 +42,6 @@ public interface IOrganisationService
     Task<string> GetOrganisationNationCodeByExternalIdAsync(Guid organisationExternalId);
 
 	Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId);
+
+    Task<OrganisationDto> GetOrganisationByCompanyHouseNumber(string companyHouseNumber);
 }

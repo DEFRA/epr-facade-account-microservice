@@ -25,8 +25,9 @@ public class OrganisationServiceTests
     private const string OrganisationByReferenceNumberUrl = "api/organisations/organisation-by-reference-number";
     private const string OrganisationNationUrl = "api/organisations/nation-code";
 	private const string OrganisationChildExternalIdsUrl = "api/organisations/v1/child-organisation-external-ids?organisationId={0}&complianceSchemeId={1}";
+    private const string OrganisationByCompanyHouseNumberUrl = "api/organisations/organisation-by-companies-house-number";
 
-	private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
+    private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<OrganisationService> _logger = new();
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
     private readonly IConfiguration _configuration = GetConfig();
@@ -549,13 +550,13 @@ public class OrganisationServiceTests
     }
 
     [TestMethod]
-    public async Task GetPagedOrganisationRelationships_Returns_OrganisationRelationshipModel_OnSuccess()
+    public async Task GetPagedOrganisationRelationships_WithoutSearchParameter_Returns_OrganisationRelationshipModel_OnSuccess()
     {
         // Arrange
         var page = 1;
         var showPerPage = 20;
 
-        var expectedModel = _fixture.Create<PaginatedResponse<RelationshipResponseModel>>();
+        var expectedModel = _fixture.Create<PagedOrganisationRelationshipsModel>();
 
         var expectedUrl =
             $"{BaseAddress}/{OrganisationGetRelationshipUri}/organisationRelationships?page={page}&showPerPage={showPerPage}";
@@ -581,6 +582,58 @@ public class OrganisationServiceTests
         // Assert
         Assert.IsNotNull(result);
         result.Should().BeEquivalentTo(expectedModel);
+    }
+
+    [TestMethod]
+    public async Task GetPagedOrganisationRelationships_WithSearchParameter_Returns_OrganisationRelationshipModel_OnSuccess()
+    {
+        // Arrange
+        var page = 1;
+        var showPerPage = 20;
+        var search = "test";
+
+        var expectedModel = _fixture.Create<PagedOrganisationRelationshipsModel>();
+
+        var expectedUrl =
+            $"{BaseAddress}/{OrganisationGetRelationshipUri}/organisationRelationships?page={page}&showPerPage={showPerPage}&search={search}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(expectedModel))
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        var result = await sut.GetPagedOrganisationRelationships(page, showPerPage, search);
+
+        // Assert
+        Assert.IsNotNull(result);
+        result.Should().BeEquivalentTo(expectedModel);
+    }
+
+    [TestMethod]
+    public async Task GetPagedOrganisationRelationships_ThrowsException_OnFailure()
+    {
+        // Arrange
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        Func<Task> act = () => sut.GetPagedOrganisationRelationships(1, 20);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
     [TestMethod]
@@ -616,22 +669,6 @@ public class OrganisationServiceTests
         result.Should().BeEquivalentTo(expectedModel);
     }
 
-
-    [TestMethod]
-    public async Task GetPagedOrganisationRelationships_ThrowsException_OnFailure()
-    {
-        // Arrange
-        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
-        httpClient.BaseAddress = new Uri(BaseAddress);
-
-        var sut = new OrganisationService(httpClient, _logger, _configuration);
-
-        // Act
-        Func<Task> act = () => sut.GetPagedOrganisationRelationships(1, 20);
-
-        // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>();
-    }
 
     [TestMethod]
     public async Task GetUnpagedOrganisationRelationships_ThrowsException_OnFailure()
@@ -946,7 +983,48 @@ public class OrganisationServiceTests
             ItExpr.IsAny<CancellationToken>());
         result.Should().BeNull();
     }
-    
+
+
+    [TestMethod]
+    public async Task GetOrganisationByCompanyNumber_WhenApiReturnsNoContent_ReturnsNullResponse()
+    {
+        // Arrange
+        const string companiesHouseNumber = "12345678";
+        const string expectedUrl = $"{BaseAddress}/{OrganisationByCompanyHouseNumberUrl}?companiesHouseNumber={companiesHouseNumber}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(
+                    req => req.Method == HttpMethod.Get &&
+                           req.RequestUri != null &&
+                           req.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NoContent,
+            }).Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        //Act
+        var result = await sut.GetOrganisationByCompanyHouseNumber(companiesHouseNumber);
+
+        // Assert
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(
+                req => req.Method == HttpMethod.Get &&
+                       req.RequestUri != null &&
+                       req.RequestUri.ToString() == expectedUrl),
+            ItExpr.IsAny<CancellationToken>());
+        result.Should().BeNull();
+    }
+
+
     [TestMethod]
     public async Task GetOrganisationByReferenceNumber_WhenApiReturnsNonSuccess_ShouldReturnUnsuccessfulResponse()
     {

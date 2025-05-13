@@ -1,6 +1,7 @@
 ﻿using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Exceptions;
 using Microsoft.Extensions.Configuration;
+using System.Web;
 
 namespace FacadeAccountCreation.Core.Services.Organisation;
 
@@ -18,8 +19,9 @@ public class OrganisationService(
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
     private const string OrganisationNationUrl = "api/organisations/nation-code";
-	
-	public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
+    private const string OrganisationByCompanyHouseNumberUrl = "api/organisations/organisation-by-companies-house-number";
+
+    public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
     {
         var url = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetOrganisationUsers").Value}?userId={userId}&organisationId={organisationId}&serviceRoleId={serviceRoleId}";
         
@@ -82,6 +84,31 @@ public class OrganisationService(
         var organisation = await response.Content.
             ReadFromJsonWithEnumsAsync<OrganisationDto>();
         
+        return organisation;
+    }
+
+    public async Task<OrganisationDto> GetOrganisationByCompanyHouseNumber(string companyHouseNumber)
+    {
+        var response = await httpClient.GetAsync($"{OrganisationByCompanyHouseNumberUrl}?companiesHouseNumber={companyHouseNumber}");
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            return null;
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+
+        response.EnsureSuccessStatusCode();
+        var organisation = await response.Content.
+            ReadFromJsonWithEnumsAsync<OrganisationDto>();
+
         return organisation;
     }
 
@@ -201,9 +228,14 @@ public class OrganisationService(
         }
     }
 
-    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationRelationships(int page, int showPerPage)
+    public async Task<PagedOrganisationRelationshipsModel> GetPagedOrganisationRelationships(int page, int showPerPage, string search = null)
     {
         var endpoint = $"{OrganisationGetSubsidiaryUri}/organisationRelationships?page={page}&showPerPage={showPerPage}";
+
+        if (search != null)
+        {
+            endpoint += $"&search={HttpUtility.UrlEncode(search)}";
+        }
 
         try
         {
@@ -213,7 +245,7 @@ public class OrganisationService(
 
             response.EnsureSuccessStatusCode();
 
-            return await response.Content.ReadFromJsonWithEnumsAsync<PaginatedResponse<RelationshipResponseModel>>();
+            return await response.Content.ReadFromJsonWithEnumsAsync<PagedOrganisationRelationshipsModel>();
         }
         catch (Exception e)
         {
