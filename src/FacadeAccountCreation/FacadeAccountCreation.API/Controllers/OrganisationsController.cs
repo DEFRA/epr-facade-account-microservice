@@ -130,6 +130,19 @@ public class OrganisationsController(
         return response == null ? NotFound() : Ok(response);
     }
 
+    [HttpGet]
+    [Route("organisation-by-company-house-number/{companyHouseNumber}")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetOrganisationsByCompaniesHouseNumber(string companyHouseNumber)
+    {
+        var response = await organisationService.GetOrganisationByCompanyHouseNumber(companyHouseNumber);
+
+        return response == null ? NotFound() : Ok(response);
+    }
+
     [HttpPost]
     [Route("create-and-add-subsidiary")]
     [Consumes("application/json")]
@@ -209,9 +222,9 @@ public class OrganisationsController(
     [Route("organisationRelationships")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetPagedOrganisationRelationshipsAsync([Required] int? page, [Required] int? showPerPage)
+    public async Task<IActionResult> GetPagedOrganisationRelationshipsAsync([Required] int? page, [Required] int? showPerPage, string search = null)
     {
-        var result = await organisationService.GetPagedOrganisationRelationships(page.Value, showPerPage.Value);
+        var result = await organisationService.GetPagedOrganisationRelationships(page.Value, showPerPage.Value, search);
 
         return Ok(result);
     }

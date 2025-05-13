@@ -1,16 +1,9 @@
-﻿using FacadeAccountCreation.Core.Constants;
-using Microsoft.FeatureManagement;
-
-namespace FacadeAccountCreation.Core.Services.CompaniesHouse;
+﻿namespace FacadeAccountCreation.Core.Services.CompaniesHouse;
 
 public class CompaniesHouseLookupService(
-    HttpClient httpClient,
-    IFeatureManager featureManager) : ICompaniesHouseLookupService
+    HttpClient httpClient) : ICompaniesHouseLookupService
 {
-    private string CompaniesHouseEndpoint { get; } = 
-        featureManager.IsEnabledAsync(FeatureFlags.UseBoomiOAuth).GetAwaiter().GetResult()
-            ? "companies"
-            : "CompaniesHouse/companies";
+    private const string CompaniesHouseEndpoint = "companies";
 
     public async Task<CompaniesHouseResponse?> GetCompaniesHouseResponseAsync(string id)
     {
