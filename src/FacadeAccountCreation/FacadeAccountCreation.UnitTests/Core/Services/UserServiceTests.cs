@@ -10,6 +10,7 @@ public class UserServiceTests
     private const string GetUserOrganisationsEndpoint = "GetUserOrganisations";
     private const string BaseAddress = "http://localhost";
     private const string UpdateUserDetailsEndpoint = "UpdateUserDetails";
+    private const string GetUserOrganisationsWithServiceRoles = "GetUserOrganisationsWithServiceRoles";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private readonly NullLogger<UserService> _logger = new();
@@ -24,6 +25,7 @@ public class UserServiceTests
             {"ApiConfig:AccountServiceBaseUrl", BaseAddress},
             {"ComplianceSchemeEndpoints:GetUserOrganisations", GetUserOrganisationsEndpoint},
             {"UserDetailsEndpoints:UpdateUserDetails", UpdateUserDetailsEndpoint},
+            {"ComplianceSchemeEndpoints:GetUserOrganisationsWithServiceRoles", GetUserOrganisationsWithServiceRoles}
         };
 
         var configuration = new ConfigurationBuilder()
@@ -195,4 +197,99 @@ public class UserServiceTests
         await act.Should().ThrowAsync<HttpRequestException>().WithMessage("Network error");
     }
 
+    [TestMethod]
+    public async Task GetUserOrganisations_WithServiceKey_ShouldReturnSuccessfulResponse()
+    {
+        // Arrange
+        var serviceKey = "test-service";
+        var apiResponse = _fixture.Build<HttpResponseMessage>()
+            .With(x => x.StatusCode, HttpStatusCode.OK)
+            .Create();
+
+        var expectedUrl = $"{BaseAddress}/{GetUserOrganisationsWithServiceRoles}?userId={_userOid}&serviceKey={Uri.EscapeDataString(serviceKey)}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => 
+                    x.RequestUri != null && 
+                    x.RequestUri.ToString() == expectedUrl &&
+                    x.Method == HttpMethod.Get),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(apiResponse)
+            .Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new UserService(httpClient, _logger, _configuration);
+
+        // Act
+        var response = await sut.GetUserOrganisations(_userOid, serviceKey);
+
+        // Assert
+        response.Should().BeEquivalentTo(apiResponse);
+    }
+    
+    [TestMethod]
+    public async Task GetUserOrganisations_WithoutServiceKey_ShouldReturnSuccessfulResponse()
+    {
+        // Arrange
+        string serviceKey = null;
+        var apiResponse = _fixture.Build<HttpResponseMessage>()
+            .With(x => x.StatusCode, HttpStatusCode.OK)
+            .Create();
+
+        var expectedUrl = $"{BaseAddress}/{GetUserOrganisationsWithServiceRoles}?userId={_userOid}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => 
+                    x.RequestUri != null && 
+                    x.RequestUri.ToString() == expectedUrl &&
+                    x.Method == HttpMethod.Get),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(apiResponse)
+            .Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new UserService(httpClient, _logger, _configuration);
+
+        // Act
+        var response = await sut.GetUserOrganisations(_userOid, serviceKey);
+
+        // Assert
+        response.Should().BeEquivalentTo(apiResponse);
+    }
+    
+    
+    [TestMethod]
+    public async Task GetUserOrganisations_ShouldThrowException_WhenEndpointIsMissing()
+    {
+        // Arrange
+        var badConfig = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
+        {
+            {"ApiConfig:AccountServiceBaseUrl", BaseAddress},
+            // No ComplianceSchemeEndpoints:GetUserOrganisations
+        }).Build();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new Uri(BaseAddress)
+        };
+
+        var sut = new UserService(httpClient, _logger, badConfig);
+
+        // Act
+        Func<Task> act = async () => await sut.GetUserOrganisations(_userOid, "service-key");
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("The 'GetUserOrganisationsWithServiceRoles' endpoint is not configured.");
+    }
 }
