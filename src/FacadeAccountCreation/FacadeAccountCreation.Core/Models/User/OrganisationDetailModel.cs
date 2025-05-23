@@ -42,4 +42,6 @@ public class OrganisationDetailModel
     public string? JobTitle { get; set; }
 
 	public int? NationId { get; set; }
+	
+	public List<ServiceRoleModel>? Enrolments { get; set; }
 }
