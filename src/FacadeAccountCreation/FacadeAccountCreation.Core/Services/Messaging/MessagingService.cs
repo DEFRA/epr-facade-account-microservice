@@ -1,5 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using FacadeAccountCreation.Core.Constants;
+using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.Messaging;
 using Notify.Interfaces;
 using PersonRole = FacadeAccountCreation.Core.Models.Connections.PersonRole;
@@ -409,8 +411,8 @@ public class MessagingService(
             { "organisationID", input.OrganisationNumber }
         };
 
-        List<string> notificationId = new List<string>();
-        List<string> recipients = new();
+        List<string> notificationId = [];
+        List<string> recipients = [];
 
         var complianceSchemeRegulatorEmail = GetRegulatorEmail(input.ComplianceSchemeNation);
         var organisationRegulatorEmail = GetRegulatorEmail(input.OrganisationNation);
@@ -588,4 +590,295 @@ public class MessagingService(
             { "organisationNumber", input.OrganisationNumber },
         };
     }
+
+    #region Reprocessor and Exporter email notification
+
+    /// <summary>
+    /// Sends an invitation email to be approved person within an organisation with an invite link
+    /// </summary>
+    /// <param name="reExNotification"></param>
+    /// <returns> list of response id with email id, or empty list if any exception</returns>
+    /// <exception cref="ArgumentException"></exception>
+    public List<(string email, string notificationResponseId)> SendReExInvitationToBeApprovedPerson(ReExNotificationModel reExNotification)
+    {
+        var notificationList = new List<(string email, string responseId)>();
+
+        foreach (var member in reExNotification.ReExInvitedApprovedPersons)
+        {
+            if (string.IsNullOrWhiteSpace(member.FirstName))
+            {
+                throw new ArgumentException("First name cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(member.LastName))
+            {
+                throw new ArgumentException("Last name cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(member.Email))
+            {
+                throw new ArgumentException("email cannot be empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(reExNotification.OrganisationId))
+            {
+                throw new ArgumentException("Organisation Id cannot be empty");
+            }
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "fullName", $"{member.FirstName} {member.LastName}" },
+                { "organisationName", reExNotification.CompanyName },
+                { "organisationId", reExNotification.OrganisationId },
+                { "acceptRejectLink", member.InviteToken }
+            };
+
+            var templateId = _messagingConfig.ReExApprovedPersonInvitationTemplateId;
+
+            try
+            {
+                var response = notificationClient.SendEmail(member.Email, templateId, parameters);
+                notificationList.Add((member.Email, response.id));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, ExceptionLogMessage, reExNotification.OrganisationId, reExNotification.UserId, templateId);
+            }
+        }
+        return notificationList;
+    }
+
+    /// <summary>
+    /// Send notification to inviter(s) that emails has been sent to relevant Approved Person(s)
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="userFullName"></param>
+    /// <param name="userEmail"></param>
+    /// <param name="organisationId"></param>
+    /// <param name="invitedList"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public string? SendReExInvitationConfirmationToInviter(string userId, string userFullName, string userEmail, string organisationId, string organisationName, IEnumerable<(string email, string notificationResponseId)> invitedList)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("User id cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(userFullName))
+        {
+            throw new ArgumentException("Full name cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(userEmail))
+        {
+            throw new ArgumentException("User email cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(organisationId))
+        {
+            throw new ArgumentException("Organisation Id cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(organisationName))
+        {
+            throw new ArgumentException("Organisation name cannot be empty");
+        }
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "inviteeFullName", userFullName },
+            { "organisationName", organisationName }
+        };
+
+        // IF HAS INVITED PERSON EMAILS
+        StringBuilder invitedEmails = new();
+
+        foreach (var invitedPerson in invitedList)
+        {
+            invitedEmails.AppendLine(invitedPerson.email);
+        }
+
+        if (invitedEmails.Length > 0)
+        {
+            parameters.Add("invitedPersonEmails", invitedEmails.ToString());
+        }
+
+        var templateId = _messagingConfig.ReExInvitationConfirmationToInviterTemplateId;
+
+        try
+        {
+            return notificationClient.SendEmail(userEmail, templateId, parameters).id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ExceptionLogMessage, organisationId, userId, templateId);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Send confirmation to inviter that the Person invited to be an AP has accepted
+    /// </summary>
+    /// <param name="reExNotification"></param>
+    /// <returns>response id or null if any exception</returns>
+    public string? SendReExConfirmationOfAnApprovedPerson(ReExNotificationModel reExNotification)
+    {
+        if (string.IsNullOrWhiteSpace(reExNotification.UserFirstName))
+        {
+            throw new ArgumentException("First name cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(reExNotification.UserLastName))
+        {
+            throw new ArgumentException("Last name cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(reExNotification.OrganisationId))
+        {
+            throw new ArgumentException("Organisation Id cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(reExNotification.CompanyName))
+        {
+            throw new ArgumentException("Company name cannot be empty");
+        }
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "fullName", $"{reExNotification.UserFirstName} {reExNotification.UserLastName}" },
+            { "organisationName", reExNotification.CompanyName },
+            { "organisationId", reExNotification.OrganisationId }
+        };
+
+        var templateId = _messagingConfig.ReExApprovedPersonAcceptedInvitationTemplateId;
+
+        try
+        {
+            return notificationClient.SendEmail(reExNotification.UserEmail, templateId, parameters).id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ExceptionLogMessage, reExNotification.OrganisationId, reExNotification.UserId, templateId);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Email to inviter that invitee has rejected AP invitation
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="userFullName"></param>
+    /// <param name="userEmail"></param>
+    /// <param name="organisationId"></param>
+    /// <param name="organisationName"></param>
+    /// <param name="rejectedByName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public string? SendRejectionEmailFromInvitedAP(string userId, string userFullName, string userEmail, string organisationId, string organisationName, string rejectedByName)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("User id cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(userFullName))
+        {
+            throw new ArgumentException("Full name cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(userEmail))
+        {
+            throw new ArgumentException("User email cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(organisationId))
+        {
+            throw new ArgumentException("Organisation Id cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(organisationName))
+        {
+            throw new ArgumentException("Organisation name cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(rejectedByName))
+        {
+            throw new ArgumentException("Approved person email cannot be empty");
+        }
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "inviteeFullName", userFullName },
+            { "rejectedAPName", rejectedByName },
+            { "organisationName", organisationName },
+            { "organisationId", organisationId }
+        };
+
+        var templateId = _messagingConfig.ReExApprovedPersonRejectedInvitationTemplateId;
+
+        try
+        {
+            var response = notificationClient.SendEmail(userEmail, templateId, parameters);
+            return response.id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ExceptionLogMessage, organisationId, userId, templateId);
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Email confirmation to invitee that they have rejected the AP invitation
+    /// </summary>
+    /// <param name="organisationId"></param>
+    /// <param name="organisationName"></param>
+    /// <param name="rejectedByName"></param>
+    /// <param name="rejectedAPEmail"></param>
+    /// <returns>response id</returns>
+    /// <exception cref="ArgumentException"></exception>
+    public string? SendRejectionConfirmationToApprovedPerson(string organisationId, string organisationName, string rejectedByName, string rejectedAPEmail)
+    {
+        if (string.IsNullOrWhiteSpace(rejectedByName))
+        {
+            throw new ArgumentException("Approved person name cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(rejectedAPEmail))
+        {
+            throw new ArgumentException("Approved person email cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(organisationId))
+        {
+            throw new ArgumentException("Organisation Id cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(organisationName))
+        {
+            throw new ArgumentException("Organisation name cannot be empty");
+        }
+
+        var parameters = new Dictionary<string, object>
+        {            
+            { "organisationId", organisationId },
+            { "organisationName", organisationName },
+            { "rejectedAPName", rejectedByName }            
+        };
+
+        var templateId = _messagingConfig.ReExApprovedPersonRejectedInvitationTemplateId;
+
+        try
+        {
+            return notificationClient.SendEmail(rejectedAPEmail, templateId, parameters).id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ExceptionLogMessage, organisationId, rejectedAPEmail, templateId);
+            return null;
+        }
+    }
+
+    #endregion
 }

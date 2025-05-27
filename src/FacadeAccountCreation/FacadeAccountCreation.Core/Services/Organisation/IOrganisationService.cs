@@ -1,4 +1,6 @@
-﻿namespace FacadeAccountCreation.Core.Services.Organisation;
+﻿using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
+
+namespace FacadeAccountCreation.Core.Services.Organisation;
 
 public interface IOrganisationService
 {
@@ -42,4 +44,6 @@ public interface IOrganisationService
     Task<string> GetOrganisationNationCodeByExternalIdAsync(Guid organisationExternalId);
 
 	Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId);
+
+    Task<ReExAddOrganisationResponse?> CreateReExOrganisationAsync(ReprocessorExporterAddOrganisation reExOrganisation, string serviceKey);
 }

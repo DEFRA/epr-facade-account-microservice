@@ -1,5 +1,8 @@
-﻿using FacadeAccountCreation.Core.Constants;
+﻿using System.Net.WebSockets;
+using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Exceptions;
+using FacadeAccountCreation.Core.Models.CreateAccount;
+using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
 using Microsoft.Extensions.Configuration;
 
 namespace FacadeAccountCreation.Core.Services.Organisation;
@@ -18,22 +21,23 @@ public class OrganisationService(
     private const string OrganisationTerminateSubsidiaryUri = "api/organisations/terminate-subsidiary";
     private const string OrganisationGetSubsidiaryUri = "api/organisations";
     private const string OrganisationNationUrl = "api/organisations/nation-code";
-	
-	public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
+    private const string ReExCreateOrganisationUrl = "/api/v1/reprocessor-exporter-accounts";
+
+    public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
     {
         var url = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetOrganisationUsers").Value}?userId={userId}&organisationId={organisationId}&serviceRoleId={serviceRoleId}";
-        
+
         logger.LogInformation("Attempting to fetch the users for organisation id {OrganisationId} from the backend", organisationId);
-        
+
         return await httpClient.GetAsync(url);
     }
 
     public async Task<HttpResponseMessage> GetNationIdByOrganisationId(Guid organisationId)
     {
         var url = $"{config.GetSection("RegulatorOrganisationEndpoints").GetSection("GetNationIdFromOrganisationId").Value}?organisationId={organisationId}";
-        
+
         logger.LogInformation("Attempting to fetch the nationId for organisation id {OrganisationId} from the backend", organisationId);
-        
+
         return await httpClient.GetAsync(url);
     }
 
@@ -44,7 +48,7 @@ public class OrganisationService(
         {
             return null;
         }
-        
+
         if (!response.IsSuccessStatusCode)
         {
             var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
@@ -81,7 +85,7 @@ public class OrganisationService(
         response.EnsureSuccessStatusCode();
         var organisation = await response.Content.
             ReadFromJsonWithEnumsAsync<OrganisationDto>();
-        
+
         return organisation;
     }
 
@@ -92,7 +96,7 @@ public class OrganisationService(
         {
             return null;
         }
-                
+
         if (!response.IsSuccessStatusCode)
         {
             var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
@@ -106,7 +110,7 @@ public class OrganisationService(
         response.EnsureSuccessStatusCode();
         var organisationName = response.Content.
             ReadFromJsonWithEnumsAsync<ApprovedPersonOrganisationModel>();
-        return organisationName.Result; 
+        return organisationName.Result;
     }
 
     public async Task<CheckRegulatorOrganisationExistResponseModel> GetRegulatorOrganisationByNationId(int nationId)
@@ -180,7 +184,7 @@ public class OrganisationService(
 
         return result;
     }
-    
+
     public async Task TerminateSubsidiaryAsync(SubsidiaryTerminateModel subsidiaryTerminateModel)
     {
         var response = await httpClient.PostAsJsonAsync(OrganisationTerminateSubsidiaryUri, subsidiaryTerminateModel);
@@ -282,7 +286,7 @@ public class OrganisationService(
     public async Task<List<ExportOrganisationSubsidiariesResponseModel>> ExportOrganisationSubsidiaries(Guid organisationExternalId)
     {
         var endpoint = $"{OrganisationGetSubsidiaryUri}/{organisationExternalId}/export-subsidiaries";
-        
+
         try
         {
             logger.LogInformation("Attempting to Export the Organisation Relationships for Organisation Id : '{OrganisationId}'", organisationExternalId);
@@ -350,34 +354,92 @@ public class OrganisationService(
         }
 
         return null;
-	}
+    }
 
-	public async Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId)
-	{
-		var url = $"api/organisations/v1/child-organisation-external-ids?organisationId={organisationId}&complianceSchemeId={complianceSchemeId}";
+    public async Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId)
+    {
+        var url = $"api/organisations/v1/child-organisation-external-ids?organisationId={organisationId}&complianceSchemeId={complianceSchemeId}";
 
-		try
-		{
-			logger.LogInformation("Attempting to fetch the list of external id's for organisation id {OrganisationId} from the backend", organisationId);
+        try
+        {
+            logger.LogInformation("Attempting to fetch the list of external id's for organisation id {OrganisationId} from the backend", organisationId);
 
-			var response = await httpClient.GetAsync(url);
-			response.EnsureSuccessStatusCode();
+            var response = await httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
 
-			if (response.StatusCode == HttpStatusCode.NoContent)
-			{
-				return [];
-			}
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return [];
+            }
 
-			return await response.Content.ReadFromJsonAsync<List<Guid>>() ?? [];
-		}
-		catch (Exception e)
-		{
-			logger.LogError(e, "Failed to get child external id's for Organisation id: '{OrganisationId}'", organisationId);
-			throw;
-		}
-		finally
-		{
-			httpClient.DefaultRequestHeaders.Clear();
-		}
-	}
+            return await response.Content.ReadFromJsonAsync<List<Guid>>() ?? [];
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to get child external id's for Organisation id: '{OrganisationId}'", organisationId);
+            throw;
+        }
+        finally
+        {
+            httpClient.DefaultRequestHeaders.Clear();
+        }
+    }
+
+    /// <summary>
+    /// Create organisation and get related response data from BackEndAccount service 
+    /// to be processed further for email notifications
+    /// </summary>
+    /// <param name="reExOrganisation"></param>
+    /// <param name="serviceKey"></param>
+    /// <returns>required object and related ids</returns>
+    /// <exception cref="ProblemResponseException"></exception>
+    public async Task<ReExAddOrganisationResponse?> CreateReExOrganisationAsync(ReprocessorExporterAddOrganisation reExOrganisation, string serviceKey)
+    {
+        ReExAddOrganisationResponse? result = null;
+        var response = await PostAsJsonAsyncWithAuditHeaders($"{ReExCreateOrganisationUrl}?serviceKey={serviceKey}", reExOrganisation, reExOrganisation.User.UserId);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            ProblemDetails? problemDetails;
+            try
+            {
+                problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+            }
+            catch (JsonException e)
+            {
+                problemDetails = new ProblemDetails() { Detail = e.Message };
+            }
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+        }
+        
+        if (response.StatusCode == HttpStatusCode.NoContent)
+        {
+            return result;
+        }
+
+        response.EnsureSuccessStatusCode();
+        var res = await response.Content.ReadFromJsonAsync<ReExAddOrganisationResponse>();
+        return res;
+    }
+
+    private Task<HttpResponseMessage> PostAsJsonAsyncWithAuditHeaders<TValue>(
+        string requestUri,
+        TValue value,
+        Guid userId)
+    {
+        const string xEprUserHeader = "X-EPR-User";
+
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+        {
+            Content = JsonContent.Create(value)
+        };
+
+        request.Headers.Add(xEprUserHeader, userId.ToString());
+
+        return httpClient.SendAsync(request);
+    }
 }

@@ -11,4 +11,5 @@ public class AccountsEndpointsConfig
     public string DeleteUser { get; set; }
     public string ApprovedUserAccounts { get; set; }
     public string ReprocessorExporterAccounts { get; set; }
+    public string ReprocessorExporterOrganisation { get; set; }
 }
