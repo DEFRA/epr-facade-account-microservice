@@ -49,14 +49,12 @@ public class ReExAddOrganisationMapperTests
                 UserLastName = "Welsh",
                 UserId = Guid.Parse("fadc06db-ac47-4c3c-ad5a-b0c800288668")
             },
-            ServiceRole = "ReEx.ApprovedPerson",
             UserRoleInOrganisation = "Director"
         };
 
         var res = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(reExOrgModel);
 
         res.Should().NotBeNull();
-        res.ServiceRoleName.Should().Be("ReEx.ApprovedPerson");
 
         res.User.JobTitle.Should().Be("Director");
         res.User.IsApprovedUser.Should().BeTrue();

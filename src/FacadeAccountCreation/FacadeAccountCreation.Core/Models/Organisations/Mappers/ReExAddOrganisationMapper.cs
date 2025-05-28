@@ -26,7 +26,6 @@ public static class ReExAddOrganisationMapper
                 ValidatedWithCompaniesHouse = organisationModel.Company.ValidatedWithCompaniesHouse                
             },
             Partners = [],
-            ServiceRoleName = organisationModel.ServiceRole,
             DeclarationTimeStamp = DateTime.UtcNow
         };
     }

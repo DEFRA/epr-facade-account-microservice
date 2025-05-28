@@ -57,7 +57,6 @@ public class ReExNotificationMapperTests
                 UserLastName = "Welsh",
                 UserId = Guid.Parse("fadc06db-ac47-4c3c-ad5a-b0c800288668")
             },
-            ServiceRole = "ReEx.ApprovedPerson",
             UserRoleInOrganisation = "Director"
         };
 
