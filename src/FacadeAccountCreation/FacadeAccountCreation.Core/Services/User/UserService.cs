@@ -21,6 +21,35 @@ public class UserService(
         return await httpClient.GetAsync(url);
     }
 
+    public async Task<HttpResponseMessage> GetUserOrganisations(Guid userId, string serviceKey)
+    {
+        var endpoint = config.GetValue<string>("ComplianceSchemeEndpoints:GetUserOrganisationsWithServiceRoles");
+        if (string.IsNullOrWhiteSpace(endpoint))
+        {
+            throw new InvalidOperationException("The 'GetUserOrganisationsWithServiceRoles' endpoint is not configured.");
+        }
+        
+        var queryParameters = new List<string> { $"userId={userId}" };
+        if (!string.IsNullOrWhiteSpace(serviceKey))
+        {
+            queryParameters.Add($"serviceKey={Uri.EscapeDataString(serviceKey)}");
+        }
+
+        var url = $"{endpoint}?{string.Join("&", queryParameters)}";
+        
+        var sanitizedServiceKey = string.IsNullOrWhiteSpace(serviceKey) 
+            ? "" 
+            : serviceKey.Replace("\n", "").Replace("\r", "");
+
+        logger.LogInformation(
+            "Attempting to fetch organisations for user id '{UserId}' from the backend{ServiceKeyInfo}",
+            userId,
+            string.IsNullOrWhiteSpace(sanitizedServiceKey) ? "" : $" with service key '{sanitizedServiceKey}'"
+        );
+
+        return await httpClient.GetAsync(url);
+    }
+
     public async Task<HttpResponseMessage> UpdatePersonalDetailsAsync(
     Guid userId, Guid organisationId, string serviceKey, UpdateUserDetailsRequest userDetailsUpdateModelRequest)
     {
