@@ -1491,8 +1491,7 @@ public class OrganisationServiceTests
             Type = "type"
         };
 
-        var reExOrgModel = _fixture.Create<ReprocessorExporterAddOrganisation>();
-        
+        var reExOrgModel = _fixture.Create<ReprocessorExporterAddOrganisation>();        
         var httpRequestMessage = _fixture.Build<HttpRequestMessage>().With(q => q.Content, JsonContent.Create(reExOrgModel)).Create();
 
         _httpMessageHandlerMock.Protected()

@@ -5,8 +5,6 @@
 /// </summary>
 public class ReExInvitedApprovedPerson
 {
-    public Guid? Id { get; set; }
-
     /// <summary>
     ///Role/Job for approved person i.e. Director, CompanySecretary
     /// </summary>

@@ -1,10 +1,8 @@
 ﻿using System.Web;
 using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
-using FacadeAccountCreation.Core.Models.Messaging;
 
 namespace FacadeAccountCreation.Core.Models.Organisations.Mappers;
 
-[ExcludeFromCodeCoverage]
 public static class ReExNotificationMapper
 {
     public static ReExNotificationModel MapOrganisationModelToReExNotificationModel(ReExOrganisationModel organisationModel, ReExAddOrganisationResponse response, string accountCreationUrl)
@@ -40,9 +38,7 @@ public static class ReExNotificationMapper
             approvedUser.InviteToken = inviteLink;
             approvedList.Add(approvedUser);
         }
-
         return approvedList;
     }
 }
-
 

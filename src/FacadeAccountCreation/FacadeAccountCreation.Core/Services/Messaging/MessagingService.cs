@@ -596,7 +596,7 @@ public class MessagingService(
     /// <summary>
     /// Sends an invitation email to be approved person within an organisation with an invite link
     /// </summary>
-    /// <param name="reExNotification"></param>
+    /// <param name="reExNotification">model with data for the email</param>
     /// <returns> list of response id with email id, or empty list if any exception</returns>
     /// <exception cref="ArgumentException"></exception>
     public List<(string email, string notificationResponseId)> SendReExInvitationToBeApprovedPerson(ReExNotificationModel reExNotification)
@@ -605,25 +605,10 @@ public class MessagingService(
 
         foreach (var member in reExNotification.ReExInvitedApprovedPersons)
         {
-            if (string.IsNullOrWhiteSpace(member.FirstName))
-            {
-                throw new ArgumentException("First name cannot be empty");
-            }
-
-            if (string.IsNullOrWhiteSpace(member.LastName))
-            {
-                throw new ArgumentException("Last name cannot be empty");
-            }
-
-            if (string.IsNullOrWhiteSpace(member.Email))
-            {
-                throw new ArgumentException("email cannot be empty");
-            }
-
-            if (string.IsNullOrWhiteSpace(reExNotification.OrganisationId))
-            {
-                throw new ArgumentException("Organisation Id cannot be empty");
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(member.FirstName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(member.LastName);
+            ArgumentException.ThrowIfNullOrWhiteSpace(member.Email);
+            ArgumentException.ThrowIfNullOrWhiteSpace(reExNotification.OrganisationId);
 
             var parameters = new Dictionary<string, object>
             {
@@ -651,12 +636,7 @@ public class MessagingService(
     /// <summary>
     /// Send notification to inviter(s) that emails has been sent to relevant Approved Person(s)
     /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="userFullName"></param>
-    /// <param name="userEmail"></param>
-    /// <param name="organisationId"></param>
-    /// <param name="invitedList"></param>
-    /// <returns></returns>
+    /// <returns>response id or null if any issue</returns>
     /// <exception cref="ArgumentException"></exception>
     public string? SendReExInvitationConfirmationToInviter(string userId, string userFullName, string userEmail, string organisationId, string organisationName, IEnumerable<(string email, string notificationResponseId)> invitedList)
     {
@@ -720,29 +700,14 @@ public class MessagingService(
     /// <summary>
     /// Send confirmation to inviter that the Person invited to be an AP has accepted
     /// </summary>
-    /// <param name="reExNotification"></param>
+    /// <param name="reExNotification">model with data for the email</param>
     /// <returns>response id or null if any exception</returns>
     public string? SendReExConfirmationOfAnApprovedPerson(ReExNotificationModel reExNotification)
     {
-        if (string.IsNullOrWhiteSpace(reExNotification.UserFirstName))
-        {
-            throw new ArgumentException("First name cannot be empty");
-        }
-
-        if (string.IsNullOrWhiteSpace(reExNotification.UserLastName))
-        {
-            throw new ArgumentException("Last name cannot be empty");
-        }
-
-        if (string.IsNullOrWhiteSpace(reExNotification.OrganisationId))
-        {
-            throw new ArgumentException("Organisation Id cannot be empty");
-        }
-
-        if (string.IsNullOrWhiteSpace(reExNotification.CompanyName))
-        {
-            throw new ArgumentException("Company name cannot be empty");
-        }
+        ArgumentException.ThrowIfNullOrWhiteSpace(reExNotification.UserFirstName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reExNotification.UserLastName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reExNotification.OrganisationId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reExNotification.CompanyName);
 
         var parameters = new Dictionary<string, object>
         {
@@ -767,13 +732,7 @@ public class MessagingService(
     /// <summary>
     /// Email to inviter that invitee has rejected AP invitation
     /// </summary>
-    /// <param name="userId"></param>
-    /// <param name="userFullName"></param>
-    /// <param name="userEmail"></param>
-    /// <param name="organisationId"></param>
-    /// <param name="organisationName"></param>
-    /// <param name="rejectedByName"></param>
-    /// <returns></returns>
+    /// <returns>reponse id or null if any issue</returns>
     /// <exception cref="ArgumentException"></exception>
     public string? SendRejectionEmailFromInvitedAP(string userId, string userFullName, string userEmail, string organisationId, string organisationName, string rejectedByName)
     {
@@ -832,12 +791,8 @@ public class MessagingService(
     /// <summary>
     /// Email confirmation to invitee that they have rejected the AP invitation
     /// </summary>
-    /// <param name="organisationId"></param>
-    /// <param name="organisationName"></param>
-    /// <param name="rejectedByName"></param>
-    /// <param name="rejectedAPEmail"></param>
-    /// <returns>response id</returns>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>response id or null if any issue</returns>
+    /// <exception cref="ArgumentException">if any param value is null or empty</exception>
     public string? SendRejectionConfirmationToApprovedPerson(string organisationId, string organisationName, string rejectedByName, string rejectedAPEmail)
     {
         if (string.IsNullOrWhiteSpace(rejectedByName))

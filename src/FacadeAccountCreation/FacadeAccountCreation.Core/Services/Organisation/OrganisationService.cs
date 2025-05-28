@@ -1,5 +1,4 @@
-﻿using System.Net.WebSockets;
-using FacadeAccountCreation.Core.Constants;
+﻿using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
@@ -454,8 +453,7 @@ public class OrganisationService(
         }
 
         response.EnsureSuccessStatusCode();
-        var res = await response.Content.ReadFromJsonAsync<ReExAddOrganisationResponse>();
-        return res;
+        return await response.Content.ReadFromJsonAsync<ReExAddOrganisationResponse>();
     }
 
     private Task<HttpResponseMessage> PostAsJsonAsyncWithAuditHeaders<TValue>(

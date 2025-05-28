@@ -1,8 +1,5 @@
-﻿using System.Security.Claims;
+﻿namespace FacadeAccountCreation.Core.Models.Organisations.Mappers;
 
-namespace FacadeAccountCreation.Core.Models.Organisations.Mappers;
-
-[ExcludeFromCodeCoverage]
 public static class ReExAddOrganisationMapper
 {
     public static ReprocessorExporterAddOrganisation MapReExOrganisationModelToReExAddOrganisation(ReExOrganisationModel organisationModel)

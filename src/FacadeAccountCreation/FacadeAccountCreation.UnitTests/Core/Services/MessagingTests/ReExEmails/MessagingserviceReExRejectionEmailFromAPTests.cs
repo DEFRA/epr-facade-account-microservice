@@ -9,7 +9,6 @@ public class MessagingserviceReExRejectionEmailFromAPTests : BaseMessagingTest
     public void SendRejectionEmailFromInvitedAP_Email_Sent_Successfully_Returns_ResponseID()
     {
         // Arrange
-
         _ = _notificationClientMock.Setup(nc => nc.SendEmail(
             It.IsAny<string>(),
             It.IsAny<string>(),
