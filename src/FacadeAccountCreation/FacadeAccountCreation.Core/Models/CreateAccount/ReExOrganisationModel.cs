@@ -1,5 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.CreateAccount;
 
+[ExcludeFromCodeCoverage]
 public class ReExOrganisationModel
 {
     public ReExUserModel ReExUser { get; set; } = new();

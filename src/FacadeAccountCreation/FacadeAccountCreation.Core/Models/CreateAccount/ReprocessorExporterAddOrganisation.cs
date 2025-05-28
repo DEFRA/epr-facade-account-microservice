@@ -1,11 +1,9 @@
 ﻿namespace FacadeAccountCreation.Core.Models.CreateAccount;
 
+[ExcludeFromCodeCoverage]
 public class ReprocessorExporterAddOrganisation
 {
     public ReprocessorExporterUserModel User { get; set; } = null!;
-
-    [Required]
-    public string ServiceRoleName { get; set; }
 
     [Required]
     public OrganisationModel Organisation { get; set; } = null!;
