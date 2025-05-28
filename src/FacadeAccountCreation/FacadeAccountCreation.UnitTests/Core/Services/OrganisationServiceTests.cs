@@ -4,7 +4,6 @@ using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Subsidiary;
-using FacadeAccountCreation.Core.Services;
 using FacadeAccountCreation.Core.Services.Organisation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -30,7 +29,6 @@ public class OrganisationServiceTests
     private const string OrganisationNationUrl = "api/organisations/nation-code";
 	private const string OrganisationChildExternalIdsUrl = "api/organisations/v1/child-organisation-external-ids?organisationId={0}&complianceSchemeId={1}";
     private const string OrganisationByCompanyHouseNumberUrl = "api/organisations/organisation-by-companies-house-number";
-    private const string OrganisationChildExternalIdsUrl = "api/organisations/v1/child-organisation-external-ids?organisationId={0}&complianceSchemeId={1}";
     private const string ServiceKey = "re-ex";
 
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
