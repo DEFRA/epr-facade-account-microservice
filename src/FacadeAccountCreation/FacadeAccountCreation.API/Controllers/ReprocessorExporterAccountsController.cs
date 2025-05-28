@@ -2,7 +2,7 @@
 namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
-[Route("api/v1/reprocessor-exporter-accounts")]
+[Route("api/v1/reprocessor-exporter-user-accounts")]
 public class ReprocessorExporterAccountsController(IAccountService accountService)
     : ControllerBase
 {

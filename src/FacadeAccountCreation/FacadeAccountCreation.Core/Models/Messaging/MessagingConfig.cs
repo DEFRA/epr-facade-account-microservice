@@ -19,4 +19,11 @@ public class MessagingConfig
     public string ComplianceSchemeResubmissionTemplateId { get; set; } = string.Empty;
     public string AccountLoginUrl { get; set; } = string.Empty;
     public string UserDetailChangeRequestTemplateId { get; set;} = string.Empty;
+
+    // Reprocessor and Exporter notification templates & URL for email body
+    public string ReExAccountCreationUrl { get; set; } = string.Empty;
+    public string ReExApprovedPersonInvitationTemplateId { get; set; } = string.Empty;
+    public string ReExInvitationConfirmationToInviterTemplateId { get; set; } = string.Empty;
+    public string ReExApprovedPersonAcceptedInvitationTemplateId { get; set; } = string.Empty;
+    public string ReExApprovedPersonRejectedInvitationTemplateId { get; set; } = string.Empty;
 }
