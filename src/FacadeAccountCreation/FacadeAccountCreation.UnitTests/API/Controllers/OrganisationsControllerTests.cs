@@ -327,8 +327,9 @@ public class OrganisationsControllerTests
         // Arrange
         var page = 1;
         var showPerPage = 20;
+        var search = "test";
 
-        var mockResponse = new PaginatedResponse<RelationshipResponseModel>
+        var mockResponse = new PagedOrganisationRelationshipsModel
         {
             CurrentPage = 1,
             TotalItems = 1,
@@ -342,15 +343,16 @@ public class OrganisationsControllerTests
                     RelationshipType = "Parent",
                     CompaniesHouseNumber = "CH123455"
                 }
-            }
+            },
+            SearchTerms = new List<string>()
         };
 
         _mockOrganisationService
-            .Setup(service => service.GetPagedOrganisationRelationships(page, showPerPage))
+            .Setup(service => service.GetPagedOrganisationRelationships(page, showPerPage, search))
             .ReturnsAsync(mockResponse);
 
         // Act
-        var result = await _sut.GetPagedOrganisationRelationshipsAsync(page, showPerPage);
+        var result = await _sut.GetPagedOrganisationRelationshipsAsync(page, showPerPage, search);
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
