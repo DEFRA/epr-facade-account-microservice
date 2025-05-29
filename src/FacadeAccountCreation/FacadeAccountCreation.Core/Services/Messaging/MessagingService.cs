@@ -855,12 +855,7 @@ public class MessagingService(
         if (string.IsNullOrWhiteSpace(rejectedAPEmail))
         {
             throw new ArgumentException("Approved person email cannot be empty");
-        }        
-
-        if (string.IsNullOrWhiteSpace(rejectedAPEmail))
-        {
-            throw new ArgumentException("Approved person email cannot be empty");
-        }
+        } 
 
         var parameters = new Dictionary<string, object>
         {
