@@ -1,9 +1,6 @@
-﻿using Azure;
-using FacadeAccountCreation.Core.Exceptions;
+﻿using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
-using FacadeAccountCreation.Core.Services.CreateAccount;
 using FacadeAccountCreation.Core.Services.Organisation;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 

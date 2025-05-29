@@ -1,5 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.CreateAccount;
 
+[ExcludeFromCodeCoverage]
 public class ReExOrganisationModel
 {
     public ReExUserModel ReExUser { get; set; } = new();
@@ -8,11 +9,6 @@ public class ReExOrganisationModel
     /// Role/Job title can be Director, CompanySecretary, Partner or Member
     /// </summary>
     public string? UserRoleInOrganisation { get; set; }
-
-    /// <summary>
-    /// User's service role i.e. ApprovedPerson, Basic or Delegated
-    /// </summary>
-    public string? ServiceRole { get; set; }
 
     public bool IsApprovedUser { get; set; }
 
