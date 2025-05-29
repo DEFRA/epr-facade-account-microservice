@@ -46,9 +46,9 @@ public class ReprocessorExporterOrganisationController(
         // send email notification to inviter(s)       
         messagingService.SendReExInvitationConfirmationToInviter(
             reExOrganisationModel.ReExUser.UserId.ToString(),
-            $"{response.UserFirstName} {response.UserLastName}",
-            reExOrganisationModel.ReExUser.UserEmail, 
-            response.OrganisationId.ToString(), 
+            reExOrganisationModel.ReExUser.UserFirstName,
+            reExOrganisationModel.ReExUser.UserLastName,
+            reExOrganisationModel.ReExUser.UserEmail,
             reExOrganisationModel.Company.CompanyName, 
             notifications);
 

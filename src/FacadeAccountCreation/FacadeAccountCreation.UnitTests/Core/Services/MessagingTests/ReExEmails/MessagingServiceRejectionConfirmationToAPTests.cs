@@ -7,7 +7,6 @@ public class MessagingServiceRejectionConfirmationToAPTests : BaseMessagingTest
     public void SendRejectionConfirmationToApprovedPerson_Email_Sent_Successfully_Returns_ResponseID()
     {
         // Arrange
-
         _ = _notificationClientMock.Setup(nc => nc.SendEmail(
             It.IsAny<string>(),
             It.IsAny<string>(),
@@ -20,8 +19,8 @@ public class MessagingServiceRejectionConfirmationToAPTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        var result = _sut.SendRejectionConfirmationToApprovedPerson("123", "Test Ltd", "John Doe", "john.doe@test.com");
-
+        var result = _sut.SendRejectionConfirmationToApprovedPerson("123", "76543211", "Test Ltd", "John Doe", "john.doe@test.com");
+        
         // Assert
         result.Should().NotBeNullOrEmpty();
         result.Should().Be("8171");
@@ -37,17 +36,19 @@ public class MessagingServiceRejectionConfirmationToAPTests : BaseMessagingTest
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    [DataRow(null, "Test Ltd", "John Doe", "john.doe@test.com")]
-    [DataRow(" ", "Test Ltd", "John Doe", "john.doe@test.com")]
-    [DataRow("123", null, "John Doe", "john.doe@test.com")]
-    [DataRow("123", "  ", "John Doe", "john.doe@test.com")]
-    [DataRow("123", "Test Ltd", null, "john.doe@test.com")]
-    [DataRow("123", "Test Ltd", "    ", "john.doe@test.com")]
-    [DataRow("123", "Test Ltd", "John Doe", null)]
-    [DataRow("123", "Test Ltd", "John Doe", "   ")]
-    public void SendRejectionConfirmationToApprovedPerson_Throws_Exception_As(string organisationId, string organisationName, string rejectedByName, string rejectedAPEmail)
+    [DataRow(null, "96325899", "Test Ltd", "John Doe", "john.doe@test.com")]
+    [DataRow(" ", "96325899", "Test Ltd", "John Doe", "john.doe@test.com")]
+    [DataRow("123", null, "Test Ltd", "John Doe", "john.doe@test.com")]
+    [DataRow("123 ", "  ", "Test Ltd", "John Doe", "john.doe@test.com")]
+    [DataRow("123", "96325899", null, "John Doe", "john.doe@test.com")]
+    [DataRow("123", "96325899", "  ", "John Doe", "john.doe@test.com")]
+    [DataRow("123", "96325899", "Test Ltd", null, "john.doe@test.com")]
+    [DataRow("123", "96325899", "Test Ltd", "    ", "john.doe@test.com")]
+    [DataRow("123", "96325899", "Test Ltd", "John Doe", null)]
+    [DataRow("123", "96325899", "Test Ltd", "John Doe", "   ")]
+    public void SendRejectionConfirmationToApprovedPerson_Throws_Exception_As(string userId, string organisationId, string organisationName, string rejectedByName, string rejectedAPEmail)
     {
         _sut = GetServiceUnderTest();
-        _ = _sut.SendRejectionConfirmationToApprovedPerson(organisationId, organisationName, rejectedByName, rejectedAPEmail);
+        _ = _sut.SendRejectionConfirmationToApprovedPerson(userId, organisationId, organisationName, rejectedByName, rejectedAPEmail);
     }
 }

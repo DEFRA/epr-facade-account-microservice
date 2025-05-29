@@ -26,4 +26,5 @@ public class MessagingConfig
     public string ReExInvitationConfirmationToInviterTemplateId { get; set; } = string.Empty;
     public string ReExApprovedPersonAcceptedInvitationTemplateId { get; set; } = string.Empty;
     public string ReExApprovedPersonRejectedInvitationTemplateId { get; set; } = string.Empty;
+    public string ReExConfirmationToInviteeRejectingInvitationTemplateId { get; set; } = string.Empty;
 }
