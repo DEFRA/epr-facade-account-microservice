@@ -35,21 +35,27 @@ public class ReprocessorExporterOrganisationController(
             return Problem("Organisation id can not be empty", statusCode: StatusCodes.Status204NoContent);
         }
 
-        // Send Email Notification        
-        var notificationModelMapper = ReExNotificationMapper.MapOrganisationModelToReExNotificationModel(reExOrganisationModel, response, messagingConfig.Value.ReExAccountCreationUrl);
+        // Send Email Notification(s)        
+        var emailNotificationMapper = ReExNotificationMapper.MapOrganisationModelToReExNotificationModel(reExOrganisationModel, response, messagingConfig.Value.ReExAccountCreationUrl);
 
-        // TO DO: check if Invited user 'email' is enrolled already
-        var notifications = messagingService.SendReExInvitationToBeApprovedPerson(notificationModelMapper); 
+        // TO DO: check if Invited approved person 'email' is enrolled already
+        if (emailNotificationMapper.ReExInvitedApprovedPersons.Count != 0)
+        {
+            var notificationResponse = messagingService.SendReExInvitationToBeApprovedPerson(emailNotificationMapper);
 
-        // send email notification to inviter(s)       
-        messagingService.SendReExInvitationConfirmationToInviter(
-            reExOrganisationModel.ReExUser.UserId.ToString(),
-            $"{response.UserFirstName} {response.UserLastName}",
-            reExOrganisationModel.ReExUser.UserEmail, 
-            response.OrganisationId.ToString(), 
-            reExOrganisationModel.Company.CompanyName, 
-            notifications);
+            if (notificationResponse.Count > 0)
+            {
+                // send acknowledgement to the inviter that AP invitation has been sent      
+                messagingService.SendReExInvitationConfirmationToInviter(
+                    emailNotificationMapper.UserId.ToString(),
+                    emailNotificationMapper.UserFirstName,
+                    emailNotificationMapper.UserLastName,
+                    emailNotificationMapper.UserEmail,
+                    emailNotificationMapper.CompanyName,
+                    notificationResponse);
+            }
+        }
 
-        return Ok(response.OrganisationId); // TO DO - need to return more data
+        return Ok(response.OrganisationId);
     }
 }
