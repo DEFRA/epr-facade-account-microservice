@@ -1,9 +1,6 @@
-﻿using Azure;
-using FacadeAccountCreation.Core.Exceptions;
+﻿using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
-using FacadeAccountCreation.Core.Services.CreateAccount;
 using FacadeAccountCreation.Core.Services.Organisation;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
 
@@ -55,11 +52,10 @@ public class ReprocessorExporterOrganisationControllerTests
     public async Task CreateAccount_HappyPath_ReturnsOk(string organisationId, string expectedResult)
     {
         // Arrange
-        var orgId = organisationId;
-
         var reExOrgModel = _fixture.Create<ReExOrganisationModel>();
         reExOrgModel.Company.Nation = Nation.England;
         reExOrgModel.Company.OrganisationType = OrganisationType.CompaniesHouseCompany;
+        reExOrgModel.InvitedApprovedPersons[0].Email = "testc@test.com";
         _fixture.Inject(reExOrgModel);
 
         var response = new ReExAddOrganisationResponse
