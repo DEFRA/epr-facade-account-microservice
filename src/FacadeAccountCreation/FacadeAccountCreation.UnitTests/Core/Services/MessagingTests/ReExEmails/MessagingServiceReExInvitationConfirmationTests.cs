@@ -13,8 +13,6 @@ public class MessagingServiceReExInvitationConfirmationTests : BaseMessagingTest
     public void SendReExInvitationToBeApprovedPerson_Email_Sent_Successfully_With_Response()
     {
         // Arrange
-        var orgId = Guid.NewGuid().ToString();
-
         _ = _notificationClientMock.SetupSequence(nc => nc.SendEmail(
             It.IsAny<string>(),
             It.IsAny<string>(),
@@ -24,11 +22,10 @@ public class MessagingServiceReExInvitationConfirmationTests : BaseMessagingTest
             null))
             .Returns(new EmailNotificationResponse { id = "123456" });
 
-
         _sut = GetServiceUnderTest();
 
         // Act
-        var result = _sut.SendReExInvitationConfirmationToInviter("10", "Adam Smith", "adam.smith@test.com", orgId, "Test Ltd", notificationList);
+        var result = _sut.SendReExInvitationConfirmationToInviter("10", "Adam", "Smith", "adam.smith@test.com", "Test Ltd", notificationList);
 
         // Assert
         result.Should().NotBeNullOrEmpty();
@@ -37,23 +34,23 @@ public class MessagingServiceReExInvitationConfirmationTests : BaseMessagingTest
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    [DataRow(null, "AdamSmith", "adam.smith@test.com", "7885", "Test Ltd")]
-    [DataRow("", "AdamSmith", "adam.smith@test.com", "7885", "Test Ltd")]
-    [DataRow("   ", "AdamSmith", "adam.smith@test.com", "7885", "Test Ltd")]
-    [DataRow("123", null, "adam.smith@test.com", "7885", "Test Ltd")]
-    [DataRow("123", " ", "adam.smith@test.com", "7885", "Test Ltd")]
-    [DataRow("123", "AdamSmith", null, "7885", "Test Ltd")]
-    [DataRow("123", "AdamSmith", " ", "7885", "Test Ltd")]
-    [DataRow("123", "AdamSmith", "adam.smith@test.com", null, "Test Ltd")]
-    [DataRow("123", "AdamSmith", "adam.smith@test.com", " ", "Test Ltd")]
-    [DataRow("123", "AdamSmith", "adam.smith@test.com", "7885", null)]
-    [DataRow("123", "AdamSmith", "adam.smith@test.com", "7885", " ")]
-    public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_As(string userId, string fullName, string userEmail, string organisationId, string companyName)
+    [DataRow(null, "Adam", "Smith", "adam.smith@test.com", "Test Ltd")]
+    [DataRow("", "Adam", "Smith", "adam.smith@test.com", "Test Ltd")]
+    [DataRow("   ", "Adam", "Smith", "adam.smith@test.com", "Test Ltd")]
+    [DataRow("123", null, "Smith", "adam.smith@test.com", "Test Ltd")]
+    [DataRow("123", " ", "Smith ", "adam.smith@test.com", "Test Ltd")]
+    [DataRow("123", "Adam", null, "adam.smith@test.com", "Test Ltd")]
+    [DataRow("123", "Adam", "  ", "adam.smith@test.com", "Test Ltd")]
+    [DataRow("123", "Adam", "Smith", null, "Test Ltd")]
+    [DataRow("123", "Adam", "Smith", " ", "Test Ltd")]
+    [DataRow("123", "Adam", "Smith", "adam.smith@test.com", null)]
+    [DataRow("123", "Adam", "Smith", "adam.smith@test.com", "  ")]
+    public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_As(string userId, string inviterFirstName, string inviterLastName, string userEmail, string companyName)
     {
         // Arrange
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationConfirmationToInviter(userId, fullName, userEmail, organisationId, companyName, notificationList);
+        _ = _sut.SendReExInvitationConfirmationToInviter(userId, inviterFirstName, inviterLastName, userEmail, companyName, notificationList);
     }
 }

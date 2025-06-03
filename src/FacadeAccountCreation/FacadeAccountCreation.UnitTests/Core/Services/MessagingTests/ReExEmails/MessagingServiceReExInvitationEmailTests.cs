@@ -93,6 +93,37 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
+    public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_ForMember_InviteToken()
+    {
+        // Arrange
+        var notificationModel = _fixture.Create<ReExNotificationModel>();
+        notificationModel.ReExInvitedApprovedPersons[0].InviteToken = string.Empty;
+
+        _ = _notificationClientMock.Setup(nc => nc.SendEmail(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<Dictionary<string, dynamic>>(),
+            null,
+            null,
+            null))
+            .Returns(new EmailNotificationResponse { id = "1" });
+
+        _sut = GetServiceUnderTest();
+
+        // Act
+        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+
+        _notificationClientMock.Verify(nc => nc.SendEmail(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<Dictionary<string, dynamic>>(),
+            null,
+            null,
+            null), Times.Never());
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
     public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_For_ApprovedPersonEmail()
     {
         // Arrange
@@ -126,21 +157,81 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_ForOrganisationId()
+    public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_ForOrganisationName()
     {
         // Arrange
         var notificationModel = _fixture.Create<ReExNotificationModel>();
-        notificationModel.OrganisationId = string.Empty;
+        notificationModel.CompanyName = string.Empty;
 
-        _ = _notificationClientMock.SetupSequence(nc => nc.SendEmail(
+        _ = _notificationClientMock.Setup(nc => nc.SendEmail(
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null,
             null))
-            .Returns(new EmailNotificationResponse { id = "1" })
-            .Returns(new EmailNotificationResponse { id = "2" })
+            .Returns(new EmailNotificationResponse { id = "3" });
+
+        _sut = GetServiceUnderTest();
+
+        // Act
+        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+
+        _notificationClientMock.Verify(nc => nc.SendEmail(
+           It.IsAny<string>(),
+           It.IsAny<string>(),
+           It.IsAny<Dictionary<string, dynamic>>(),
+           null,
+           null,
+           null), Times.Never());
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_For_InviteeFirstName()
+    {
+        // Arrange
+        var notificationModel = _fixture.Create<ReExNotificationModel>();
+        notificationModel.UserFirstName = string.Empty;
+
+        _ = _notificationClientMock.Setup(nc => nc.SendEmail(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<Dictionary<string, dynamic>>(),
+            null,
+            null,
+            null))
+            .Returns(new EmailNotificationResponse { id = "3" });
+
+        _sut = GetServiceUnderTest();
+
+        // Act
+        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+
+        _notificationClientMock.Verify(nc => nc.SendEmail(
+           It.IsAny<string>(),
+           It.IsAny<string>(),
+           It.IsAny<Dictionary<string, dynamic>>(),
+           null,
+           null,
+           null), Times.Never());
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_For_InviteeLastName()
+    {
+        // Arrange
+        var notificationModel = _fixture.Create<ReExNotificationModel>();
+        notificationModel.UserLastName = string.Empty;
+
+        _ = _notificationClientMock.Setup(nc => nc.SendEmail(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<Dictionary<string, dynamic>>(),
+            null,
+            null,
+            null))
             .Returns(new EmailNotificationResponse { id = "3" });
 
         _sut = GetServiceUnderTest();

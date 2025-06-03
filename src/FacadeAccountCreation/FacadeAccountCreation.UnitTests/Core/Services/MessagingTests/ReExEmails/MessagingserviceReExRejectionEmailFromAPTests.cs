@@ -1,6 +1,4 @@
-﻿using Notify.Models;
-
-namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests.ReExEmails;
+﻿namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests.ReExEmails;
 
 [TestClass]
 public class MessagingserviceReExRejectionEmailFromAPTests : BaseMessagingTest

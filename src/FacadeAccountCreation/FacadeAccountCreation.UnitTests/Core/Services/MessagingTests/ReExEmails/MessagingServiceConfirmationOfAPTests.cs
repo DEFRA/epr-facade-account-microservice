@@ -3,14 +3,10 @@
 [TestClass]
 public class MessagingServiceConfirmationOfAPTests : BaseMessagingTest
 {
-    private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
-
     [TestMethod]
     public void SendReExConfirmationOfAnApprovedPerson_Email_Sent_Successfully_Returns_ResponseID()
     {
         // Arrange
-        var notificationModel = _fixture.Create<ReExNotificationModel>();
-
         _ = _notificationClientMock.Setup(nc => nc.SendEmail(
             It.IsAny<string>(),
             It.IsAny<string>(),
@@ -23,7 +19,7 @@ public class MessagingServiceConfirmationOfAPTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        var result = _sut.SendReExConfirmationOfAnApprovedPerson(notificationModel);
+        var result = _sut.SendReExConfirmationOfAnApprovedPerson("678", "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", "Welsh");
 
         // Assert
         result.Should().NotBeNullOrEmpty();
@@ -40,57 +36,26 @@ public class MessagingServiceConfirmationOfAPTests : BaseMessagingTest
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void SendRejectionEmailFromInvitedAP_Throws_ArgumentException_AsFirstNameIsEmpty()
+    [DataRow(null, "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", "Welsh")]
+    [DataRow("  ", "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", "Welsh")]
+    [DataRow("678", null, "John", "Smith", "Test Ltd", "Peter", "Welsh")]
+    [DataRow("678", " ", "John", "Smith", "Test Ltd", "Peter", "Welsh")]
+    [DataRow("678", "john.smith@tester.com", null, "Smith", "Test Ltd", "Peter", "Welsh")]
+    [DataRow("678", "john.smith@tester.com", "", "Smith", "Test Ltd", "Peter", "Welsh")]
+    [DataRow("678", "john.smith@tester.com", "John", null, "Test Ltd", "Peter", "Welsh")]
+    [DataRow("678", "john.smith@tester.com", "John", "  ", "Test Ltd", "Peter", "Welsh")]
+    [DataRow("678", "john.smith@tester.com", "John", "Smith", null, "Peter", "Welsh")]
+    [DataRow("678", "john.smith@tester.com", "John", "Smith", "    ", "Peter", "Welsh")]
+    [DataRow("678", "john.smith@tester.com", "John", "Smith", "Test Ltd", null, "Welsh")]
+    [DataRow("678", "john.smith@tester.com", "John", "Smith", "Test Ltd", " ", "Welsh")]
+    [DataRow("678", "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", null)]
+    [DataRow("678", "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", "")]
+    public void SendRejectionEmailFromInvitedAP_Throws_ArgumentException_As_InviterFirstNameIsEmpty(string userId, string inviterEmail, string inviteeFirstName, string inviteeLastName, string companyName, string inviterFirstName, string inviterLastName)
     {
         // Arrange
-        var notificationModel = _fixture.Create<ReExNotificationModel>();
-        notificationModel.UserFirstName = string.Empty;
-
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExConfirmationOfAnApprovedPerson(notificationModel);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void SendRejectionEmailFromInvitedAP_Throws_ArgumentException_AsLastNameIsEmpty()
-    {
-        // Arrange
-        var notificationModel = _fixture.Create<ReExNotificationModel>();
-        notificationModel.UserLastName = string.Empty;
-
-        _sut = GetServiceUnderTest();
-
-        // Act
-        _ = _sut.SendReExConfirmationOfAnApprovedPerson(notificationModel);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void SendRejectionEmailFromInvitedAP_Throws_ArgumentException_AsOrganisationIdIsEmpty()
-    {
-        // Arrange
-        var notificationModel = _fixture.Create<ReExNotificationModel>();
-        notificationModel.OrganisationId = string.Empty;
-
-        _sut = GetServiceUnderTest();
-
-        // Act
-        _ = _sut.SendReExConfirmationOfAnApprovedPerson(notificationModel);
-    }
-
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void SendRejectionEmailFromInvitedAP_Throws_ArgumentException_AsCompanyNameIsEmpty()
-    {
-        // Arrange
-        var notificationModel = _fixture.Create<ReExNotificationModel>();
-        notificationModel.CompanyName = string.Empty;
-
-        _sut = GetServiceUnderTest();
-
-        // Act
-        _ = _sut.SendReExConfirmationOfAnApprovedPerson(notificationModel);
+        _ = _sut.SendReExConfirmationOfAnApprovedPerson(userId, inviterEmail, inviteeFirstName, inviteeLastName, companyName, inviterFirstName, inviterLastName);
     }
 }

@@ -29,26 +29,25 @@ public interface IMessagingService
     /// Send notification to inviter(s) that emails has been sent to relevant Approved Person(s)
     /// </summary>
     /// <returns>response id or null if any issue</returns>
-    string? SendReExInvitationConfirmationToInviter(string userId, string userFullName, string userEmail, string organisationId, string organisationName, IEnumerable<(string email, string notificationResponseId)> invitedList);
+    string? SendReExInvitationConfirmationToInviter(string userId, string inviterFirstName, string inviterLastName, string inviterEmail, string organisationName, IEnumerable<(string email, string notificationResponseId)> invitedList);
 
     /// <summary>
     /// Send confirmation to inviter that the Person invited to be an AP has accepted
     /// </summary>
-    /// <param name="reExNotification">model with data for the email</param>
     /// <returns>response id or null if any exception</returns>
-    string? SendReExConfirmationOfAnApprovedPerson(ReExNotificationModel reExNotification);
+    string? SendReExConfirmationOfAnApprovedPerson(string userId, string inviterEmail, string inviteeFirstName, string inviteeLastName, string companyName, string inviterFirstName, string inviterLastName);
 
     /// <summary>
     /// Email to inviter that invitee has rejected AP invitation
     /// </summary>
     /// <returns>response id or null if any issue</returns>
-    string? SendRejectionEmailFromInvitedAP(string userId, string userFullName, string userEmail, string organisationId, string organisationName, string rejectedByName);
+    string? SendRejectionEmailFromInvitedAP(string userId, string inviterFullName, string inviterEmail, string organisationId, string organisationName, string rejectedByName);
 
     /// <summary>
     /// Email confirmation to invitee that they have rejected the AP invitation
     /// </summary>
     /// <returns>response id o rnull if any issue</returns>
-    string? SendRejectionConfirmationToApprovedPerson(string organisationId, string organisationName, string rejectedByName, string rejectedAPEmail);
+    string? SendRejectionConfirmationToApprovedPerson(string userId, string organisationId, string organisationName, string rejectedByName, string rejectedAPEmail);
 
     #endregion
 }
