@@ -204,6 +204,56 @@ public class ReExAddOrganisationMapperTests
     }
 
     [TestMethod]
+    public void MapReExOrganisationModelToReExAddOrganisation_MapsManualInput_WithNullValues()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var manualInput = new ReExManualInputModel
+        {
+            TradingName = null,
+            ProducerType = null,
+            BusinessAddress = null
+        };
+
+        var organisationModel = new ReExOrganisationModel
+        {
+            ReExUser = new ReExUserModel
+            {
+                UserId = userId,
+                IsApprovedUser = false
+            },
+            UserRoleInOrganisation = "Member",
+            IsApprovedUser = false,
+            Company = null,
+            ManualInput = manualInput,
+            InvitedApprovedPersons = []
+        };
+
+        // Act
+        var result = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(organisationModel);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.User.Should().NotBeNull();
+        result.User.UserId.Should().Be(userId);
+        result.User.JobTitle.Should().Be("Member");
+        result.User.IsApprovedUser.Should().BeFalse();
+
+        result.Organisation.Should().BeNull();
+
+        result.ManualInput.Should().NotBeNull();
+        result.ManualInput.TradingName.Should().BeNull();
+        result.ManualInput.ProducerType.Should().BeNull();
+        result.ManualInput.BusinessAddress.Should().BeNull();
+
+        result.InvitedApprovedUsers.Should().NotBeNull();
+        result.InvitedApprovedUsers.Should().BeEmpty();
+
+        result.Partners.Should().NotBeNull();
+        result.Partners.Should().BeEmpty();
+    }
+
+    [TestMethod]
     public void MapReExOrganisationModelToReExAddOrganisation_HandlesNullInput_ThrowsArgumentNullException()
     {
         // Act & Assert
