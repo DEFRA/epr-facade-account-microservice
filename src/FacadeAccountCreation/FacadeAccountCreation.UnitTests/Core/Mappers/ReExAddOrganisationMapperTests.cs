@@ -31,7 +31,7 @@ public class ReExAddOrganisationMapperTests
                 ValidatedWithCompaniesHouse = true
             },
             ManualInput = null,
-            InvitedApprovedPersons = [],
+            InvitedApprovedPersons = null,
             IsApprovedUser = true,
             ReExUser = new ReExUserModel
             {
@@ -169,7 +169,7 @@ public class ReExAddOrganisationMapperTests
             IsApprovedUser = false,
             Company = null,
             ManualInput = manualInput,
-            InvitedApprovedPersons = new List<ReExInvitedApprovedPerson>()
+            InvitedApprovedPersons = []
         };
 
         // Act
@@ -210,5 +210,4 @@ public class ReExAddOrganisationMapperTests
         Assert.ThrowsException<NullReferenceException>(() =>
             ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(null));
     }
-
 }
