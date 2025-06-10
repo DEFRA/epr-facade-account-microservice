@@ -8,9 +8,9 @@ public class ReprocessorExporterAddOrganisation
     [Required]
     public OrganisationModel? Organisation { get; set; } = null; // To DO: need this null if manual input got values
 
-    public ReExManualInputModel? ManualInput { get; set; } // To DoL: need this null if Organisation has company data
-
     public List<PartnerModel> Partners { get; set; } = [];
+
+    public ReExManualInputModel? ManualInput { get; set; } // To DoL: need this null if Organisation has company data       
 
     public List<InvitedApprovedUserModel> InvitedApprovedUsers { get; set; } = [];
 

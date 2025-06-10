@@ -13,20 +13,36 @@ public static class ReExAddOrganisationMapper
                 UserId = organisationModel.ReExUser.UserId.Value
             },
             InvitedApprovedUsers = GetInvitedUsers(organisationModel.InvitedApprovedPersons),
-            Organisation = new OrganisationModel
-            {
-                Address = organisationModel.Company.CompanyRegisteredAddress,
-                CompaniesHouseNumber = organisationModel.Company.CompaniesHouseNumber,
-                IsComplianceScheme = organisationModel.Company.IsComplianceScheme,
-                Name = organisationModel.Company.CompanyName,
-                Nation = organisationModel.Company.Nation ?? Nation.NotSet,
-                OrganisationId = organisationModel.Company.OrganisationId,
-                OrganisationType = organisationModel.Company.OrganisationType ?? OrganisationType.NotSet,
-                ProducerType = null,
-                ValidatedWithCompaniesHouse = organisationModel.Company.ValidatedWithCompaniesHouse                
-            },
+            Organisation = organisationModel.Company != null ? GetCompanyModel(organisationModel.Company) : null,
+            ManualInput = organisationModel.ManualInput != null ? GetManualInputModel(organisationModel) : null,
             Partners = [],
             DeclarationTimeStamp = DateTime.UtcNow
+        };
+    }
+
+    private static ReExManualInputModel GetManualInputModel(ReExOrganisationModel organisationModel)
+    {
+        return new ReExManualInputModel
+        {
+            BusinessAddress = organisationModel.ManualInput?.BusinessAddress,
+            ProducerType = organisationModel.ManualInput?.ProducerType,
+            TradingName = organisationModel.ManualInput?.TradingName
+        };
+    }
+
+    private static OrganisationModel GetCompanyModel(ReExCompanyModel companyModel)
+    {
+        return new OrganisationModel
+        {
+            Address = companyModel.CompanyRegisteredAddress,
+            CompaniesHouseNumber = companyModel.CompaniesHouseNumber,
+            IsComplianceScheme = companyModel.IsComplianceScheme,
+            Name = companyModel.CompanyName,
+            Nation = companyModel.Nation ?? Nation.NotSet,
+            OrganisationId = companyModel.OrganisationId,
+            OrganisationType = companyModel.OrganisationType ?? OrganisationType.NotSet,
+            ProducerType = null,
+            ValidatedWithCompaniesHouse = companyModel.ValidatedWithCompaniesHouse
         };
     }
 
