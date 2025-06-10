@@ -6,6 +6,64 @@ namespace FacadeAccountCreation.UnitTests.Core.Mappers;
 public class ReExAddOrganisationMapperTests
 {
     [TestMethod]
+    public void MapReExOrganisationModelToReExAddOrganisation_UpdatedWtihCorrectValue()
+    {
+        var reExOrgModel = new ReExOrganisationModel
+        {
+            Company = new ReExCompanyModel
+            {
+                CompaniesHouseNumber = "12345678",
+                CompanyName = "Test Ltd",
+                CompanyRegisteredAddress = new AddressModel
+                {
+                    BuildingName = "XYZ",
+                    BuildingNumber = "14",
+                    Country = "England",
+                    County = "West Midlands",
+                    Postcode = "CV1 9HB",
+                    Street = "High Street",
+                    Town = "Coventry"
+                },
+                IsComplianceScheme = false,
+                Nation = Nation.England,
+                OrganisationId = "7ea62027-2bd9-4267-aeea-7f6dbc71824a",
+                OrganisationType = OrganisationType.CompaniesHouseCompany,
+                ValidatedWithCompaniesHouse = true
+            },
+            ManualInput = null,
+            InvitedApprovedPersons = [],
+            IsApprovedUser = true,
+            ReExUser = new ReExUserModel
+            {
+                IsApprovedUser = true,
+                UserEmail = "user01@user.com",
+                UserFirstName = "Peter",
+                UserLastName = "Welsh",
+                UserId = Guid.Parse("fadc06db-ac47-4c3c-ad5a-b0c800288668")
+            },
+            UserRoleInOrganisation = "Director"
+        };
+
+        var res = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(reExOrgModel);
+
+        res.Should().NotBeNull();
+
+        res.User.JobTitle.Should().Be("Director");
+        res.User.IsApprovedUser.Should().BeTrue();
+        res.User.UserId.Should().Be("fadc06db-ac47-4c3c-ad5a-b0c800288668");
+
+        res.InvitedApprovedUsers.Should().HaveCount(0);
+        res.InvitedApprovedUsers.Should().BeEmpty();
+
+        res.Organisation.Name.Should().Be("Test Ltd");
+        res.Organisation.CompaniesHouseNumber.Should().Be("12345678");
+        res.Organisation.Address.BuildingName.Should().Be("XYZ");
+        res.Organisation.Address.Postcode.Should().Be("CV1 9HB");
+
+        res.ManualInput.Should().BeNull();
+    }
+
+    [TestMethod]
     public void MapReExOrganisationModelToReExAddOrganisation_MapsCompanyDetails_Correctly()
     {
         // Arrange
