@@ -30,6 +30,7 @@ public class ReExAddOrganisationMapperTests
                 OrganisationType = OrganisationType.CompaniesHouseCompany,
                 ValidatedWithCompaniesHouse = true
             },
+            ManualInput = null,
             InvitedApprovedPersons =
             [
                 new() {
@@ -69,6 +70,8 @@ public class ReExAddOrganisationMapperTests
         res.Organisation.CompaniesHouseNumber.Should().Be("12345678");
         res.Organisation.Address.BuildingName.Should().Be("XYZ");
         res.Organisation.Address.Postcode.Should().Be("CV1 9HB");
+
+        res.ManualInput.Should().BeNull();
     }
 
     [TestMethod]
@@ -115,7 +118,7 @@ public class ReExAddOrganisationMapperTests
             IsApprovedUser = true,
             Company = company,
             ManualInput = null,
-            InvitedApprovedPersons = new List<ReExInvitedApprovedPerson> { invitedPerson }
+            InvitedApprovedPersons = [invitedPerson]
         };
 
         // Act

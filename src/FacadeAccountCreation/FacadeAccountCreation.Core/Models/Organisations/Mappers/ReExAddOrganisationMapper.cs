@@ -24,9 +24,9 @@ public static class ReExAddOrganisationMapper
     {
         return new ReExManualInputModel
         {
-            BusinessAddress = organisationModel.ManualInput?.BusinessAddress,
-            ProducerType = organisationModel.ManualInput?.ProducerType,
-            TradingName = organisationModel.ManualInput?.TradingName
+            BusinessAddress = organisationModel.ManualInput.BusinessAddress,
+            ProducerType = organisationModel.ManualInput.ProducerType,
+            TradingName = organisationModel.ManualInput.TradingName
         };
     }
 
