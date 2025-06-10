@@ -24,7 +24,7 @@ public class ReExAddOrganisationMapperTests
                     Street = "High Street",
                     Town = "Coventry",
                 },
-                ProducerType = ProducerType.LimitedPartnership,
+                ProducerType = ProducerType.LimitedLiabilityPartnership,
                 IsComplianceScheme = false,
                 Nation = Nation.England,
                 OrganisationId = "7ea62027-2bd9-4267-aeea-7f6dbc71824a",
