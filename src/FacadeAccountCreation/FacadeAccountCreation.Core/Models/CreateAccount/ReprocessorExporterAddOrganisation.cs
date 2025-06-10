@@ -5,12 +5,12 @@ public class ReprocessorExporterAddOrganisation
 {
     public ReprocessorExporterUserModel User { get; set; } = null!;
 
-    [Required]
+    //[Required]
     public OrganisationModel? Organisation { get; set; } = null; // To DO: need this null if manual input got values
 
     public List<PartnerModel> Partners { get; set; } = [];
 
-    public ReExManualInputModel? ManualInput { get; set; } // To DoL: need this null if Organisation has company data       
+    public ReExManualInputModel? ManualInput { get; set; }
 
     public List<InvitedApprovedUserModel> InvitedApprovedUsers { get; set; } = [];
 
