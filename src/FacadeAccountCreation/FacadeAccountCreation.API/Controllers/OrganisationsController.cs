@@ -58,6 +58,51 @@ public class OrganisationsController(
     }
 
     [HttpGet]
+    [Route("all-users")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAllOrganisationUsers(Guid organisationId)
+    {
+        try
+        {
+            var userId = User.UserId();
+            if (userId == Guid.Empty)
+            {
+                logger.LogError("UserId not available");
+                return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
+            }
+
+            var response = await organisationService.GetOrganisationAllUsersList(userId, organisationId);
+            if (response.IsSuccessStatusCode)
+            {
+                var rolesLookupModels = serviceRolesLookupService.GetServiceRoles();
+
+                var userListResponse = response.Content.ReadFromJsonAsync<List<OrganisationUser>>().Result;
+
+                logger.LogInformation("Fetched all users for organisation {OrganisationId}", organisationId);
+
+                var userList =
+                    OrganisationUsersMapper.ConvertToOrganisationUserModels(userListResponse, rolesLookupModels);
+
+                logger.LogInformation("Mapped all users for the response for organisation {OrganisationId}",
+                    organisationId);
+
+                return Ok(userList);
+            }
+
+            logger.LogError("Failed to fetch all users for organisation {OrganisationId}", organisationId);
+            return HandleError.HandleErrorWithStatusCode(response.StatusCode);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error fetching all users for organisation {OrganisationId}", organisationId);
+            return HandleError.Handle(e);
+        }
+    }
+
+    [HttpGet]
     [Route("organisation-nation")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]

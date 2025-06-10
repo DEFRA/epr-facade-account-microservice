@@ -30,6 +30,15 @@ public class OrganisationService(
         return await httpClient.GetAsync(url);
     }
 
+    public async Task<HttpResponseMessage> GetOrganisationAllUsersList(Guid userId, Guid organisationId)
+    {
+        var url = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetAllOrganisationUsers").Value}?userId={userId}&organisationId={organisationId}";
+
+        logger.LogInformation("Attempting to fetch all users for organisation id {OrganisationId} from the backend", organisationId);
+
+        return await httpClient.GetAsync(url);
+    }
+
     public async Task<HttpResponseMessage> GetNationIdByOrganisationId(Guid organisationId)
     {
         var url = $"{config.GetSection("RegulatorOrganisationEndpoints").GetSection("GetNationIdFromOrganisationId").Value}?organisationId={organisationId}";

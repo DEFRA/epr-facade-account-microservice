@@ -13,6 +13,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Services;
 public class OrganisationServiceTests
 {
     private const string GetOrganisationUsersListEndpoint = "api/organisations/users";
+    private const string GetOrganisationAllUsersListEndpoint = "api/organisations/all-users";
     private const string GetNationIdByOrganisationIdEndpoint = "api/regulator-organisation/organisation-nation";
     private const string GetOrganisationIdFromNationEndpoint = "api/regulator-organisation?nation=";
     private const string UpdateOrganisationEndPoint = "api/organisations/organisation/";
@@ -41,6 +42,7 @@ public class OrganisationServiceTests
         {
             {"ApiConfig:AccountServiceBaseUrl", BaseAddress},
             {"ComplianceSchemeEndpoints:GetOrganisationUsers", GetOrganisationUsersListEndpoint},
+            {"ComplianceSchemeEndpoints:GetAllOrganisationUsers", GetOrganisationAllUsersListEndpoint},
             {"RegulatorOrganisationEndpoints:GetNationIdFromOrganisationId", GetNationIdByOrganisationIdEndpoint},
             {"RegulatorOrganisationEndpoints:GetOrganisationIdFromNation", GetOrganisationIdFromNationEndpoint},
             {"OrganisationEndpoints:UpdateOrganisation", UpdateOrganisationEndPoint }
@@ -96,6 +98,53 @@ public class OrganisationServiceTests
 
         // Act
         Func<Task> act = () => sut.GetOrganisationUserList(_userOid, _organisationId, _serviceRoleId);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationAllUsersList_should_return_successful_response()
+    {
+        // Arrange
+        var apiResponse = _fixture
+            .Build<HttpResponseMessage>()
+            .With(x => x.StatusCode, HttpStatusCode.OK)
+            .Create();
+
+        var expectedUrl =
+            $"{BaseAddress}/{GetOrganisationAllUsersListEndpoint}?userId={_userOid}&organisationId={_organisationId}";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == expectedUrl),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(apiResponse)
+            .Verifiable();
+
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        var response = await sut.GetOrganisationAllUsersList(_userOid, _organisationId);
+
+        // Assert
+        response.Should().BeEquivalentTo(apiResponse);
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationAllUsersList_should_throw_exception_when_no_response_returned()
+    {
+        // Arrange
+        var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        httpClient.BaseAddress = new Uri(BaseAddress);
+
+        var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+        // Act
+        Func<Task> act = () => sut.GetOrganisationAllUsersList(_userOid, _organisationId);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();

@@ -135,6 +135,105 @@ public class OrganisationsControllerTests
     }
 
     [TestMethod]
+    public async Task GetAllOrganisationUsers_should_return_statusCode_404_when_GetOrganisationAllUsersList_throws_notFound()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+                x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ThrowsAsync(new HttpRequestException("Test exception", null, HttpStatusCode.NotFound));
+
+        // Act
+        var result = await _sut.GetAllOrganisationUsers(_userId);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [TestMethod]
+    public async Task GetAllOrganisationUsers_should_return_statusCode_500_when_GetOrganisationAllUsersList_throws_500()
+    {
+        // Arrange
+        _mockOrganisationService.Setup(x =>
+            x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ThrowsAsync(new HttpRequestException("Test exception", null, HttpStatusCode.InternalServerError));
+
+        // Act
+        var result = await _sut.GetAllOrganisationUsers(_userId);
+
+        // Assert
+        result.Should().BeOfType<StatusCodeResult>();
+        var statusCodeResult = result as BadRequestResult;
+        statusCodeResult?.StatusCode.Should().Be(500);
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationAllUsersList_should_return_organisation_user_list_if_no_exceptions()
+    {
+        // Arrange
+        var handlerResponse =
+            _fixture
+                .Build<HttpResponseMessage>()
+                .With(x => x.StatusCode, HttpStatusCode.OK)
+                .With(x => x.Content, new StringContent(_fixture.Create<string>()))
+                .Create();
+
+        _mockOrganisationService.Setup(x =>
+            x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ReturnsAsync(handlerResponse);
+
+        // Act
+        var result = await _sut.GetAllOrganisationUsers(_userId);
+
+        // Assert
+        result.Should().BeOfType<StatusCodeResult>();
+        var obj = result as OkObjectResult;
+        obj?.Value.Should().BeEquivalentTo(handlerResponse.Content);
+    }
+
+    [TestMethod]
+    public async Task GetOrganisationAllUsersList_should_return_statusCode_200_when_Success()
+    {
+        // Arrange
+        var apiResponse = _fixture.Create<OrganisationUser>();
+        _mockOrganisationService.Setup(x =>
+                x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonSerializer.Serialize(apiResponse))
+                });
+
+        _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles()).Returns([]);
+
+        // Act
+        var result = await _sut.GetAllOrganisationUsers(_userId);
+
+        // Assert
+        result.Should().BeOfType<StatusCodeResult>();
+        var statusCodeResult = result as OkObjectResult;
+        statusCodeResult?.StatusCode.Should().Be(200);
+    }
+
+    [TestMethod]
+    public async Task GetAllOrganisationUsers_should_return_500_statusCode_when_empty_user()
+    {
+        // Arrange
+        _httpContextMock.Setup(x => x.User.Claims).Returns(new List<Claim>
+        {
+            new("emails", "_userEmail"),
+            new(ClaimConstants.ObjectId, Guid.Empty.ToString()),
+        }.AsEnumerable());
+        _sut.ControllerContext.HttpContext = _httpContextMock.Object;
+
+        // Act
+        var result = await _sut.GetAllOrganisationUsers(_userId);
+
+        // Assert
+        result.Should().BeOfType<ObjectResult>();
+        var statusCodeResult = result as ObjectResult;
+        statusCodeResult?.StatusCode.Should().Be(500);
+    }
+
+    [TestMethod]
     public async Task Should_Return_StatusCode_200_When_GetNationIdByOrganisationId_Succeeds()
     {
         // Arrange
