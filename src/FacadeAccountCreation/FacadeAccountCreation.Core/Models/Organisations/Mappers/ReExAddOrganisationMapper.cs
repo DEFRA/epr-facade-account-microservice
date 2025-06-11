@@ -22,10 +22,10 @@ public static class ReExAddOrganisationMapper
                 Nation = organisationModel.Company.Nation ?? Nation.NotSet,
                 OrganisationId = organisationModel.Company.OrganisationId,
                 OrganisationType = organisationModel.Company.OrganisationType ?? OrganisationType.NotSet,
-                ProducerType = null,
+                ProducerType = organisationModel.Company.ProducerType ?? ProducerType.NotSet,
                 ValidatedWithCompaniesHouse = organisationModel.Company.ValidatedWithCompaniesHouse                
             },
-            Partners = [],
+            Partners = organisationModel.Partners ?? [],
             DeclarationTimeStamp = DateTime.UtcNow
         };
     }

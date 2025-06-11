@@ -22,8 +22,9 @@ public class ReExAddOrganisationMapperTests
                     County = "West Midlands",
                     Postcode = "CV1 9HB",
                     Street = "High Street",
-                    Town = "Coventry"
+                    Town = "Coventry",
                 },
+                ProducerType = ProducerType.LimitedLiabilityPartnership,
                 IsComplianceScheme = false,
                 Nation = Nation.England,
                 OrganisationId = "7ea62027-2bd9-4267-aeea-7f6dbc71824a",
@@ -32,7 +33,7 @@ public class ReExAddOrganisationMapperTests
             },
             InvitedApprovedPersons =
             [
-                new() { 
+                new() {
                     FirstName = "John",
                     LastName = "Smith",
                     Email = "john.smith@tester.com",
@@ -49,7 +50,15 @@ public class ReExAddOrganisationMapperTests
                 UserLastName = "Welsh",
                 UserId = Guid.Parse("fadc06db-ac47-4c3c-ad5a-b0c800288668")
             },
-            UserRoleInOrganisation = "Director"
+            UserRoleInOrganisation = "Director",
+            Partners = 
+            [
+                new()
+                {
+                    Name = "PartnerTest",
+                    PartnerRole = "PartnerRoleTest"
+                }
+            ]
         };
 
         var res = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(reExOrgModel);
@@ -69,5 +78,8 @@ public class ReExAddOrganisationMapperTests
         res.Organisation.CompaniesHouseNumber.Should().Be("12345678");
         res.Organisation.Address.BuildingName.Should().Be("XYZ");
         res.Organisation.Address.Postcode.Should().Be("CV1 9HB");
+        res.Organisation.ProducerType.Should().Be(ProducerType.LimitedLiabilityPartnership);
+        res.Partners[0].Name.Should().Be("PartnerTest");
+        res.Partners[0].PartnerRole.Should().Be("PartnerRoleTest");
     }
 }
