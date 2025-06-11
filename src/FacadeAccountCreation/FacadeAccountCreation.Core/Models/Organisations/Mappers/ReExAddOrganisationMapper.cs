@@ -13,37 +13,40 @@ public static class ReExAddOrganisationMapper
                 UserId = organisationModel.ReExUser.UserId.Value
             },
             InvitedApprovedUsers = GetInvitedUsers(organisationModel.InvitedApprovedPersons),
-            Organisation = organisationModel.Company != null ? GetCompanyModel(organisationModel.Company) : null,
-            ManualInput = organisationModel.ManualInput != null ? GetManualInputModel(organisationModel) : null,
+            Organisation = GetOrganisationModel(organisationModel),
             Partners = [],
             DeclarationTimeStamp = DateTime.UtcNow
         };
     }
 
-    private static ReExManualInputModel GetManualInputModel(ReExOrganisationModel organisationModel)
+    private static OrganisationModel GetOrganisationModel(ReExOrganisationModel organisationModel)
     {
-        return new ReExManualInputModel
+        return organisationModel switch
         {
-            BusinessAddress = organisationModel.ManualInput.BusinessAddress,
-            ProducerType = organisationModel.ManualInput.ProducerType,
-            TradingName = organisationModel.ManualInput.TradingName
-        };
-    }
-
-    private static OrganisationModel GetCompanyModel(ReExCompanyModel companyModel)
-    {
-        return new OrganisationModel
-        {
-            Address = companyModel.CompanyRegisteredAddress,
-            CompaniesHouseNumber = companyModel.CompaniesHouseNumber,
-            IsComplianceScheme = companyModel.IsComplianceScheme,
-            Name = companyModel.CompanyName,
-            Nation = companyModel.Nation ?? Nation.NotSet,
-            OrganisationId = companyModel.OrganisationId,
-            OrganisationType = companyModel.OrganisationType ?? OrganisationType.NotSet,
-            ProducerType = null,
-            ValidatedWithCompaniesHouse = companyModel.ValidatedWithCompaniesHouse
-        };
+            { Company: not null } => new OrganisationModel
+            {
+                Address = organisationModel.Company.CompanyRegisteredAddress,
+                CompaniesHouseNumber = organisationModel.Company.CompaniesHouseNumber,
+                IsComplianceScheme = organisationModel.Company.IsComplianceScheme,
+                Name = organisationModel.Company.CompanyName,
+                Nation = organisationModel.Company.Nation ?? Nation.NotSet,
+                OrganisationId = organisationModel.Company.OrganisationId,
+                OrganisationType = organisationModel.Company.OrganisationType ?? OrganisationType.NotSet,
+                ProducerType = null,
+                ValidatedWithCompaniesHouse = organisationModel.Company.ValidatedWithCompaniesHouse
+            },
+            { ManualInput: not null } => new OrganisationModel
+            {
+                Address = organisationModel.ManualInput.BusinessAddress,
+                IsComplianceScheme = false,
+                Name = organisationModel.ManualInput.TradingName,
+                Nation = organisationModel.ManualInput.Nation ?? Nation.NotSet,
+                OrganisationId = null,
+                OrganisationType = organisationModel.ManualInput.OrganisationType ?? OrganisationType.NotSet,
+                ProducerType = organisationModel.ManualInput.ProducerType ?? ProducerType.NotSet,
+                ValidatedWithCompaniesHouse = false
+            },
+        };        
     }
 
     private static List<InvitedApprovedUserModel> GetInvitedUsers(IEnumerable<ReExInvitedApprovedPerson> invitedApprovedList)

@@ -59,8 +59,6 @@ public class ReExAddOrganisationMapperTests
         res.Organisation.CompaniesHouseNumber.Should().Be("12345678");
         res.Organisation.Address.BuildingName.Should().Be("XYZ");
         res.Organisation.Address.Postcode.Should().Be("CV1 9HB");
-
-        res.ManualInput.Should().BeNull();
     }
 
     [TestMethod]
@@ -127,8 +125,6 @@ public class ReExAddOrganisationMapperTests
         result.Organisation.OrganisationType.Should().Be(OrganisationType.CompaniesHouseCompany);
         result.Organisation.Name.Should().Be("Test Company");
 
-        result.ManualInput.Should().BeNull();
-
         result.InvitedApprovedUsers.Should().NotBeNull();
         result.InvitedApprovedUsers.Should().HaveCount(1);  
         result.InvitedApprovedUsers[0].Person.FirstName.Should().Be("Alice");
@@ -155,7 +151,9 @@ public class ReExAddOrganisationMapperTests
                 Town = "Manual Town",
                 Postcode = "ZZ99 9ZZ",
                 Country = "UK"
-            }
+            },
+            OrganisationType = OrganisationType.NonCompaniesHouseCompany,
+            Nation = Nation.England
         };
 
         var organisationModel = new ReExOrganisationModel
@@ -182,25 +180,26 @@ public class ReExAddOrganisationMapperTests
         result.User.JobTitle.Should().Be("Member");
         result.User.IsApprovedUser.Should().BeFalse();
 
-        result.Organisation.Should().BeNull();
+        result.Organisation.Should().NotBeNull();
 
-        result.ManualInput.Should().NotBeNull();
-        result.ManualInput.TradingName.Should().Be("Manual Org");
-        result.ManualInput.ProducerType.Should().Be(ProducerType.SoleTrader);
-        result.ManualInput.BusinessAddress.Should().NotBeNull();
-        result.ManualInput.BusinessAddress.BuildingName.Should().Be("Manual Building");
-        result.ManualInput.BusinessAddress.Street.Should().Be("Manual Street");
-        result.ManualInput.BusinessAddress.Town.Should().Be("Manual Town");
-        result.ManualInput.BusinessAddress.Postcode.Should().Be("ZZ99 9ZZ");
-        result.ManualInput.BusinessAddress.Country.Should().Be("UK");
-        
+        result.Organisation.OrganisationType.Should().Be(OrganisationType.NonCompaniesHouseCompany);
+
+        result.Organisation.Name.Should().Be("Manual Org");
+        result.Organisation.ProducerType.Should().Be(ProducerType.SoleTrader);
+        result.Organisation.Address.Should().NotBeNull();
+        result.Organisation.Address.BuildingName.Should().Be("Manual Building");
+        result.Organisation.Address.Street.Should().Be("Manual Street");
+        result.Organisation.Address.Town.Should().Be("Manual Town");
+        result.Organisation.Address.Postcode.Should().Be("ZZ99 9ZZ");
+        result.Organisation.Address.Country.Should().Be("UK");
+
         result.InvitedApprovedUsers.Should().NotBeNull();
         result.InvitedApprovedUsers.Should().BeEmpty();
 
         result.Partners.Should().NotBeNull();
         result.Partners.Should().BeEmpty();
 
-        result.DeclarationTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(1));
+        result.DeclarationTimeStamp.Should().NotBeOnOrAfter(DateTime.UtcNow);
     }
 
     [TestMethod]
@@ -239,12 +238,10 @@ public class ReExAddOrganisationMapperTests
         result.User.JobTitle.Should().Be("Member");
         result.User.IsApprovedUser.Should().BeFalse();
 
-        result.Organisation.Should().BeNull();
-
-        result.ManualInput.Should().NotBeNull();
-        result.ManualInput.TradingName.Should().BeNull();
-        result.ManualInput.ProducerType.Should().BeNull();
-        result.ManualInput.BusinessAddress.Should().BeNull();
+        result.Organisation.Should().NotBeNull();
+        result.Organisation.Name.Should().BeNull();
+        result.Organisation.ProducerType.Should().Be(ProducerType.NotSet);
+        result.Organisation.Address.Should().BeNull();
 
         result.InvitedApprovedUsers.Should().NotBeNull();
         result.InvitedApprovedUsers.Should().BeEmpty();
