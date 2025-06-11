@@ -63,7 +63,7 @@ public class OrganisationsController(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetAllOrganisationUsers(Guid organisationId)
+    public async Task<IActionResult> GetAllOrganisationUsers(Guid organisationId, int serviceRoleId)
     {
         try
         {
@@ -74,7 +74,7 @@ public class OrganisationsController(
                 return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
             }
 
-            var response = await organisationService.GetOrganisationAllUsersList(userId, organisationId);
+            var response = await organisationService.GetOrganisationAllUsersList(userId, organisationId, serviceRoleId);
             if (response.IsSuccessStatusCode)
             {
                 var rolesLookupModels = serviceRolesLookupService.GetServiceRoles();

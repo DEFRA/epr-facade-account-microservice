@@ -139,11 +139,11 @@ public class OrganisationsControllerTests
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
-                x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>()))
             .ThrowsAsync(new HttpRequestException("Test exception", null, HttpStatusCode.NotFound));
 
         // Act
-        var result = await _sut.GetAllOrganisationUsers(_userId);
+        var result = await _sut.GetAllOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<NotFoundResult>();
@@ -154,11 +154,11 @@ public class OrganisationsControllerTests
     {
         // Arrange
         _mockOrganisationService.Setup(x =>
-            x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>()))
             .ThrowsAsync(new HttpRequestException("Test exception", null, HttpStatusCode.InternalServerError));
 
         // Act
-        var result = await _sut.GetAllOrganisationUsers(_userId);
+        var result = await _sut.GetAllOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<StatusCodeResult>();
@@ -178,11 +178,11 @@ public class OrganisationsControllerTests
                 .Create();
 
         _mockOrganisationService.Setup(x =>
-            x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>()))
             .ReturnsAsync(handlerResponse);
 
         // Act
-        var result = await _sut.GetAllOrganisationUsers(_userId);
+        var result = await _sut.GetAllOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<StatusCodeResult>();
@@ -196,7 +196,7 @@ public class OrganisationsControllerTests
         // Arrange
         var apiResponse = _fixture.Create<OrganisationUser>();
         _mockOrganisationService.Setup(x =>
-                x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(new HttpResponseMessage
+                x.GetOrganisationAllUsersList(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>())).ReturnsAsync(new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.OK,
                     Content = new StringContent(JsonSerializer.Serialize(apiResponse))
@@ -205,7 +205,7 @@ public class OrganisationsControllerTests
         _serviceRolesLookupServiceMock.Setup(x => x.GetServiceRoles()).Returns([]);
 
         // Act
-        var result = await _sut.GetAllOrganisationUsers(_userId);
+        var result = await _sut.GetAllOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<StatusCodeResult>();
@@ -225,7 +225,7 @@ public class OrganisationsControllerTests
         _sut.ControllerContext.HttpContext = _httpContextMock.Object;
 
         // Act
-        var result = await _sut.GetAllOrganisationUsers(_userId);
+        var result = await _sut.GetAllOrganisationUsers(_userId, ServiceRoleId);
 
         // Assert
         result.Should().BeOfType<ObjectResult>();

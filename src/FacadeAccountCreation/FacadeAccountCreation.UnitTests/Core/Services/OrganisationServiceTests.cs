@@ -113,7 +113,7 @@ public class OrganisationServiceTests
             .Create();
 
         var expectedUrl =
-            $"{BaseAddress}/{GetOrganisationAllUsersListEndpoint}?userId={_userOid}&organisationId={_organisationId}";
+            $"{BaseAddress}/{GetOrganisationAllUsersListEndpoint}?userId={_userOid}&organisationId={_organisationId}&serviceRoleId={_serviceRoleId}";
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -128,7 +128,7 @@ public class OrganisationServiceTests
         var sut = new OrganisationService(httpClient, _logger, _configuration);
 
         // Act
-        var response = await sut.GetOrganisationAllUsersList(_userOid, _organisationId);
+        var response = await sut.GetOrganisationAllUsersList(_userOid, _organisationId, _serviceRoleId);
 
         // Assert
         response.Should().BeEquivalentTo(apiResponse);
@@ -144,7 +144,7 @@ public class OrganisationServiceTests
         var sut = new OrganisationService(httpClient, _logger, _configuration);
 
         // Act
-        Func<Task> act = () => sut.GetOrganisationAllUsersList(_userOid, _organisationId);
+        Func<Task> act = () => sut.GetOrganisationAllUsersList(_userOid, _organisationId, _serviceRoleId);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>();

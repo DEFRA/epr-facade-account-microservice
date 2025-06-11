@@ -30,9 +30,9 @@ public class OrganisationService(
         return await httpClient.GetAsync(url);
     }
 
-    public async Task<HttpResponseMessage> GetOrganisationAllUsersList(Guid userId, Guid organisationId)
+    public async Task<HttpResponseMessage> GetOrganisationAllUsersList(Guid userId, Guid organisationId, int serviceRoleId)
     {
-        var url = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetAllOrganisationUsers").Value}?userId={userId}&organisationId={organisationId}";
+        var url = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetAllOrganisationUsers").Value}?userId={userId}&organisationId={organisationId}&serviceRoleId={serviceRoleId}";
 
         logger.LogInformation("Attempting to fetch all users for organisation id {OrganisationId} from the backend", organisationId);
 
