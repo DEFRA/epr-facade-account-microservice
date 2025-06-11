@@ -1,4 +1,6 @@
-﻿using FacadeAccountCreation.Core.Models.Organisations.Mappers;
+﻿using FacadeAccountCreation.Core.Models.CreateAccount;
+using FacadeAccountCreation.Core.Models.Organisations.Mappers;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FacadeAccountCreation.UnitTests.Core.Mappers;
 
@@ -81,7 +83,7 @@ public class ReExAddOrganisationMapperTests
                 Country = "UK"
             },
             ValidatedWithCompaniesHouse = true,
-            Nation = Nation.England,
+            Nation = Nation.NorthernIreland,
             IsComplianceScheme = false
         };
 
@@ -113,7 +115,7 @@ public class ReExAddOrganisationMapperTests
 
         // Assert
 
-        result.Should().NotBeNull();
+        result.Organisation.Should().NotBeNull();
         result.User.Should().NotBeNull();
         result.User.UserId.Should().Be(userId);
         result.User.JobTitle.Should().Be("Director");
@@ -121,12 +123,12 @@ public class ReExAddOrganisationMapperTests
 
         result.Organisation.Should().NotBeNull();
         result.Organisation.OrganisationId.Should().Be("org-1");
-        result.Organisation.Nation.Should().Be(Nation.England);
+        result.Organisation.Nation.Should().Be(Nation.NorthernIreland);
         result.Organisation.OrganisationType.Should().Be(OrganisationType.CompaniesHouseCompany);
         result.Organisation.Name.Should().Be("Test Company");
 
         result.InvitedApprovedUsers.Should().NotBeNull();
-        result.InvitedApprovedUsers.Should().HaveCount(1);  
+        result.InvitedApprovedUsers.Should().HaveCount(1);
         result.InvitedApprovedUsers[0].Person.FirstName.Should().Be("Alice");
         result.InvitedApprovedUsers[0].Person.LastName.Should().Be("Smith");
         result.InvitedApprovedUsers[0].Person.ContactEmail.Should().Be("alice.smith@example.com");
@@ -174,8 +176,8 @@ public class ReExAddOrganisationMapperTests
         var result = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(organisationModel);
 
         // Assert
-        result.Should().NotBeNull();
-        result.User.Should().NotBeNull();   
+        result.Organisation.Should().NotBeNull();
+        result.User.Should().NotBeNull();
         result.User.UserId.Should().Be(userId);
         result.User.JobTitle.Should().Be("Member");
         result.User.IsApprovedUser.Should().BeFalse();
@@ -232,7 +234,7 @@ public class ReExAddOrganisationMapperTests
         var result = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(organisationModel);
 
         // Assert
-        result.Should().NotBeNull();
+        result.Organisation.Should().NotBeNull();
         result.User.Should().NotBeNull();
         result.User.UserId.Should().Be(userId);
         result.User.JobTitle.Should().Be("Member");
@@ -256,5 +258,173 @@ public class ReExAddOrganisationMapperTests
         // Act & Assert
         Assert.ThrowsException<NullReferenceException>(() =>
             ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(null));
+    }
+
+    [TestMethod]
+    public void GetOrganisationModel_MapsCompanyCorrectly()
+    {
+        var userId = Guid.NewGuid();
+        var company = new ReExCompanyModel
+        {
+            OrganisationId = "org-123",
+            OrganisationType = OrganisationType.CompaniesHouseCompany,
+            CompaniesHouseNumber = "CH123456",
+            CompanyName = "Test Company",
+            CompanyRegisteredAddress = new AddressModel
+            {
+                BuildingName = "Building",
+                Street = "Street",
+                Town = "Town",
+                Postcode = "AB12 3CD",
+                Country = "UK"
+            },
+            ValidatedWithCompaniesHouse = true,
+            Nation = Nation.Scotland,
+            IsComplianceScheme = true
+        };
+
+        var orgModel = new ReExOrganisationModel
+        {
+            ReExUser = new ReExUserModel
+            {
+                UserId = userId,
+                IsApprovedUser = false
+            },
+            Company = company,
+            ManualInput = null
+        };
+
+        var result = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(orgModel);
+
+        result.Organisation.Should().NotBeNull();
+        result.Organisation.OrganisationId.Should().Be("org-123");
+        result.Organisation.OrganisationType.Should().Be(OrganisationType.CompaniesHouseCompany);
+        result.Organisation.CompaniesHouseNumber.Should().Be("CH123456");
+        result.Organisation.Name.Should().Be("Test Company");
+        result.Organisation.Address.Should().NotBeNull();
+        result.Organisation.Address.BuildingName.Should().Be("Building");
+        result.Organisation.Nation.Should().Be(Nation.Scotland);
+        result.Organisation.IsComplianceScheme.Should().BeTrue();
+        result.Organisation.ValidatedWithCompaniesHouse.Should().BeTrue();
+        result.Organisation.ProducerType.Should().BeNull();
+    }
+
+    [TestMethod]
+    public void GetOrganisationModel_MapsManualInputCorrectly()
+    {
+        var userId = Guid.NewGuid();
+        var manualInput = new ReExManualInputModel
+        {
+            TradingName = "Manual Org",
+            ProducerType = ProducerType.SoleTrader,
+            BusinessAddress = new AddressModel
+            {
+                BuildingName = "Manual Building",
+                Street = "Manual Street",
+                Town = "Manual Town",
+                Postcode = "ZZ99 9ZZ",
+                Country = "UK"
+            },
+            OrganisationType = OrganisationType.NonCompaniesHouseCompany,
+            Nation = Nation.Wales
+        };
+
+        var orgModel = new ReExOrganisationModel
+        {
+            ReExUser = new ReExUserModel
+            {
+                UserId = userId,
+                IsApprovedUser = false
+            },
+            Company = null,
+            ManualInput = manualInput
+        };
+
+        var result = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(orgModel);
+
+        result.Organisation.Should().NotBeNull();
+        result.Organisation.OrganisationId.Should().BeNull();
+        result.Organisation.OrganisationType.Should().Be(OrganisationType.NonCompaniesHouseCompany);
+        result.Organisation.CompaniesHouseNumber.Should().BeNull();
+        result.Organisation.Name.Should().Be("Manual Org");
+        result.Organisation.Address.Should().NotBeNull();
+        result.Organisation.Address.BuildingName.Should().Be("Manual Building");
+        result.Organisation.Nation.Should().Be(Nation.Wales);
+        result.Organisation.IsComplianceScheme.Should().BeFalse();
+        result.Organisation.ValidatedWithCompaniesHouse.Should().BeFalse();
+        result.Organisation.ProducerType.Should().Be(ProducerType.SoleTrader);
+    }
+
+    [TestMethod]
+    public void GetOrganisationModel_ManualInput_NullProperties_DefaultsSet()
+    {
+        var manualInput = new ReExManualInputModel
+        {
+            TradingName = null,
+            ProducerType = null,
+            BusinessAddress = null,
+            OrganisationType = null,
+            Nation = null
+        };
+
+        var orgModel = new ReExOrganisationModel
+        {
+            ReExUser = new ReExUserModel
+            {
+                UserId = Guid.NewGuid(),
+                IsApprovedUser = false
+            },
+            Company = null,
+            ManualInput = manualInput
+        };
+
+        var result = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(orgModel);
+
+        result.Organisation.Should().NotBeNull();
+        result.Organisation.Name.Should().BeNull();
+        result.Organisation.ProducerType.Should().Be(ProducerType.NotSet);
+        result.Organisation.Address.Should().BeNull();
+        result.Organisation.OrganisationType.Should().Be(OrganisationType.NotSet);
+        result.Organisation.Nation.Should().Be(Nation.NotSet);
+    }
+
+    [TestMethod]
+    public void GetOrganisationModel_Company_NullOptionalProperties_DefaultsSet()
+    {
+        var company = new ReExCompanyModel
+        {
+            OrganisationId = null,
+            OrganisationType = null,
+            CompaniesHouseNumber = null,
+            CompanyName = null,
+            CompanyRegisteredAddress = null,
+            ValidatedWithCompaniesHouse = false,
+            Nation = null,
+            IsComplianceScheme = false
+        };
+
+        var orgModel = new ReExOrganisationModel
+        {
+            ReExUser = new ReExUserModel
+            {
+                UserId = Guid.NewGuid(),
+                IsApprovedUser = false
+            },
+            Company = company,
+            ManualInput = null
+        };
+
+        var result = ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(orgModel);
+
+        result.Organisation.Should().NotBeNull();
+        result.Organisation.OrganisationId.Should().BeNull();
+        result.Organisation.OrganisationType.Should().Be(OrganisationType.NotSet);
+        result.Organisation.CompaniesHouseNumber.Should().BeNull();
+        result.Organisation.Name.Should().BeNull();
+        result.Organisation.Address.Should().BeNull();
+        result.Organisation.Nation.Should().Be(Nation.NotSet);
+        result.Organisation.IsComplianceScheme.Should().BeFalse();
+        result.Organisation.ValidatedWithCompaniesHouse.Should().BeFalse();
+        result.Organisation.ProducerType.Should().BeNull();
     }
 }
