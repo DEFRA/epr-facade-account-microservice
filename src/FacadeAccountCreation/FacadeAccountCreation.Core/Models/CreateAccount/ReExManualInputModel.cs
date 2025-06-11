@@ -1,5 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.CreateAccount;
 
+[ExcludeFromCodeCoverage]
 public class ReExManualInputModel
 {
     public string TradingName { get; set; }
