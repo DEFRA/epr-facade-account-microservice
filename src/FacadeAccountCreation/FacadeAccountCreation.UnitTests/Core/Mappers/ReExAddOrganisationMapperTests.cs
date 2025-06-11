@@ -7,7 +7,7 @@ namespace FacadeAccountCreation.UnitTests.Core.Mappers;
 [TestClass]
 public class ReExAddOrganisationMapperTests
 {
-    [TestMethod]
+    [TestMethod]    
     public void MapReExOrganisationModelToReExAddOrganisation_UpdatedWtihCorrectValue()
     {
         var reExOrgModel = new ReExOrganisationModel
@@ -64,14 +64,19 @@ public class ReExAddOrganisationMapperTests
     }
 
     [TestMethod]
-    public void MapReExOrganisationModelToReExAddOrganisation_MapsCompanyDetails_Correctly()
+    [DataRow(OrganisationType.CompaniesHouseCompany, "CompaniesHouseCompany", Nation.Wales)]
+    [DataRow(OrganisationType.NonCompaniesHouseCompany, "NonCompaniesHouseCompany", Nation.NorthernIreland)]
+    [DataRow(OrganisationType.CompaniesHouseCompany, "CompaniesHouseCompany", Nation.Scotland)]
+    [DataRow(OrganisationType.NonCompaniesHouseCompany, "NonCompaniesHouseCompany", Nation.England)]
+    [DataRow(OrganisationType.NotSet, "NotSet", Nation.NotSet)]
+    public void MapReExOrganisationModelToReExAddOrganisation_MapsCompanyDetails_Correctly(OrganisationType organisationType, string expectedResult, Nation nation)
     {
         // Arrange
         var userId = Guid.NewGuid();
         var company = new ReExCompanyModel
         {
             OrganisationId = "org-1",
-            OrganisationType = OrganisationType.CompaniesHouseCompany,
+            OrganisationType = organisationType,
             CompaniesHouseNumber = "12345678",
             CompanyName = "Test Company",
             CompanyRegisteredAddress = new AddressModel
@@ -83,7 +88,7 @@ public class ReExAddOrganisationMapperTests
                 Country = "UK"
             },
             ValidatedWithCompaniesHouse = true,
-            Nation = Nation.NorthernIreland,
+            Nation = nation,
             IsComplianceScheme = false
         };
 
@@ -123,8 +128,8 @@ public class ReExAddOrganisationMapperTests
 
         result.Organisation.Should().NotBeNull();
         result.Organisation.OrganisationId.Should().Be("org-1");
-        result.Organisation.Nation.Should().Be(Nation.NorthernIreland);
-        result.Organisation.OrganisationType.Should().Be(OrganisationType.CompaniesHouseCompany);
+        result.Organisation.Nation.Should().Be(nation);
+        result.Organisation.OrganisationType.ToString().Should().Be(expectedResult);
         result.Organisation.Name.Should().Be("Test Company");
 
         result.InvitedApprovedUsers.Should().NotBeNull();
@@ -138,7 +143,12 @@ public class ReExAddOrganisationMapperTests
     }
 
     [TestMethod]
-    public void MapReExOrganisationModelToReExAddOrganisation_MapsManualInputCorrectly()
+    [DataRow(OrganisationType.CompaniesHouseCompany, "CompaniesHouseCompany", Nation.Wales)]
+    [DataRow(OrganisationType.NonCompaniesHouseCompany, "NonCompaniesHouseCompany", Nation.NorthernIreland)]
+    [DataRow(OrganisationType.CompaniesHouseCompany, "CompaniesHouseCompany", Nation.Scotland)]
+    [DataRow(OrganisationType.NonCompaniesHouseCompany, "NonCompaniesHouseCompany", Nation.England)]
+    [DataRow(OrganisationType.NotSet, "NotSet", Nation.NotSet)]
+    public void MapReExOrganisationModelToReExAddOrganisation_MapsManualInputCorrectly(OrganisationType organisationType, string expectedOrgType, Nation nation)
     {
         // Arrange
         var userId = Guid.NewGuid();
@@ -154,8 +164,8 @@ public class ReExAddOrganisationMapperTests
                 Postcode = "ZZ99 9ZZ",
                 Country = "UK"
             },
-            OrganisationType = OrganisationType.NonCompaniesHouseCompany,
-            Nation = Nation.England
+            OrganisationType = organisationType,
+            Nation = nation
         };
 
         var organisationModel = new ReExOrganisationModel
@@ -184,7 +194,7 @@ public class ReExAddOrganisationMapperTests
 
         result.Organisation.Should().NotBeNull();
 
-        result.Organisation.OrganisationType.Should().Be(OrganisationType.NonCompaniesHouseCompany);
+        result.Organisation.OrganisationType.ToString().Should().Be(expectedOrgType);
 
         result.Organisation.Name.Should().Be("Manual Org");
         result.Organisation.ProducerType.Should().Be(ProducerType.SoleTrader);
@@ -194,6 +204,8 @@ public class ReExAddOrganisationMapperTests
         result.Organisation.Address.Town.Should().Be("Manual Town");
         result.Organisation.Address.Postcode.Should().Be("ZZ99 9ZZ");
         result.Organisation.Address.Country.Should().Be("UK");
+
+        result.Organisation.Nation.Should().Be(nation);
 
         result.InvitedApprovedUsers.Should().NotBeNull();
         result.InvitedApprovedUsers.Should().BeEmpty();
