@@ -33,16 +33,7 @@ public class ReExAddOrganisationMapperTests
                 OrganisationType = OrganisationType.CompaniesHouseCompany,
                 ValidatedWithCompaniesHouse = true
             },
-            InvitedApprovedPersons =
-            [
-                new() {
-                    FirstName = "John",
-                    LastName = "Smith",
-                    Email = "john.smith@tester.com",
-                    Role = "CompanySecretary",
-                    InviteToken = "B786tgs12856=="
-                }
-            ],
+            InvitedApprovedPersons = null,
             IsApprovedUser = true,
             ReExUser = new ReExUserModel
             {
@@ -338,7 +329,7 @@ public class ReExAddOrganisationMapperTests
         result.Organisation.Nation.Should().Be(Nation.Scotland);
         result.Organisation.IsComplianceScheme.Should().BeTrue();
         result.Organisation.ValidatedWithCompaniesHouse.Should().BeTrue();
-        result.Organisation.ProducerType.Should().BeNull();
+        result.Organisation.ProducerType.Should().Be(ProducerType.NotSet);
     }
 
     [TestMethod]
@@ -457,6 +448,7 @@ public class ReExAddOrganisationMapperTests
         result.Organisation.Nation.Should().Be(Nation.NotSet);
         result.Organisation.IsComplianceScheme.Should().BeFalse();
         result.Organisation.ValidatedWithCompaniesHouse.Should().BeFalse();
-        result.Organisation.ProducerType.Should().BeNull();
+        result.Organisation.ProducerType.Should().Be(ProducerType.NotSet);
+        result.Partners.Should().NotBeNull().And.BeEmpty();
     }
 }
