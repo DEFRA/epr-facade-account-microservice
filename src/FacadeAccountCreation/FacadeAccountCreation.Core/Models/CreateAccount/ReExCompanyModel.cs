@@ -7,6 +7,8 @@ public class ReExCompanyModel
 
     public OrganisationType? OrganisationType { get; set; }
 
+    public ProducerType? ProducerType { get; set; }
+
     public string? CompaniesHouseNumber { get; set; }
 
     public string CompanyName { get; set; }

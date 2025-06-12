@@ -14,7 +14,7 @@ public static class ReExAddOrganisationMapper
             },
             InvitedApprovedUsers = GetInvitedUsers(organisationModel.InvitedApprovedPersons),
             Organisation = GetOrganisationModel(organisationModel),
-            Partners = [],
+            Partners = organisationModel.Partners ?? [],
             DeclarationTimeStamp = DateTime.UtcNow
         };
     }
@@ -32,8 +32,8 @@ public static class ReExAddOrganisationMapper
                 Nation = organisationModel.Company.Nation ?? Nation.NotSet,
                 OrganisationId = organisationModel.Company.OrganisationId,
                 OrganisationType = organisationModel.Company.OrganisationType ?? OrganisationType.NotSet,
-                ProducerType = null,
-                ValidatedWithCompaniesHouse = organisationModel.Company.ValidatedWithCompaniesHouse
+                ProducerType = organisationModel.Company.ProducerType ?? ProducerType.NotSet,
+                ValidatedWithCompaniesHouse = organisationModel.Company.ValidatedWithCompaniesHouse                
             },
             { ManualInput: not null } => new OrganisationModel
             {

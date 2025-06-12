@@ -23,4 +23,6 @@ public class ReExOrganisationModel
     /// ReEx Approved persons information related to names/emails
     /// </summary>
     public List<ReExInvitedApprovedPerson> InvitedApprovedPersons { get; set; } = [];
+
+    public List<PartnerModel>? Partners { get; set; }
 }
