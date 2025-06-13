@@ -872,7 +872,7 @@ public class MessagingService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, ExceptionLogMessage, organisationId, rejectedAPEmail, templateId);
+            logger.LogError(ex, ExceptionLogMessage, organisationId, "", templateId);
             return null;
         }
     }
