@@ -61,6 +61,7 @@ public class ComplianceSchemeService(
         try
         {
             logger.LogInformation("Attempting to get the compliance schemes members for organisation id : '{OrganisationId}'", organisationId);
+            // this doesn't look thread safe to me
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add(XEprUserHeader, userId.ToString());
             result = await httpClient.GetAsync(endpoint);

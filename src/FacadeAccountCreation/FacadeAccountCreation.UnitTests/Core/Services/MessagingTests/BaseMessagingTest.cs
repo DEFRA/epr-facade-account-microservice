@@ -24,7 +24,14 @@ public class BaseMessagingTest
             ComplianceSchemeResubmissionTemplateId = "ComplianceSchemeResubmissionTemplateId",
             ProducerResubmissionTemplateId = "ProducerResubmissionTemplateId",
             AccountLoginUrl="dummyUrl",
-            AccountCreationUrl= "dummyCreateUrl"
+            AccountCreationUrl= "dummyCreateUrl",
+            ReExAccountCreationUrl = "someTestUrl",
+            ReExApprovedPersonInvitationTemplateId = "templateId-01",
+            ReExInvitationConfirmationToInviterTemplateId = "templateId-02",
+            ReExApprovedPersonAcceptedInvitationTemplateId = "templateId-03",
+            ReExApprovedPersonRejectedInvitationTemplateId = "templateId-04",
+            ReExConfirmationToInviteeRejectingInvitationTemplateId = "templateId-05",
+
         });
         _regulatorEmailConfig = Options.Create(new RegulatorEmailConfig
         {
