@@ -13,7 +13,17 @@ public static class ReExAddOrganisationMapper
                 UserId = organisationModel.ReExUser.UserId.Value
             },
             InvitedApprovedUsers = GetInvitedUsers(organisationModel.InvitedApprovedPersons),
-            Organisation = new OrganisationModel
+            Organisation = GetOrganisationModel(organisationModel),
+            Partners = organisationModel.Partners ?? [],
+            DeclarationTimeStamp = DateTime.UtcNow
+        };
+    }
+
+    private static OrganisationModel GetOrganisationModel(ReExOrganisationModel organisationModel)
+    {
+        return organisationModel switch
+        {
+            { Company: not null } => new OrganisationModel
             {
                 Address = organisationModel.Company.CompanyRegisteredAddress,
                 CompaniesHouseNumber = organisationModel.Company.CompaniesHouseNumber,
@@ -25,9 +35,18 @@ public static class ReExAddOrganisationMapper
                 ProducerType = organisationModel.Company.ProducerType ?? ProducerType.NotSet,
                 ValidatedWithCompaniesHouse = organisationModel.Company.ValidatedWithCompaniesHouse                
             },
-            Partners = organisationModel.Partners ?? [],
-            DeclarationTimeStamp = DateTime.UtcNow
-        };
+            { ManualInput: not null } => new OrganisationModel
+            {
+                Address = organisationModel.ManualInput.BusinessAddress,
+                IsComplianceScheme = false,
+                Name = organisationModel.ManualInput.TradingName,
+                Nation = organisationModel.ManualInput.Nation ?? Nation.NotSet,
+                OrganisationId = null,
+                OrganisationType = organisationModel.ManualInput.OrganisationType ?? OrganisationType.NotSet,
+                ProducerType = organisationModel.ManualInput.ProducerType ?? ProducerType.NotSet,
+                ValidatedWithCompaniesHouse = false
+            },
+        };        
     }
 
     private static List<InvitedApprovedUserModel> GetInvitedUsers(IEnumerable<ReExInvitedApprovedPerson> invitedApprovedList)
