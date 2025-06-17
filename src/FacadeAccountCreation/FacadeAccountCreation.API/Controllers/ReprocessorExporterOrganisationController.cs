@@ -5,9 +5,9 @@ namespace FacadeAccountCreation.API.Controllers;
 [ApiController]
 [Route("api/v1/reprocessor-exporter-org")]
 public class ReprocessorExporterOrganisationController(
-    IOrganisationService organisationService, 
-    IMessagingService messagingService, 
-    IOptions<MessagingConfig> messagingConfig, 
+    IOrganisationService organisationService,
+    IMessagingService messagingService,
+    IOptions<MessagingConfig> messagingConfig,
     ILogger<ReprocessorExporterOrganisationController> logger) : ControllerBase
 {
     [HttpPost]
@@ -30,33 +30,30 @@ public class ReprocessorExporterOrganisationController(
             return Problem("Response can not be null", statusCode: StatusCodes.Status204NoContent);
         }
 
-        if (response.OrganisationId  == Guid.Empty)
+        if (response.OrganisationId == Guid.Empty)
         {
             logger.LogError("Organisation id can not be empty");
             return Problem("Organisation id can not be empty", statusCode: StatusCodes.Status204NoContent);
         }
 
         // Send Email Notification(s)
-        if (reExOrganisationModel.Company != null)
+        var emailNotificationMapper = ReExNotificationMapper.MapOrganisationModelToReExNotificationModel(reExOrganisationModel, response, messagingConfig.Value.ReExAccountCreationUrl);
+
+        // TO DO: check if Invited approved person 'email' is enrolled already
+        if (emailNotificationMapper.ReExInvitedApprovedPersons.Count != 0)
         {
-            var emailNotificationMapper = ReExNotificationMapper.MapOrganisationModelToReExNotificationModel(reExOrganisationModel, response, messagingConfig.Value.ReExAccountCreationUrl);
+            var notificationResponse = messagingService.SendReExInvitationToBeApprovedPerson(emailNotificationMapper);
 
-            // TO DO: check if Invited approved person 'email' is enrolled already
-            if (emailNotificationMapper.ReExInvitedApprovedPersons.Count != 0)
+            if (notificationResponse.Count > 0)
             {
-                var notificationResponse = messagingService.SendReExInvitationToBeApprovedPerson(emailNotificationMapper);
-
-                if (notificationResponse.Count > 0)
-                {
-                    // send acknowledgement to the inviter that AP invitation has been sent      
-                    messagingService.SendReExInvitationConfirmationToInviter(
-                        emailNotificationMapper.UserId.ToString(),
-                        emailNotificationMapper.UserFirstName,
-                        emailNotificationMapper.UserLastName,
-                        emailNotificationMapper.UserEmail,
-                        emailNotificationMapper.CompanyName,
-                        notificationResponse);
-                }
+                // send acknowledgement to the inviter that AP invitation has been sent      
+                messagingService.SendReExInvitationConfirmationToInviter(
+                    emailNotificationMapper.UserId.ToString(),
+                    emailNotificationMapper.UserFirstName,
+                    emailNotificationMapper.UserLastName,
+                    emailNotificationMapper.UserEmail,
+                    emailNotificationMapper.CompanyName,
+                    notificationResponse);
             }
         }
 
