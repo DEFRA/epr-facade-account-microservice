@@ -872,7 +872,8 @@ public class MessagingService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, ExceptionLogMessage, organisationId, "", templateId);
+            var userDetail = $"user-id:{userId}";
+            logger.LogError(ex, ExceptionLogMessage, organisationId, userDetail, templateId);
             return null;
         }
     }
