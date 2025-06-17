@@ -28,7 +28,6 @@ public class OrganisationServiceTests
     private const string OrganisationGetRelationshipUri = "api/organisations";
     private const string OrganisationByReferenceNumberUrl = "api/organisations/organisation-by-reference-number";
     private const string OrganisationNationUrl = "api/organisations/nation-code";
-	private const string OrganisationChildExternalIdsUrl = "api/organisations/v1/child-organisation-external-ids?organisationId={0}&complianceSchemeId={1}";
     private const string OrganisationByCompanyHouseNumberUrl = "api/organisations/organisation-by-companies-house-number";
     private const string ServiceKey = "re-ex";
 
