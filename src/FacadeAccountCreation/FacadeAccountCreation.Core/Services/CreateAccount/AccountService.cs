@@ -1,6 +1,7 @@
-using System.Collections.ObjectModel;
 using FacadeAccountCreation.Core.Configs;
 using FacadeAccountCreation.Core.Exceptions;
+using System;
+using System.Collections.ObjectModel;
 
 namespace FacadeAccountCreation.Core.Services.CreateAccount;
 
@@ -28,6 +29,59 @@ public class AccountService(HttpClient httpClient, IOptions<AccountsEndpointsCon
         var result = await response.Content.ReadFromJsonAsync<CreateAccountResponse>();
 
         return result;
+    }
+
+    public async Task AddReprocessorExporterAccountAsync(
+        ReprocessorExporterAccountWithUserModel accountWithUser,
+        string serviceKey)
+    {
+        var response = await PostAsJsonAsyncWithAuditHeaders(
+            $"{_accountsEndpointsConfig.ReprocessorExporterAccounts}?serviceKey={serviceKey}",
+            accountWithUser,
+            accountWithUser.User.UserId!.Value);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            ProblemDetails? problemDetails = null;
+            try
+            {
+                problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+            }
+            catch (JsonException e)
+            {
+                // if the response isn't a valid ProblemDetails, either this exception is thrown,
+                // or in some circumstances, null is returned.
+                // we handle both scenarios next
+            }
+
+            if (problemDetails != null)
+            {
+                throw new ProblemResponseException(problemDetails, response.StatusCode);
+            }
+
+            response.EnsureSuccessStatusCode();
+        }
+    }
+
+    /// <summary>
+    /// Thread-safe version of PostAsJsonAsync that adds out-of-bounds audit headers.
+    /// (Other code in the solution adds headers in a thread unsafe manner.)
+    /// </summary>
+    private Task<HttpResponseMessage> PostAsJsonAsyncWithAuditHeaders<TValue>(
+        string requestUri,
+        TValue value,
+        Guid userId)
+    {
+        const string xEprUserHeader = "X-EPR-User";
+
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+        {
+            Content = JsonContent.Create(value)
+        };
+
+        request.Headers.Add(xEprUserHeader, userId.ToString());
+
+        return httpClient.SendAsync(request);
     }
 
     public async Task<CreateAccountResponse?> AddApprovedUserAccountAsync(AccountModel approvedUser )

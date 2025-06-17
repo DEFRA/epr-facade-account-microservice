@@ -1,9 +1,13 @@
-﻿namespace FacadeAccountCreation.Core.Services.Organisation;
+﻿using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
+
+namespace FacadeAccountCreation.Core.Services.Organisation;
 
 public interface IOrganisationService
 {
     Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId);
-    
+
+    Task<HttpResponseMessage> GetOrganisationAllUsersList(Guid userId, Guid organisationId, int serviceRoleId);
+
     Task<HttpResponseMessage> GetNationIdByOrganisationId(Guid organisationId);
 
     /// <summary>
@@ -42,4 +46,6 @@ public interface IOrganisationService
     Task<string> GetOrganisationNationCodeByExternalIdAsync(Guid organisationExternalId);
 
     Task<OrganisationDto> GetOrganisationByCompanyHouseNumber(string companyHouseNumber);
+
+    Task<ReExAddOrganisationResponse?> CreateReExOrganisationAsync(ReprocessorExporterAddOrganisation reExOrganisation, string serviceKey);
 }
