@@ -84,9 +84,6 @@ public class ReExNotificationMapperTests
         res.ReExInvitedApprovedPersons[0].InviteToken.Should().Be("www.someUrl.co.ukB786tgs12856%3d%3d");
     }
 
-    //***********
-
-
     [TestMethod]
     public void MapOrganisationModelToReExNotificationModel_CompanyJourney_MapsAllFieldsCorrectly()
     {
