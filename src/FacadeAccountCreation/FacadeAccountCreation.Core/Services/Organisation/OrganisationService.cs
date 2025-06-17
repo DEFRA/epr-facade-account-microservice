@@ -396,35 +396,6 @@ public class OrganisationService(
         return null;
     }
 
-    public async Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId)
-    {
-        var url = $"api/organisations/v1/child-organisation-external-ids?organisationId={organisationId}&complianceSchemeId={complianceSchemeId}";
-
-        try
-        {
-            logger.LogInformation("Attempting to fetch the list of external id's for organisation id {OrganisationId} from the backend", organisationId);
-
-            var response = await httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-
-            if (response.StatusCode == HttpStatusCode.NoContent)
-            {
-                return [];
-            }
-
-            return await response.Content.ReadFromJsonAsync<List<Guid>>() ?? [];
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Failed to get child external id's for Organisation id: '{OrganisationId}'", organisationId);
-            throw;
-        }
-        finally
-        {
-            httpClient.DefaultRequestHeaders.Clear();
-        }
-    }
-
     /// <summary>
     /// Create organisation and get related response data from BackEndAccount service 
     /// to be processed further for email notifications
