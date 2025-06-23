@@ -9,8 +9,9 @@ public class RolesController(ILogger<RolesController> logger, IServiceRolesLooku
 {
     [HttpGet]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ServiceRolesLookupModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult<List<ServiceRolesLookupModel>> GetServiceRoles()
     {
         var response = serviceRolesLookup.GetServiceRoles();

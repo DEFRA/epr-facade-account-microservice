@@ -1,3 +1,4 @@
+using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Person;
 using Microsoft.AspNetCore.Authorization;
 
@@ -12,7 +13,7 @@ public class PersonsController(
     : ControllerBase
 {
     [HttpGet("current", Name = "GetCurrent")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PersonResponseModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetCurrent()
     {
@@ -30,6 +31,7 @@ public class PersonsController(
     [Route("")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PersonResponseModel))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetPerson([FromQuery] Guid userId)
     {
@@ -43,6 +45,7 @@ public class PersonsController(
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PersonResponseModel))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllPerson([FromQuery] Guid userId)
     {
         var personResponse = await personService.GetAllPersonByUserIdAsync(userId);
@@ -66,7 +69,7 @@ public class PersonsController(
     [HttpGet]
     [Route("person-by-invite-token")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PersonResponseModel))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(InviteApprovedUserModel))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPersonFromInviteToken([FromQuery] string token)

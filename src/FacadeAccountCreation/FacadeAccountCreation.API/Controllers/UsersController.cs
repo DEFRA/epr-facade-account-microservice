@@ -14,8 +14,9 @@ public class UsersController(
     [HttpGet]
     [Consumes("application/json")]
     [Route("user-accounts")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserOrganisationsListModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetOrganisation()
     {
         try
@@ -47,8 +48,9 @@ public class UsersController(
     [HttpGet]
     [Consumes("application/json")]
     [Route("v1/user-accounts")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserOrganisationsListModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetOrganisationsWithRoles([FromQuery] string serviceKey = null)
     {
         try
@@ -80,7 +82,7 @@ public class UsersController(
     [HttpPut]
     [Consumes("application/json")]
     [Route("user-accounts/personal-details")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UpdateUserDetailsResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdatePersonalDetails(
        [BindRequired, FromBody] UpdateUserDetailsRequest updateUserDetailsRequest,

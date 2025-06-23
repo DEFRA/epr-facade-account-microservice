@@ -19,6 +19,7 @@ public class EnrolmentsController(
 
     [HttpDelete]
     [Route("{personExternalId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete([FromRoute] Guid personExternalId, Guid organisationId, int serviceRoleId)
     {
         if (personExternalId == Guid.Empty || organisationId == Guid.Empty || serviceRoleId == default)
