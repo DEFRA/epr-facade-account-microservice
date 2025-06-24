@@ -1,6 +1,8 @@
 ﻿using FacadeAccountCreation.Core.Exceptions;
+using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 
 namespace FacadeAccountCreation.API.Controllers;
 
@@ -15,9 +17,10 @@ public class OrganisationsController(
     [HttpGet]
     [Route("users")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationUserModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetOrganisationUsers(Guid organisationId, int serviceRoleId)
     {
         try
@@ -60,9 +63,10 @@ public class OrganisationsController(
     [HttpGet]
     [Route("all-users")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<OrganisationUserModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllOrganisationUsers(Guid organisationId, int serviceRoleId)
     {
         try
@@ -105,7 +109,7 @@ public class OrganisationsController(
     [HttpGet]
     [Route("organisation-nation")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<int>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetNationIdByOrganisationId(Guid organisationId)
@@ -132,7 +136,7 @@ public class OrganisationsController(
     [HttpGet]
     [Route("regulator-nation")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRegulatorNation(Guid organisationId)
@@ -152,8 +156,9 @@ public class OrganisationsController(
     [HttpGet]
     [Route("organisation-name")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApprovedPersonOrganisationModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetOrganisationNameByInviteToken([FromQuery] string token)
     {
@@ -165,8 +170,9 @@ public class OrganisationsController(
     [HttpGet]
     [Route("organisation-by-reference-number/{referenceNumber}")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(OrganisationDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetOrganisationByReferenceNumber(string referenceNumber)
     {
@@ -178,8 +184,9 @@ public class OrganisationsController(
     [HttpGet]
     [Route("organisation-by-company-house-number/{companyHouseNumber}")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(OrganisationDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetOrganisationsByCompaniesHouseNumber(string companyHouseNumber)
     {
@@ -191,8 +198,9 @@ public class OrganisationsController(
     [HttpPost]
     [Route("create-and-add-subsidiary")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> CreateAndAddSubsidiary(LinkOrganisationModel linkOrganisationModel)
     {
         linkOrganisationModel.UserId = User.UserId();
@@ -209,8 +217,9 @@ public class OrganisationsController(
     [HttpPost]
     [Route("add-subsidiary")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> AddSubsidiary(SubsidiaryAddModel subsidiaryAddModel)
     {
         subsidiaryAddModel.UserId = User.UserId();
@@ -248,7 +257,7 @@ public class OrganisationsController(
 
     [HttpGet]
     [Route("{organisationId:guid}/organisationRelationships")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(OrganisationRelationshipModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOrganisationRelationshipsByOrganisationIdAsync(Guid organisationId)
@@ -265,7 +274,7 @@ public class OrganisationsController(
 
     [HttpGet]
     [Route("organisationRelationships")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedOrganisationRelationshipsModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetPagedOrganisationRelationshipsAsync([Required] int? page, [Required] int? showPerPage, string search = null)
     {
@@ -276,7 +285,7 @@ public class OrganisationsController(
 
     [HttpGet]
     [Route("organisationRelationshipsWithoutPaging")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<RelationshipResponseModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUnpagedOrganisationRelationshipsAsync()
     {
@@ -287,7 +296,7 @@ public class OrganisationsController(
 
     [HttpGet]
     [Route("{organisationId:guid}/export-subsidiaries")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ExportOrganisationSubsidiariesResponseModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetExportOrganisationSubsidiariesAsync(Guid organisationId)

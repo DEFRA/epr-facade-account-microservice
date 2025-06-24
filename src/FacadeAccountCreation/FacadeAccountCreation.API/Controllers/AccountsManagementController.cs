@@ -19,8 +19,9 @@ public class AccountsManagementController(
     [HttpPost]
     [Route("invite-user")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> InviteUser(AccountInvitationModel invitation)
     {
         if (!ModelState.IsValid)
@@ -87,8 +88,9 @@ public class AccountsManagementController(
     [HttpPost]
     [Route("enrol-invited-user")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> EnrolInvitedUser(EnrolInvitedUserModel enrolInvitedUserModel)
     {
         if (!ModelState.IsValid)

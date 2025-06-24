@@ -52,7 +52,7 @@ public class DelegatedPersonEnrolmentsController(
 
     [HttpGet]
     [Route("{enrolmentId:guid}/delegated-person-nominator")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(DelegatedPersonNominatorModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DelegatedPersonNominatorModel>> Get(
         Guid enrolmentId,

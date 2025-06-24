@@ -1,5 +1,6 @@
 using FacadeAccountCreation.Core.Constants;
 using FacadeAccountCreation.Core.Models.ComplianceScheme;
+using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
 using Microsoft.FeatureManagement;
 
@@ -20,9 +21,10 @@ public class ComplianceSchemesController(
     [Route("{organisationId:guid}/schemes/{complianceSchemeId:guid}/scheme-members")]
     [HttpGet]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ComplianceSchemeMembershipResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetComplianceSchemeMembers(
         Guid organisationId,
         Guid complianceSchemeId,
@@ -71,7 +73,7 @@ public class ComplianceSchemesController(
 
     [HttpGet]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ComplianceSchemeModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllComplianceSchemes()
     {
@@ -99,7 +101,7 @@ public class ComplianceSchemesController(
     [HttpGet]
     [Route("get-for-operator")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ComplianceSchemeModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetOperatorComplianceSchemes(Guid operatorOrganisationId)
     {
@@ -130,8 +132,9 @@ public class ComplianceSchemesController(
     [HttpGet]
     [Route("get-for-producer")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProducerComplianceSchemeModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetComplianceSchemeForProducer(Guid producerOrganisationId)
     {
         try
@@ -194,7 +197,7 @@ public class ComplianceSchemesController(
     [HttpGet]
     [Route("member-removal-reasons")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ReasonsForRemovalModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllReasonsForRemoval()
     {
@@ -224,6 +227,7 @@ public class ComplianceSchemesController(
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Remove(RemoveComplianceSchemeModel request)
     {
         try
@@ -258,8 +262,9 @@ public class ComplianceSchemesController(
     [HttpPost]
     [Route("select")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SelectedSchemeIdModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> SelectComplianceScheme(SelectSchemeModel model)
     {
         try
@@ -298,8 +303,9 @@ public class ComplianceSchemesController(
     [HttpPost]
     [Route("update")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SelectedSchemeIdModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateComplianceScheme(UpdateSchemeModel model)
     {
         try
@@ -339,8 +345,9 @@ public class ComplianceSchemesController(
     [HttpGet]
     [Route("{organisationId:guid}/scheme-members/{selectedSchemeId:guid}")]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(MemberDetailsModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> GetComplianceSchemeMemberDetails(Guid organisationId, Guid selectedSchemeId)
     {
         try
@@ -377,6 +384,7 @@ public class ComplianceSchemesController(
     [Consumes("application/json")]
     [ProducesResponseType(typeof(RemoveComplianceSchemeMemberResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RemoveComplianceSchemeMember(
         [BindRequired, FromRoute] Guid organisationId,
         [BindRequired, FromRoute] Guid selectedSchemeId,
@@ -433,7 +441,7 @@ public class ComplianceSchemesController(
 
     [HttpGet]
     [Route("{organisationId:guid}/schemes/{complianceSchemeId:guid}/export-subsidiaries")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ExportOrganisationSubsidiariesResponseModel>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ExportComplianceSchemeSubsidiaries(

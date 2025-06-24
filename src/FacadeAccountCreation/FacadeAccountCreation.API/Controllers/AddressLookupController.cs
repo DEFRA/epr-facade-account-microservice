@@ -10,7 +10,7 @@ namespace FacadeAccountCreation.API.Controllers;
 public class AddressLookupController(IAddressLookupService addressLookupService) : ControllerBase
 {
     [HttpGet(Name = "AddressLookup")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AddressLookupResponseDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult<AddressLookupResponseDto>> Get(
         [FromQuery][RegularExpression(Regexs.PostcodeRegex, ErrorMessage = "Invalid post code")]

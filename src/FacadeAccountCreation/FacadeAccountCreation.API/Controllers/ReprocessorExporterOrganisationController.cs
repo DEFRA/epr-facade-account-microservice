@@ -12,7 +12,7 @@ public class ReprocessorExporterOrganisationController(
 {
     [HttpPost]
     [Consumes("application/json")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Guid), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> CreateReExAccount(ReExOrganisationModel reExOrganisationModel, [BindRequired, FromQuery] string serviceKey)
     {
