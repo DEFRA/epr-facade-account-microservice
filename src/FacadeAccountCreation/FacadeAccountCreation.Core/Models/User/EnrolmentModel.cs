@@ -1,6 +1,6 @@
 namespace FacadeAccountCreation.Core.Models.User;
 
-public class ServiceRoleModel
+public class EnrolmentModel
 {
     public int? EnrolmentId { get; set; }
     
@@ -8,7 +8,9 @@ public class ServiceRoleModel
 
     public string? ServiceRole { get; set; }
 
-    public string? Service { get; set; }
+	public string? ServiceRoleKey { get; set; }
+
+	public string? Service { get; set; }
 
     public int? ServiceRoleId { get; set; }
 }

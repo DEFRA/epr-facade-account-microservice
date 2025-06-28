@@ -27,5 +27,7 @@ public class UserDetailsModel
 
     public bool IsChangeRequestPending { get; set; }
 
-    public List<OrganisationDetailModel> Organisations { get; set; }
+	public int NumberOfOrganisations { get; set; }
+
+	public List<OrganisationDetailModel> Organisations { get; set; }
 }
