@@ -19,11 +19,11 @@ public static class ReExAddOrganisationMapper
         };
     }
 
-    private static OrganisationModel GetOrganisationModel(ReExOrganisationModel organisationModel)
+    private static ReprocessorExporterOrganisationModel GetOrganisationModel(ReExOrganisationModel organisationModel)
     {
         return organisationModel switch
         {
-            { Company: not null } => new OrganisationModel
+            { Company: not null } => new ReprocessorExporterOrganisationModel
             {
                 Address = organisationModel.Company.CompanyRegisteredAddress,
                 CompaniesHouseNumber = organisationModel.Company.CompaniesHouseNumber,
@@ -33,13 +33,14 @@ public static class ReExAddOrganisationMapper
                 OrganisationId = organisationModel.Company.OrganisationId,
                 OrganisationType = organisationModel.Company.OrganisationType ?? OrganisationType.NotSet,
                 ProducerType = organisationModel.Company.ProducerType ?? ProducerType.NotSet,
-                ValidatedWithCompaniesHouse = organisationModel.Company.ValidatedWithCompaniesHouse                
+                ValidatedWithCompaniesHouse = organisationModel.Company.ValidatedWithCompaniesHouse,
+                TradingName = organisationModel.TradingName
             },
-            { ManualInput: not null } => new OrganisationModel
+            { ManualInput: not null } => new ReprocessorExporterOrganisationModel
             {
                 Address = organisationModel.ManualInput.BusinessAddress,
                 IsComplianceScheme = false,
-                Name = organisationModel.ManualInput.TradingName,
+                Name = organisationModel.TradingName,
                 Nation = organisationModel.ManualInput.Nation ?? Nation.NotSet,
                 OrganisationId = null,
                 OrganisationType = organisationModel.ManualInput.OrganisationType ?? OrganisationType.NotSet,

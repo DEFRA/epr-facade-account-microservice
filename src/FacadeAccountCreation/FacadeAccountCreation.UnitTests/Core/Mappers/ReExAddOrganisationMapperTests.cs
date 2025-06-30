@@ -164,8 +164,7 @@ public class ReExAddOrganisationMapperTests
         // Arrange
         var userId = Guid.NewGuid();
         var manualInput = new ReExManualInputModel
-        {
-            TradingName = "Manual Org",
+        {            
             ProducerType = ProducerType.SoleTrader,
             BusinessAddress = new AddressModel
             {
@@ -181,6 +180,7 @@ public class ReExAddOrganisationMapperTests
 
         var organisationModel = new ReExOrganisationModel
         {
+            TradingName = "Manual Org",
             ReExUser = new ReExUserModel
             {
                 UserId = userId,
@@ -233,14 +233,14 @@ public class ReExAddOrganisationMapperTests
         // Arrange
         var userId = Guid.NewGuid();
         var manualInput = new ReExManualInputModel
-        {
-            TradingName = null,
+        {            
             ProducerType = null,
             BusinessAddress = null
         };
 
         var organisationModel = new ReExOrganisationModel
         {
+            TradingName = null,
             ReExUser = new ReExUserModel
             {
                 UserId = userId,
@@ -337,8 +337,7 @@ public class ReExAddOrganisationMapperTests
     {
         var userId = Guid.NewGuid();
         var manualInput = new ReExManualInputModel
-        {
-            TradingName = "Manual Org",
+        {            
             ProducerType = ProducerType.SoleTrader,
             BusinessAddress = new AddressModel
             {
@@ -354,6 +353,7 @@ public class ReExAddOrganisationMapperTests
 
         var orgModel = new ReExOrganisationModel
         {
+            TradingName = "Manual Org",
             ReExUser = new ReExUserModel
             {
                 UserId = userId,
@@ -382,8 +382,7 @@ public class ReExAddOrganisationMapperTests
     public void GetOrganisationModel_ManualInput_NullProperties_DefaultsSet()
     {
         var manualInput = new ReExManualInputModel
-        {
-            TradingName = null,
+        {            
             ProducerType = null,
             BusinessAddress = null,
             OrganisationType = null,
@@ -392,6 +391,7 @@ public class ReExAddOrganisationMapperTests
 
         var orgModel = new ReExOrganisationModel
         {
+            TradingName = null,
             ReExUser = new ReExUserModel
             {
                 UserId = Guid.NewGuid(),

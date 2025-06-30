@@ -5,7 +5,7 @@ public class ReprocessorExporterAddOrganisation
 {
     public ReprocessorExporterUserModel User { get; set; } = null!;
 
-    public OrganisationModel Organisation { get; set; } = null!;
+    public ReprocessorExporterOrganisationModel Organisation { get; set; } = null!;
 
     public List<PartnerModel> Partners { get; set; } = [];
 
