@@ -1,7 +1,7 @@
 namespace FacadeAccountCreation.Core.Models.CreateAccount;
 
 [ExcludeFromCodeCoverage]
-public class OrganisationModel
+public class ReprocessorExporterOrganisationModel
 {
     public OrganisationType OrganisationType { get; set; }
 
@@ -12,6 +12,9 @@ public class OrganisationModel
     [Required]
     [MaxLength(100)]
     public string Name { get; set; } = null!;
+
+    [MaxLength(170)]
+    public string? TradingName { get; set; }
 
     [Required]
     public AddressModel Address { get; set; } = null!;

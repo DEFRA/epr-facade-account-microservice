@@ -25,4 +25,6 @@ public class ReExOrganisationModel
     public List<ReExInvitedApprovedPerson> InvitedApprovedPersons { get; set; } = [];
 
     public List<PartnerModel>? Partners { get; set; }
+
+    public string? TradingName { get; set; }
 }

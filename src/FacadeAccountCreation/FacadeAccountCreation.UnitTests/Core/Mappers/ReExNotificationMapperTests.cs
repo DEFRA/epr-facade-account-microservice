@@ -119,14 +119,14 @@ public class ReExNotificationMapperTests
             UserLastName = "Last",
             OrganisationId = organisationId,
             ReferenceNumber = "REF123",
-            InvitedApprovedUsers = new List<InvitedApprovedUserResponse>
+            InvitedApprovedUsers =
+            [
+                new InvitedApprovedUserResponse
                 {
-                    new InvitedApprovedUserResponse
-                    {
-                        Email = "ap1@test.com",
-                        InviteToken = "token123"
-                    }
+                    Email = "ap1@test.com",
+                    InviteToken = "token123"
                 }
+            ]
         };
         var accountCreationUrl = "https://test.com/invite?token=";
 
@@ -154,10 +154,7 @@ public class ReExNotificationMapperTests
         // Arrange
         var userId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
-        var manualInput = new ReExManualInputModel
-        {
-            TradingName = "Manual Trader"
-        };
+        var manualInput = new ReExManualInputModel();
         var reExUser = new ReExUserModel
         {
             UserId = userId,
@@ -172,6 +169,7 @@ public class ReExNotificationMapperTests
         };
         var organisationModel = new ReExOrganisationModel
         {
+            TradingName = "Manual Trader",
             ReExUser = reExUser,
             ManualInput = manualInput,
             InvitedApprovedPersons = new List<ReExInvitedApprovedPerson> { invitedPerson }
@@ -184,8 +182,7 @@ public class ReExNotificationMapperTests
             ReferenceNumber = "REF123",
             InvitedApprovedUsers = new List<InvitedApprovedUserResponse>
                 {
-                    new InvitedApprovedUserResponse
-                    {
+                    new() {
                         Email = "ap2@test.com",
                         InviteToken = "token123"
                     }
