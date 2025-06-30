@@ -13,7 +13,7 @@ public class ReprocessorExporterOrganisationModel
     [MaxLength(100)]
     public string Name { get; set; } = null!;
 
-    [MaxLength(170)]
+    [MaxLength(160)]
     public string? TradingName { get; set; }
 
     [Required]
