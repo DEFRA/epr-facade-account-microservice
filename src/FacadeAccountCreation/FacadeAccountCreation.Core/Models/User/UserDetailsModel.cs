@@ -19,7 +19,7 @@ public class UserDetailsModel
     
     public string? Service { get; set; }
     
-    public int? ServiceRoleId { get; set; }
+    public int ServiceRoleId { get; set; }
 
     public string? Telephone { get; set; }
 
