@@ -40,12 +40,13 @@ public static class ReExAddOrganisationMapper
             {
                 Address = organisationModel.ManualInput.BusinessAddress,
                 IsComplianceScheme = false,
-                Name = organisationModel.TradingName,
+                Name = organisationModel.ManualInput.OrganisationName,
                 Nation = organisationModel.ManualInput.Nation ?? Nation.NotSet,
                 OrganisationId = null,
                 OrganisationType = organisationModel.ManualInput.OrganisationType ?? OrganisationType.NotSet,
                 ProducerType = organisationModel.ManualInput.ProducerType ?? ProducerType.NotSet,
-                ValidatedWithCompaniesHouse = false
+                ValidatedWithCompaniesHouse = false,
+                TradingName = organisationModel.TradingName
             },
         };        
     }
