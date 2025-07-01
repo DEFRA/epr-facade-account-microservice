@@ -30,7 +30,7 @@ public static class ReExNotificationMapper
         }
         else if (organisationModel?.ManualInput is not null)
         {
-            name = organisationModel.TradingName;
+            name = organisationModel.ManualInput.OrganisationName;
         }
         return name;
     }
