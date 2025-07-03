@@ -878,5 +878,48 @@ public class MessagingService(
         }
     }
 
+    public string? SendReExAccountCreationConfirmation(string userId, string firstName, string lastName, string contactEmail)
+    {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ArgumentException("User id cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(firstName))
+        {
+            throw new ArgumentException("First name cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(lastName))
+        {
+            throw new ArgumentException("Last name cannot be empty");
+        }
+
+        if (string.IsNullOrWhiteSpace(contactEmail))
+        {
+            throw new ArgumentException("Contact email cannot be empty");
+        }
+
+        var parameters = new Dictionary<string, object>
+        {
+            { "emailaddress",contactEmail },
+            { "firstName", firstName },
+            { "lastName", lastName }
+        };
+
+        var templateId = _messagingConfig.ReExAccountCreationConfirmationTemplateId;
+
+        try
+        {
+            return notificationClient.SendEmail(contactEmail, templateId, parameters).id;
+        }
+        catch (Exception ex)
+        {
+            var userDetail = $"user-id:{userId}";
+            logger.LogError(ex, ExceptionLogMessage, "EPR for packaging: reprocessors and exporters service", userDetail, templateId);
+            return null;
+        }
+    }
+
     #endregion
 }
