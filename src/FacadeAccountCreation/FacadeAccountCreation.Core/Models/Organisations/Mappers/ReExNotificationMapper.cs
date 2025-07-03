@@ -15,10 +15,38 @@ public static class ReExNotificationMapper
             UserEmail = organisationModel.ReExUser.UserEmail,
             OrganisationId = response.OrganisationId.ToString(),
             OrganisationExternalId = string.Empty,
-            CompanyName = organisationModel.Company.CompanyName,
-            CompanyHouseNumber = organisationModel.Company.CompaniesHouseNumber,
+            CompanyName = GetName(organisationModel),
+            CompanyHouseNumber = GetNumber(organisationModel, response.ReferenceNumber),
             ReExInvitedApprovedPersons = GetApprvedPersonList(organisationModel.InvitedApprovedPersons, response.InvitedApprovedUsers, accountCreationUrl)            
         };
+    }
+
+    private static string GetName(ReExOrganisationModel organisationModel)
+    {
+        var name = string.Empty;
+        if (organisationModel?.Company is not null)
+        {
+            name = organisationModel.Company.CompanyName;
+        }
+        else if (organisationModel?.ManualInput is not null)
+        {
+            name = organisationModel.ManualInput.OrganisationName;
+        }
+        return name;
+    }
+
+    private static string GetNumber(ReExOrganisationModel organisationModel, string referenceNumber)
+    {
+        var referenceNo = string.Empty;
+        if (organisationModel?.Company is not null)
+        {
+            referenceNo = organisationModel.Company.CompaniesHouseNumber;
+        }
+        else if (organisationModel?.ManualInput is not null)
+        {
+            referenceNo = referenceNumber;
+        }
+        return referenceNo;
     }
 
     private static List<ReExInvitedApprovedPerson> GetApprvedPersonList(IEnumerable<ReExInvitedApprovedPerson> reExInvitedPeople,  IEnumerable<InvitedApprovedUserResponse> approvedListResponse, string accountCreationUrl)

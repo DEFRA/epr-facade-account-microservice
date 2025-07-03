@@ -3,7 +3,8 @@ namespace FacadeAccountCreation.API.Controllers;
 
 [ApiController]
 [Route("api/v1/reprocessor-exporter-user-accounts")]
-public class ReprocessorExporterAccountsController(IAccountService accountService)
+public class ReprocessorExporterAccountsController(IAccountService accountService,
+    IMessagingService messagingService)
     : ControllerBase
 {
     [HttpPost]
@@ -22,7 +23,14 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
 
         await accountService.AddReprocessorExporterAccountAsync(accountWithUser, serviceKey);
 
+        // send email confirmation for account creation
+        var confirmationEmailId = messagingService.SendReExAccountCreationConfirmation(
+            userId: User.UserId().ToString(), 
+            firstName: account.Person.FirstName, 
+            lastName: account.Person.LastName, 
+            contactEmail: account.Person.ContactEmail);
+
         // returning Created would probably be better, but we return OK to be consistent with the existing CreateAccount
-        return Ok();
+        return Ok(confirmationEmailId);
     }
 }

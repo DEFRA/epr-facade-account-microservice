@@ -7,7 +7,7 @@ public class AccountModel
     public PersonModel Person { get; set; } = null!;
 
     [Required]
-    public OrganisationModel Organisation { get; set; } = null!;
+    public ReprocessorExporterOrganisationModel Organisation { get; set; } = null!;
 
     [Required]
     public ConnectionModel Connection { get; set; } = null!;

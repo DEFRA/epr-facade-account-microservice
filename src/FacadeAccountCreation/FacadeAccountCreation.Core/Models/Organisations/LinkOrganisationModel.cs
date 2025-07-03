@@ -3,7 +3,7 @@
 [ExcludeFromCodeCoverage]
 public class LinkOrganisationModel
 {
-    public OrganisationModel Subsidiary { get; init; }
+    public ReprocessorExporterOrganisationModel Subsidiary { get; init; }
     public Guid ParentOrganisationId { get; init; }
     public Guid? UserId { get; set; }
 }

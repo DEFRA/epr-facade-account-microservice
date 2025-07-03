@@ -8,7 +8,15 @@ public class ReExNotificationModel
     public string UserEmail { get; set; }
     public string OrganisationId { get; set; }
     public string OrganisationExternalId { get; set; }
+
+    /// <summary>
+    /// Sets company name or Trading name
+    /// </summary>
     public string CompanyName { get; set; }
+
+    /// <summary>
+    /// Sets company house number or reference number
+    /// </summary>
     public string CompanyHouseNumber { get; set; }
 
     /// <summary>

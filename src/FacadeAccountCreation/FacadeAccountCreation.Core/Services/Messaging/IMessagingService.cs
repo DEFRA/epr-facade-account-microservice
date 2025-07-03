@@ -49,5 +49,10 @@ public interface IMessagingService
     /// <returns>response id o rnull if any issue</returns>
     string? SendRejectionConfirmationToApprovedPerson(string userId, string organisationId, string organisationName, string rejectedByName, string rejectedAPEmail);
 
+    /// <summary>
+    /// Confirmation email for re-ex account creation
+    /// </summary>
+    string? SendReExAccountCreationConfirmation(string userId, string firstName, string lastName, string contactEmail);
+
     #endregion
 }

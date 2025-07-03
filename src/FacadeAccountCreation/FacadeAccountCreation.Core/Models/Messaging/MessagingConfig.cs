@@ -27,4 +27,7 @@ public class MessagingConfig
     public string ReExApprovedPersonAcceptedInvitationTemplateId { get; set; } = string.Empty;
     public string ReExApprovedPersonRejectedInvitationTemplateId { get; set; } = string.Empty;
     public string ReExConfirmationToInviteeRejectingInvitationTemplateId { get; set; } = string.Empty;
+
+    // Reprocessor and Exporter Account Creation
+    public string ReExAccountCreationConfirmationTemplateId { get; set; } = string.Empty;
 }

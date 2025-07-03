@@ -2,7 +2,9 @@
 
 [ExcludeFromCodeCoverage]
 public class ReExOrganisationModel
-{
+{    
+    public string? TradingName { get; set; }
+
     public ReExUserModel ReExUser { get; set; } = new();
 
     /// <summary>
@@ -24,5 +26,5 @@ public class ReExOrganisationModel
     /// </summary>
     public List<ReExInvitedApprovedPerson> InvitedApprovedPersons { get; set; } = [];
 
-    public List<PartnerModel>? Partners { get; set; }
+    public List<PartnerModel>? Partners { get; set; }    
 }

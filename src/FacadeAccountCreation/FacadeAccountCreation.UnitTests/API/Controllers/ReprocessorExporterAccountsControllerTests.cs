@@ -11,12 +11,15 @@ public class ReprocessorExporterAccountsControllerTests
     private string _userEmail;
     private readonly Mock<IAccountService> _mockAccountServiceMock = new();
     private readonly Mock<HttpContext> _httpContextMock = new();
+    private Mock<IMessagingService> _messagingServiceMock;
     private ReprocessorExporterAccountsController? _sut;
 
     [TestInitialize]
     public void Setup()
     {
-        _sut = new ReprocessorExporterAccountsController(_mockAccountServiceMock.Object)
+        _messagingServiceMock = new Mock<IMessagingService>();
+
+        _sut = new ReprocessorExporterAccountsController(_mockAccountServiceMock.Object, _messagingServiceMock.Object)
         {
             ControllerContext =
             {
@@ -46,7 +49,7 @@ public class ReprocessorExporterAccountsControllerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeOfType<OkResult>();
+        result.Should().BeOfType<OkObjectResult>();
     }
 
 
