@@ -49,7 +49,7 @@ public class ReprocessorExporterAccountsControllerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeOfType<OkResult>();
+        result.Should().BeOfType<OkObjectResult>();
     }
 
 
