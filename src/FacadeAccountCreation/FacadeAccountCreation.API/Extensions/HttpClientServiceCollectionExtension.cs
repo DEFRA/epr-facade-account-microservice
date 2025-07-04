@@ -4,6 +4,7 @@ using FacadeAccountCreation.Core.Services.CompaniesHouse;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
 using FacadeAccountCreation.Core.Services.Enrolments;
 using FacadeAccountCreation.Core.Services.Notification;
+using FacadeAccountCreation.Core.Services.ReprocessorExporter;
 using FacadeAccountCreation.Core.Services.RoleManagement;
 using FacadeAccountCreation.Core.Services.User;
 
@@ -107,6 +108,15 @@ public static class HttpClientServiceCollectionExtension
         })
         .AddHttpMessageHandler<AccountServiceAuthorisationHandler>();
 
-        return services;
+		services.AddHttpClient<IReprocessorExporterService, ReprocessorExporterService>((sp, client) =>
+		{
+			var config = sp.GetRequiredService<IOptions<ApiConfig>>().Value;
+
+			client.BaseAddress = new Uri(config.AccountServiceBaseUrl);
+			client.Timeout = TimeSpan.FromSeconds(config.Timeout);
+		})
+		.AddHttpMessageHandler<AccountServiceAuthorisationHandler>();
+
+		return services;
     }
 }
