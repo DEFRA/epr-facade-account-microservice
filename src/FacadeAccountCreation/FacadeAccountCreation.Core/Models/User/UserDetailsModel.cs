@@ -19,7 +19,7 @@ public class UserDetailsModel
     
     public string? Service { get; set; }
     
-    public int? ServiceRoleId { get; set; }
+    public int ServiceRoleId { get; set; }
 
     public string? Telephone { get; set; }
 
@@ -27,5 +27,7 @@ public class UserDetailsModel
 
     public bool IsChangeRequestPending { get; set; }
 
-    public List<OrganisationDetailModel> Organisations { get; set; }
+	public int NumberOfOrganisations { get; set; }
+
+	public List<OrganisationDetailModel> Organisations { get; set; }
 }

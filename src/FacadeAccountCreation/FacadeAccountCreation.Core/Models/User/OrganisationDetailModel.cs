@@ -42,6 +42,10 @@ public class OrganisationDetailModel
     public string? JobTitle { get; set; }
 
 	public int? NationId { get; set; }
-	
-	public List<ServiceRoleModel>? Enrolments { get; set; }
+
+	public string? PersonRoleInOrganisation { get; set; }
+
+	public bool IsChangeRequestPending { get; set; } = false;
+
+	public List<EnrolmentModel>? Enrolments { get; set; }
 }
