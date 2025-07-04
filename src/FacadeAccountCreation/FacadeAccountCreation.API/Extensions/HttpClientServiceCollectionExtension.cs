@@ -1,5 +1,7 @@
 ﻿using FacadeAccountCreation.API.Handlers;
 using FacadeAccountCreation.Core.Services.AddressLookup;
+using FacadeAccountCreation.Core.Services.B2c;
+using FacadeAccountCreation.Core.Services.B2C;
 using FacadeAccountCreation.Core.Services.CompaniesHouse;
 using FacadeAccountCreation.Core.Services.ComplianceScheme;
 using FacadeAccountCreation.Core.Services.Enrolments;
@@ -36,6 +38,15 @@ public static class HttpClientServiceCollectionExtension
             .AddHttpMessageHandler<CompaniesHouseCredentialHandler>();
 
         services.AddHttpClient<IComplianceSchemeService, ComplianceSchemeService>((sp, client) =>
+        {
+            var config = sp.GetRequiredService<IOptions<ApiConfig>>().Value;
+
+            client.BaseAddress = new Uri(config.AccountServiceBaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(config.Timeout);
+        })
+        .AddHttpMessageHandler<AccountServiceAuthorisationHandler>();
+
+        services.AddHttpClient<IB2CService, B2CService>((sp, client) =>
         {
             var config = sp.GetRequiredService<IOptions<ApiConfig>>().Value;
 
