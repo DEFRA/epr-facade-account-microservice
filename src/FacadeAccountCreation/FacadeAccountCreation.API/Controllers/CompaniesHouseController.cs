@@ -12,7 +12,7 @@ public class CompaniesHouseController(
     : ControllerBase
 {
     [HttpGet(Name = "CompanyLookup")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CompaniesHouseResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult<CompaniesHouseResponse>> Get([Required] string id)
     {

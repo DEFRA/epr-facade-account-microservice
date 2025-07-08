@@ -9,6 +9,7 @@ public class AccountsController(IAccountService accountService, IMessagingServic
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> CreateAccount(AccountModel account)
     {
         var accountWithUser = new AccountWithUserModel(account, new UserModel
@@ -41,6 +42,7 @@ public class AccountsController(IAccountService accountService, IMessagingServic
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> CreateApprovedUserAccount(AccountModel approvedUser)
     {
         approvedUser.UserId = User.UserId();
