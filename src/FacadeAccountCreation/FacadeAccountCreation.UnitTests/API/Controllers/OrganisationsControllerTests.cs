@@ -1,13 +1,12 @@
-using Azure.Core;
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
 using FacadeAccountCreation.Core.Models.Organisations;
 using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Models.User;
-using FacadeAccountCreation.Core.Services;
 using FacadeAccountCreation.Core.Services.Organisation;
 using FacadeAccountCreation.Core.Services.ServiceRoleLookup;
+using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
 namespace FacadeAccountCreation.UnitTests.API.Controllers;
@@ -796,4 +795,48 @@ public class OrganisationsControllerTests
                 It.IsAny<Guid>()),
             Times.Once);
     }
+
+	[TestMethod]
+	public async Task GetOrganisationTeamMembers_ReturnsOk_WhenSuccessful()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var serviceRoleId = 1;
+
+		var teamMembers = new List<OrganisationTeamMemberModel>
+		{
+			new OrganisationTeamMemberModel { FirstName = "Alice", LastName = "Smith", Email = "alice@test.com" }
+		};
+
+		_mockOrganisationService.Setup(s =>
+			s.GetOrganisationTeamMembers(It.IsAny<Guid>(), organisationId, serviceRoleId))
+			.ReturnsAsync(teamMembers);
+
+		// Act
+		var result = await _sut.GetOrganisationTeamMembers(organisationId, serviceRoleId);
+
+		// Assert
+		var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+		okResult.StatusCode.Should().Be(StatusCodes.Status200OK);
+		var model = okResult.Value.As<List<OrganisationTeamMemberModel>>();
+		model.Should().NotBeNullOrEmpty();
+	}
+
+	[TestMethod]
+	public async Task GetOrganisationTeamMembers_Returns500_WhenUserIdIsEmpty()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var serviceRoleId = 1;
+
+		// Clear UserId claim to simulate missing user
+		_sut.ControllerContext.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
+
+		// Act
+		var result = await _sut.GetOrganisationTeamMembers(organisationId, serviceRoleId);
+
+		// Assert
+		var problemResult = result.Should().BeOfType<StatusCodeResult>().Subject;
+		problemResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+	}
 }

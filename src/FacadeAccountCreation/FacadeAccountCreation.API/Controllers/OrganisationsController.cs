@@ -106,7 +106,33 @@ public class OrganisationsController(
         }
     }
 
-    [HttpGet]
+	[HttpGet]
+	[Route("team-members")]
+	[Consumes("application/json")]
+	[ProducesResponseType(typeof(List<OrganisationTeamMemberModel>), StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	public async Task<IActionResult> GetOrganisationTeamMembers(Guid organisationId, int serviceRoleId)
+	{
+		try
+		{
+			var userId = User.UserId();
+			if (userId == Guid.Empty)
+			{
+				logger.LogError("UserId not available");
+				return Problem("UserId not available", statusCode: StatusCodes.Status500InternalServerError);
+			}
+
+			var response = await organisationService.GetOrganisationTeamMembers(userId, organisationId, serviceRoleId);
+			return Ok(response);
+		}
+		catch (Exception e)
+		{
+			logger.LogError(e, "Error fetching team members for organisation {OrganisationId}", organisationId);
+			return HandleError.Handle(e);
+		}
+	}
+
+	[HttpGet]
     [Route("organisation-nation")]
     [Consumes("application/json")]
     [ProducesResponseType(typeof(List<int>), StatusCodes.Status200OK)]
