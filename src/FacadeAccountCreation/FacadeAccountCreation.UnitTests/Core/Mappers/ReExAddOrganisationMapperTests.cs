@@ -164,8 +164,7 @@ public class ReExAddOrganisationMapperTests
         // Arrange
         var userId = Guid.NewGuid();
         var manualInput = new ReExManualInputModel
-        {
-            TradingName = "Manual Org",
+        {            
             ProducerType = ProducerType.SoleTrader,
             BusinessAddress = new AddressModel
             {
@@ -176,11 +175,13 @@ public class ReExAddOrganisationMapperTests
                 Country = "UK"
             },
             OrganisationType = organisationType,
-            Nation = nation
+            Nation = nation,
+            OrganisationName = "Manual Org",
         };
 
         var organisationModel = new ReExOrganisationModel
         {
+            TradingName = "Manual tarder",
             ReExUser = new ReExUserModel
             {
                 UserId = userId,
@@ -208,6 +209,7 @@ public class ReExAddOrganisationMapperTests
         result.Organisation.OrganisationType.ToString().Should().Be(expectedOrgType);
 
         result.Organisation.Name.Should().Be("Manual Org");
+        result.Organisation.TradingName.Should().Be("Manual tarder");
         result.Organisation.ProducerType.Should().Be(ProducerType.SoleTrader);
         result.Organisation.Address.Should().NotBeNull();
         result.Organisation.Address.BuildingName.Should().Be("Manual Building");
@@ -233,14 +235,14 @@ public class ReExAddOrganisationMapperTests
         // Arrange
         var userId = Guid.NewGuid();
         var manualInput = new ReExManualInputModel
-        {
-            TradingName = null,
+        {            
             ProducerType = null,
             BusinessAddress = null
         };
 
         var organisationModel = new ReExOrganisationModel
         {
+            TradingName = null,
             ReExUser = new ReExUserModel
             {
                 UserId = userId,
@@ -337,8 +339,8 @@ public class ReExAddOrganisationMapperTests
     {
         var userId = Guid.NewGuid();
         var manualInput = new ReExManualInputModel
-        {
-            TradingName = "Manual Org",
+        {            
+            OrganisationName = "Manual Organisation name",
             ProducerType = ProducerType.SoleTrader,
             BusinessAddress = new AddressModel
             {
@@ -354,6 +356,7 @@ public class ReExAddOrganisationMapperTests
 
         var orgModel = new ReExOrganisationModel
         {
+            TradingName = "Manual trading name",
             ReExUser = new ReExUserModel
             {
                 UserId = userId,
@@ -369,7 +372,8 @@ public class ReExAddOrganisationMapperTests
         result.Organisation.OrganisationId.Should().BeNull();
         result.Organisation.OrganisationType.Should().Be(OrganisationType.NonCompaniesHouseCompany);
         result.Organisation.CompaniesHouseNumber.Should().BeNull();
-        result.Organisation.Name.Should().Be("Manual Org");
+        result.Organisation.Name.Should().Be("Manual Organisation name");
+        result.Organisation.TradingName.Should().Be("Manual trading name");
         result.Organisation.Address.Should().NotBeNull();
         result.Organisation.Address.BuildingName.Should().Be("Manual Building");
         result.Organisation.Nation.Should().Be(Nation.Wales);
@@ -382,8 +386,7 @@ public class ReExAddOrganisationMapperTests
     public void GetOrganisationModel_ManualInput_NullProperties_DefaultsSet()
     {
         var manualInput = new ReExManualInputModel
-        {
-            TradingName = null,
+        {            
             ProducerType = null,
             BusinessAddress = null,
             OrganisationType = null,
@@ -392,6 +395,7 @@ public class ReExAddOrganisationMapperTests
 
         var orgModel = new ReExOrganisationModel
         {
+            TradingName = null,
             ReExUser = new ReExUserModel
             {
                 UserId = Guid.NewGuid(),

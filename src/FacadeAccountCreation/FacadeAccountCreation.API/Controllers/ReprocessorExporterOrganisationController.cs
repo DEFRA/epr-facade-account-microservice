@@ -5,9 +5,9 @@ namespace FacadeAccountCreation.API.Controllers;
 [ApiController]
 [Route("api/v1/reprocessor-exporter-org")]
 public class ReprocessorExporterOrganisationController(
-    IOrganisationService organisationService, 
-    IMessagingService messagingService, 
-    IOptions<MessagingConfig> messagingConfig, 
+    IOrganisationService organisationService,
+    IMessagingService messagingService,
+    IOptions<MessagingConfig> messagingConfig,
     ILogger<ReprocessorExporterOrganisationController> logger) : ControllerBase
 {
     [HttpPost]
@@ -30,13 +30,13 @@ public class ReprocessorExporterOrganisationController(
             return Problem("Response can not be null", statusCode: StatusCodes.Status204NoContent);
         }
 
-        if (response.OrganisationId  == Guid.Empty)
+        if (response.OrganisationId == Guid.Empty)
         {
             logger.LogError("Organisation id can not be empty");
             return Problem("Organisation id can not be empty", statusCode: StatusCodes.Status204NoContent);
         }
 
-        // Send Email Notification(s)        
+        // Send Email Notification(s)
         var emailNotificationMapper = ReExNotificationMapper.MapOrganisationModelToReExNotificationModel(reExOrganisationModel, response, messagingConfig.Value.ReExAccountCreationUrl);
 
         // TO DO: check if Invited approved person 'email' is enrolled already
