@@ -30,7 +30,6 @@ public class ReprocessorExporterAccountsController(IAccountService accountServic
             lastName: account.Person.LastName, 
             contactEmail: account.Person.ContactEmail);
 
-        // returning Created would probably be better, but we return OK to be consistent with the existing CreateAccount
         return Ok(confirmationEmailId);
     }
 }
