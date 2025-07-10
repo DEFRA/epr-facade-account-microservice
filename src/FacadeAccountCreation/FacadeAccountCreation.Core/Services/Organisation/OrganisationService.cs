@@ -48,7 +48,7 @@ public class OrganisationService(
 	{
 		var url = $"{OrganisationTeamMembersUri}?userId={userId}&organisationId={organisationId}&serviceRoleId={serviceRoleId}";
 
-		logger.LogInformation("Attempting to fetch all team members for organisation id {OrganisationId} from the backend", organisationId);
+		logger.LogInformation("Attempting to fetch all team members for organisation id {OrganisationId}", organisationId);
 
 		var response = await httpClient.GetAsync(url);
 
