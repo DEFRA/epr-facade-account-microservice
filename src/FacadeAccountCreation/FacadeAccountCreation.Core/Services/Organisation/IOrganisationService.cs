@@ -1,4 +1,5 @@
 ﻿using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
+using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 
 namespace FacadeAccountCreation.Core.Services.Organisation;
 
@@ -7,6 +8,8 @@ public interface IOrganisationService
     Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId);
 
     Task<HttpResponseMessage> GetOrganisationAllUsersList(Guid userId, Guid organisationId, int serviceRoleId);
+
+	Task<List<OrganisationTeamMemberModel>> GetOrganisationTeamMembers(Guid userId, Guid organisationId, int serviceRoleId);
 
     Task<HttpResponseMessage> GetNationIdByOrganisationId(Guid organisationId);
 

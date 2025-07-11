@@ -2,6 +2,7 @@
 using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CreateAccount;
 using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
+using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using Microsoft.Extensions.Configuration;
 using System.Web;
 
@@ -23,6 +24,7 @@ public class OrganisationService(
     private const string OrganisationNationUrl = "api/organisations/nation-code";
     private const string OrganisationByCompanyHouseNumberUrl = "api/organisations/organisation-by-companies-house-number";
     private const string ReExCreateOrganisationUrl = "/api/v1/reprocessor-exporter-accounts";
+    private const string OrganisationTeamMembersUri = "api/organisations/team-members";
 
     public async Task<HttpResponseMessage> GetOrganisationUserList(Guid userId, Guid organisationId, int serviceRoleId)
     {
@@ -40,9 +42,33 @@ public class OrganisationService(
         logger.LogInformation("Attempting to fetch all users for organisation id {OrganisationId} from the backend", organisationId);
 
         return await httpClient.GetAsync(url);
-    }
+	}
 
-    public async Task<HttpResponseMessage> GetNationIdByOrganisationId(Guid organisationId)
+	public async Task<List<OrganisationTeamMemberModel>> GetOrganisationTeamMembers(Guid userId, Guid organisationId, int serviceRoleId)
+	{
+		var url = $"{OrganisationTeamMembersUri}?userId={userId}&organisationId={organisationId}&serviceRoleId={serviceRoleId}";
+
+		logger.LogInformation("Attempting to fetch all team members for organisation id {OrganisationId}", organisationId);
+
+		var response = await httpClient.GetAsync(url);
+
+		if (!response.IsSuccessStatusCode)
+		{
+			var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+			if (problemDetails != null)
+			{
+				throw new ProblemResponseException(problemDetails, response.StatusCode);
+			}
+		}
+
+		response.EnsureSuccessStatusCode();
+		var teamMembers = await response.Content.ReadFromJsonWithEnumsAsync<List<OrganisationTeamMemberModel>>();
+
+		return teamMembers;
+	}
+
+	public async Task<HttpResponseMessage> GetNationIdByOrganisationId(Guid organisationId)
     {
         var url = $"{config.GetSection("RegulatorOrganisationEndpoints").GetSection("GetNationIdFromOrganisationId").Value}?organisationId={organisationId}";
 

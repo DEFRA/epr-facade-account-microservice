@@ -1,14 +1,15 @@
-﻿using System.Net.Http.Json;
-using System.Net.Http;
-using FacadeAccountCreation.Core.Exceptions;
+﻿using FacadeAccountCreation.Core.Exceptions;
 using FacadeAccountCreation.Core.Models.CompaniesHouse;
+using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
 using FacadeAccountCreation.Core.Models.Organisations;
+using FacadeAccountCreation.Core.Models.Organisations.OrganisationUsers;
 using FacadeAccountCreation.Core.Models.Subsidiary;
 using FacadeAccountCreation.Core.Services.Organisation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -1384,4 +1385,125 @@ public class OrganisationServiceTests
             req.Content.ReadAsStringAsync().Result == httpRequestMessage.Content.ReadAsStringAsync().Result),
             ItExpr.IsAny<CancellationToken>());
     }
+
+	[TestMethod]
+	public async Task GetOrganisationTeamMembers_ReturnsTeamMembers_WhenSuccessful()
+	{
+		// Arrange
+		var userId = Guid.NewGuid();
+		var organisationId = Guid.NewGuid();
+		var serviceRoleId = 1;
+
+		var expectedMembers = new List<OrganisationTeamMemberModel>
+		{
+			new() { FirstName = "John", LastName = "Doe", Email = "john@example.com" }
+		};
+
+		var json = JsonSerializer.Serialize(expectedMembers);
+
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>(
+				"SendAsync",
+				ItExpr.IsAny<HttpRequestMessage>(),
+				ItExpr.IsAny<CancellationToken>())
+			.ReturnsAsync(new HttpResponseMessage
+			{
+				StatusCode = HttpStatusCode.OK,
+				Content = new StringContent(json)
+			});
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri(BaseAddress)
+		};
+
+		var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+		// Act
+		var result = await sut.GetOrganisationTeamMembers(userId, organisationId, serviceRoleId);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().HaveCount(1);
+		result[0].FirstName.Should().Be("John");
+		result[0].Email.Should().Be("john@example.com");
+	}
+
+	[TestMethod]
+	public async Task GetOrganisationTeamMembers_ThrowsProblemResponseException_WhenResponseHasProblemDetails()
+	{
+		// Arrange
+		var userId = Guid.NewGuid();
+		var organisationId = Guid.NewGuid();
+		var serviceRoleId = 1;
+
+		var problem = new ProblemDetails
+		{
+			Title = "Unauthorized",
+			Status = 401,
+			Detail = "You are not authorized"
+		};
+
+		var json = JsonSerializer.Serialize(problem);
+
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>(
+				"SendAsync",
+				ItExpr.Is<HttpRequestMessage>(m => m.Method == HttpMethod.Get),
+				ItExpr.IsAny<CancellationToken>())
+			.ReturnsAsync(new HttpResponseMessage
+			{
+				StatusCode = HttpStatusCode.Unauthorized,
+				Content = new StringContent(json)
+			});
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri(BaseAddress)
+		};
+
+		var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+		// Act
+		Func<Task> action = async () =>
+			await sut.GetOrganisationTeamMembers(userId, organisationId, serviceRoleId);
+
+		// Assert
+		await action.Should().ThrowAsync<ProblemResponseException>()
+			.Where(ex => ex.StatusCode == HttpStatusCode.Unauthorized &&
+						 ex.ProblemDetails.Title == "Unauthorized");
+	}
+
+	[TestMethod]
+	public async Task GetOrganisationTeamMembers_ThrowsException_WhenHttpCallFailsWithoutProblemDetails()
+	{
+		// Arrange
+		var userId = Guid.NewGuid();
+		var organisationId = Guid.NewGuid();
+		var serviceRoleId = 1;
+
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>(
+				"SendAsync",
+				ItExpr.Is<HttpRequestMessage>(m => m.Method == HttpMethod.Get),
+				ItExpr.IsAny<CancellationToken>())
+			.ReturnsAsync(new HttpResponseMessage
+			{
+				StatusCode = HttpStatusCode.InternalServerError,
+				Content = new StringContent("Internal Error") // not JSON
+			});
+
+		var httpClient = new HttpClient(_httpMessageHandlerMock.Object)
+		{
+			BaseAddress = new Uri(BaseAddress)
+		};
+
+		var sut = new OrganisationService(httpClient, _logger, _configuration);
+
+		// Act
+		Func<Task> act = async () => await sut.GetOrganisationTeamMembers(userId, organisationId, serviceRoleId);
+
+		// Assert
+		await act.Should().ThrowAsync<JsonException>();
+	}
 }
