@@ -3,6 +3,8 @@
 [ExcludeFromCodeCoverage]
 public class TeamMemberEnrolment
 {
+	public int EnrolmentId { get; set; }
+
 	public int ServiceRoleId { get; set; }
 
 	public int EnrolmentStatusId { get; set; }
