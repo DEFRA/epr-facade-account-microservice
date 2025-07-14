@@ -7,4 +7,5 @@ public class DeleteUserModel
     public Guid LoggedInUserId { get; set; }
     public Guid OrganisationId { get; set; }
     public int ServiceRoleId { get; set; }
+    public int? EnrolmentId { get; set; }
 }

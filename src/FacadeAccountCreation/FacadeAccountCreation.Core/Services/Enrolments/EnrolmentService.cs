@@ -11,4 +11,9 @@ public class EnrolmentService(HttpClient httpClient, IOptions<AccountsEndpointsC
     {
         return await httpClient.DeleteAsync($"{_accountsEndpointsConfig.DeleteUser}/{model.PersonExternalIdToDelete}?userId={model.LoggedInUserId}&organisationId={model.OrganisationId}&serviceRoleId={model.ServiceRoleId}");
     }
+
+    public async Task<HttpResponseMessage?> DeletePersonConnectionAndEnrolment(DeleteUserModel model)
+    {
+        return await httpClient.DeleteAsync($"{_accountsEndpointsConfig.DeletePersonConnectionAndEnrolment}/{model.PersonExternalIdToDelete}?userId={model.LoggedInUserId}&organisationId={model.OrganisationId}&enrolmentId={model.EnrolmentId}");
+    }
 }

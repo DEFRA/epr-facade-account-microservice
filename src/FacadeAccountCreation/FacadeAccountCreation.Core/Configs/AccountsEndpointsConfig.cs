@@ -9,6 +9,7 @@ public class AccountsEndpointsConfig
     public string InviteUser { get; set; }
     public string EnrolInvitedUser { get; set; }
     public string DeleteUser { get; set; }
+    public string DeletePersonConnectionAndEnrolment { get; set; }
     public string ApprovedUserAccounts { get; set; }
     public string ReprocessorExporterAccounts { get; set; }
     public string ReprocessorExporterOrganisation { get; set; }
