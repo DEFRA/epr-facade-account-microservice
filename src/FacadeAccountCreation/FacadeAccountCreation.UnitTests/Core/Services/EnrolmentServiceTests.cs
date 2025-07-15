@@ -11,16 +11,17 @@ public class EnrolmentServiceTests
     
     private const string BaseAddress = "http://localhost";
     private const string DeleteUserEndpoint = "api/enrolments/delete";
+    private const string DeletePersonConnectionAndEnrolmentUserEndpoint = "api/enrolments/v1/delete";
     
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
     private readonly DeleteUserModel _deleteUserModel;
-    private readonly string _expectedUrl;
 
     public EnrolmentServiceTests()
     {
         var options = Options.Create(new AccountsEndpointsConfig
         {
-            DeleteUser = DeleteUserEndpoint
+            DeleteUser = DeleteUserEndpoint,
+            DeletePersonConnectionAndEnrolment = DeletePersonConnectionAndEnrolmentUserEndpoint,
         });
 
         _deleteUserModel = new DeleteUserModel
@@ -28,10 +29,9 @@ public class EnrolmentServiceTests
             PersonExternalIdToDelete = Guid.NewGuid(),
             LoggedInUserId = Guid.NewGuid(),
             OrganisationId = Guid.NewGuid(),
-            ServiceRoleId = 1
+            ServiceRoleId = 1,
+            EnrolmentId = 1
         };
-        
-        _expectedUrl = $"{BaseAddress}/{DeleteUserEndpoint}/{_deleteUserModel.PersonExternalIdToDelete}?userId={_deleteUserModel.LoggedInUserId}&organisationId={_deleteUserModel.OrganisationId}&serviceRoleId={_deleteUserModel.ServiceRoleId}";
         
         var httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         httpClient.BaseAddress = new Uri(BaseAddress);
@@ -74,34 +74,85 @@ public class EnrolmentServiceTests
         // Arrange
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
-                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == _expectedUrl),
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == BuildExpectedUrl(false)),
                 ItExpr.IsAny<CancellationToken>())
             .ThrowsAsync(new Exception());
         
         // Act
         await _sut.DeleteUser(_deleteUserModel);
     }
+    
+    [TestMethod]
+    public async Task DeletePersonConnectionAndEnrolment_ShouldReturnNoContent_WhenSuccessful()
+    {
+        // Arrange
+        SetupMessageHandlerMock(HttpStatusCode.NoContent, useEnrolmentEndpoint: true);
 
-    private void SetupMessageHandlerMock(HttpStatusCode httpStatusCode)
+        // Act
+        var response = await _sut.DeletePersonConnectionAndEnrolment(_deleteUserModel);
+
+        // Assert
+        VerifySendAsyncIsCalled(useEnrolmentEndpoint: true);
+        response.Should().NotBeNull();
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+    }
+    
+    [TestMethod]
+    public async Task DeletePersonConnectionAndEnrolment_ShouldReturnBadRequest_WhenInvalid()
+    {
+        // Arrange
+        SetupMessageHandlerMock(HttpStatusCode.BadRequest, useEnrolmentEndpoint: true);
+
+        // Act
+        var response = await _sut.DeletePersonConnectionAndEnrolment(_deleteUserModel);
+
+        // Assert
+        VerifySendAsyncIsCalled(useEnrolmentEndpoint: true);
+        response.Should().NotBeNull();
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(Exception))]
+    public async Task DeletePersonConnectionAndEnrolment_ShouldThrowException_WhenBackendFails()
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync",
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == BuildExpectedUrl(true)),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(new Exception());
+
+        // Act
+        await _sut.DeletePersonConnectionAndEnrolment(_deleteUserModel);
+    }
+
+    private void SetupMessageHandlerMock(HttpStatusCode httpStatusCode, bool useEnrolmentEndpoint = false)
     {
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync",
-                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == _expectedUrl),
+                ItExpr.Is<HttpRequestMessage>(x => x.RequestUri != null && x.RequestUri.ToString() == BuildExpectedUrl(useEnrolmentEndpoint)),
                 ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = httpStatusCode,
-                }
-            ).Verifiable();
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = httpStatusCode })
+            .Verifiable();
     }
 
-    private void VerifySendAsyncIsCalled()
+    private void VerifySendAsyncIsCalled(bool useEnrolmentEndpoint = false)
     {
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(
-                req => req.Method == HttpMethod.Delete &&
-                       req.RequestUri != null &&
-                       req.RequestUri.ToString() == _expectedUrl),
+            ItExpr.Is<HttpRequestMessage>(req =>
+                req.Method == HttpMethod.Delete &&
+                req.RequestUri != null &&
+                req.RequestUri.ToString() == BuildExpectedUrl(useEnrolmentEndpoint)),
             ItExpr.IsAny<CancellationToken>());
+    }
+
+    private string BuildExpectedUrl(bool useEnrolmentEndpoint)
+    {
+        var endpoint = useEnrolmentEndpoint
+            ? $"{DeletePersonConnectionAndEnrolmentUserEndpoint}/{_deleteUserModel.PersonExternalIdToDelete}?userId={_deleteUserModel.LoggedInUserId}&organisationId={_deleteUserModel.OrganisationId}&enrolmentId={_deleteUserModel.EnrolmentId}"
+            : $"{DeleteUserEndpoint}/{_deleteUserModel.PersonExternalIdToDelete}?userId={_deleteUserModel.LoggedInUserId}&organisationId={_deleteUserModel.OrganisationId}&serviceRoleId={_deleteUserModel.ServiceRoleId}";
+
+        return $"{BaseAddress}/{endpoint}";
     }
 }

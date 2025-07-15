@@ -59,6 +59,37 @@ public class EnrolmentsController(
         logger.LogError("Error deleting user {PersonExternalId} with service role {ServiceRoleId}",personExternalId, serviceRoleId);
         return Problem($"Error deleting user {personExternalId} with service role {serviceRoleId}");
     }
+    
+    [HttpDelete]
+    [Route("v1/{personExternalId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeletePersonConnectionAndEnrolment([FromRoute] Guid personExternalId, Guid organisationId, int enrolmentId)
+    {
+        if (personExternalId == Guid.Empty || organisationId == Guid.Empty || enrolmentId == 0)
+        {
+            var errorMessage = $"Invalid request to delete user {personExternalId} with enrolmentId {enrolmentId}";
+            logger.LogError(errorMessage);
+            return Problem(errorMessage);
+        }
+
+        var response = await enrolmentService.DeletePersonConnectionAndEnrolment(new DeleteUserModel
+        {
+            PersonExternalIdToDelete = personExternalId,
+            LoggedInUserId = User.UserId(),
+            OrganisationId = organisationId,
+            EnrolmentId = enrolmentId
+        });
+
+        if (response.IsSuccessStatusCode)
+        {
+            logger.LogInformation("Deleted user {PersonExternalId} with EnrolmentId {EnrolmentId} successfully", personExternalId, enrolmentId);
+            
+            return NoContent();
+        }
+
+        logger.LogError("Error deleting user {PersonExternalId} with EnrolmentId {EnrolmentId}",personExternalId, enrolmentId);
+        return Problem($"Error deleting user {personExternalId} with EnrolmentId {enrolmentId}");
+    }
 
     private async Task<RemovedUserNotificationEmailModel> GetPersonDetailsToSendEmail(Guid personExternalId, Guid organisationId)
     {
