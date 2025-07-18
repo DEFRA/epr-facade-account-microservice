@@ -5,4 +5,5 @@ public record InvitedApprovedUserResponse
 {
     public required string Email { get; set; }
     public required string InviteToken { get; set; }
+    public required ServiceRoleResponse ServiceRole { get; set; }
 }

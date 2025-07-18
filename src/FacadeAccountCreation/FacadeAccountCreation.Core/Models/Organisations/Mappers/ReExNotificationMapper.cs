@@ -55,16 +55,20 @@ public static class ReExNotificationMapper
 
         foreach (var approvedUser in reExInvitedPeople)
         {
-            string invitedToken = approvedListResponse.FirstOrDefault(x => x.Email == approvedUser.Email)?.InviteToken;
-           
-            if(string.IsNullOrWhiteSpace(invitedToken))
-            {
-                continue;
-            }
+            var invitedApprovedUser = approvedListResponse.FirstOrDefault(x => x.Email == approvedUser.Email);
 
-            var inviteLink = $"{accountCreationUrl}{HttpUtility.UrlEncode(invitedToken)}";
-            approvedUser.InviteToken = inviteLink;
-            approvedList.Add(approvedUser);
+            if (invitedApprovedUser != null)
+            {
+                if (string.IsNullOrWhiteSpace(invitedApprovedUser.InviteToken))
+                {
+                    continue;
+                }
+
+                var inviteLink = $"{accountCreationUrl}{HttpUtility.UrlEncode(invitedApprovedUser.InviteToken)}";
+                approvedUser.InviteToken = inviteLink;
+                approvedUser.ServiceRole = invitedApprovedUser.ServiceRole;
+                approvedList.Add(approvedUser);
+            }
         }
         return approvedList;
     }
