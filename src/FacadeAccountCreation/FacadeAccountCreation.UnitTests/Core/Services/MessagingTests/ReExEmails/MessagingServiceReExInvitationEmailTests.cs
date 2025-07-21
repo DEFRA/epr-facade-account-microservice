@@ -25,7 +25,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        var result = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+        var result = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
 
         // Assert
         result.Should().NotBeNullOrEmpty();
@@ -55,7 +55,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
     }
 
     [TestMethod]
@@ -80,7 +80,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
             It.IsAny<string>(),
@@ -111,7 +111,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
             It.IsAny<string>(),
@@ -144,7 +144,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
            It.IsAny<string>(),
@@ -175,7 +175,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
            It.IsAny<string>(),
@@ -206,7 +206,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
            It.IsAny<string>(),
@@ -237,7 +237,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
            It.IsAny<string>(),
@@ -268,7 +268,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        var result = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+        var result = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
 
         // Assert
         result.Count.Should().Be(0);

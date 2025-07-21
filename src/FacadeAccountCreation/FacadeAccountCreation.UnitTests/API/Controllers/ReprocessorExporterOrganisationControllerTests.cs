@@ -82,7 +82,7 @@ public class ReprocessorExporterOrganisationControllerTests
             ("test01@test.com", "123456")
         };
 
-        _messagingServiceMock.Setup(x => x.SendReExInvitationToBeApprovedPerson(It.IsAny<ReExNotificationModel>()))
+        _messagingServiceMock.Setup(x => x.SendReExInvitationToAcceptServiceRole(It.IsAny<ReExNotificationModel>()))
             .Returns(notificationList);
         _messagingServiceMock.Setup(x => x.SendReExInvitationConfirmationToInviter(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<(string email, string notificationResponseId)>>()))
             .Returns("9879");
