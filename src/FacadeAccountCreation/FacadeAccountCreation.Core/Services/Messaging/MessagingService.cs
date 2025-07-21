@@ -594,12 +594,12 @@ public class MessagingService(
     #region Reprocessor and Exporter email notification
 
     /// <summary>
-    /// Sends an invitation email to be approved person within an organisation with an invite link
+    /// Sends an invitation email to accept service role i.e. 'approved person' or 'admin' etc. within an organisation with an invite link
     /// </summary>
     /// <param name="reExNotification">model with data for the email</param>
     /// <returns> list of response id with email id, or empty list if any exception</returns>
     /// <exception cref="ArgumentException"></exception>
-    public List<(string email, string notificationResponseId)> SendReExInvitationToBeApprovedPerson(ReExNotificationModel reExNotification)
+    public List<(string email, string notificationResponseId)> SendReExInvitationToAcceptServiceRole(ReExNotificationModel reExNotification)
     {
         var notificationList = new List<(string email, string responseId)>();
 

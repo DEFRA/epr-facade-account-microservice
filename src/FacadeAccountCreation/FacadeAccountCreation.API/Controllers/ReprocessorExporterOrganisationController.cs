@@ -42,7 +42,7 @@ public class ReprocessorExporterOrganisationController(
         // TO DO: check if Invited approved person 'email' is enrolled already
         if (emailNotificationMapper.ReExInvitedApprovedPersons.Count != 0)
         {
-            var notificationResponse = messagingService.SendReExInvitationToBeApprovedPerson(emailNotificationMapper);
+            var notificationResponse = messagingService.SendReExInvitationToAcceptServiceRole(emailNotificationMapper);
 
             if (notificationResponse.Count > 0)
             {
