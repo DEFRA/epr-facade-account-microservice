@@ -60,6 +60,8 @@ public class ReprocessorExporterOrganisationControllerTests
 
         var response = new ReExAddOrganisationResponse
         {
+            UserFirstName = "Jon",
+            UserLastName = "Doe",
             OrganisationId = Guid.Parse(organisationId),
             ReferenceNumber = "12555209",
             UserServiceRoles = [],
@@ -137,9 +139,12 @@ public class ReprocessorExporterOrganisationControllerTests
 
         var response = new ReExAddOrganisationResponse
         {
+            UserFirstName = "Jon",
+            UserLastName = "Doe",
             OrganisationId = Guid.Empty,
             ReferenceNumber = "12555209",
-            InvitedApprovedUsers = [new InvitedApprovedUserResponse { Email = "testc@test.com", InviteToken = "xyz122334==" }]
+            UserServiceRoles = [],
+            InvitedApprovedUsers = [new InvitedApprovedUserResponse { Email = "testc@test.com", InviteToken = "xyz122334==", ServiceRole = new ServiceRoleResponse() }]
         };
 
         _organisationServiceMock.Setup(x => x.CreateReExOrganisationAsync(It.IsAny<ReprocessorExporterAddOrganisation>(), It.IsAny<string>()))

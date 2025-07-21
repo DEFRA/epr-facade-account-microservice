@@ -681,7 +681,7 @@ public class MessagingService(
             { "lastName", inviterLastName }
         };
 
-        // IF HAS INVITED PERSON EMAILS
+        // If has invited person emails then append as we want to show them all in an email.
         StringBuilder invitedEmails = new();
 
         foreach (var invitedPerson in invitedList)

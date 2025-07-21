@@ -50,12 +50,37 @@ public class MessagingServiceConfirmationOfAPTests : BaseMessagingTest
     [DataRow("678", "john.smith@tester.com", "John", "Smith", "Test Ltd", " ", "Welsh")]
     [DataRow("678", "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", null)]
     [DataRow("678", "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", "")]
-    public void SendRejectionEmailFromInvitedAP_Throws_ArgumentException_As_InviterFirstNameIsEmpty(string userId, string inviterEmail, string inviteeFirstName, string inviteeLastName, string companyName, string inviterFirstName, string inviterLastName)
+    public void SendReExConfirmationOfAnApprovedPerson_Throws_ArgumentException_As_InviterFirstNameIsEmpty(string userId, string inviterEmail, string inviteeFirstName, string inviteeLastName, string companyName, string inviterFirstName, string inviterLastName)
     {
         // Arrange
         _sut = GetServiceUnderTest();
 
         // Act
         _ = _sut.SendReExConfirmationOfAnApprovedPerson(userId, inviterEmail, inviteeFirstName, inviteeLastName, companyName, inviterFirstName, inviterLastName);
+    }
+
+    [TestMethod]
+    public void SendReExConfirmationOfAnApprovedPerson_WhenNotificationClientThrowsException_ReturnsNull_And_LogsError()
+    {
+        // Arrange
+        var thrownException = new InvalidOperationException("some exception");
+
+        _notificationClientMock
+            .Setup(nc => nc.SendEmail(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, dynamic>>(),
+                null,
+                null,
+                null))
+            .Throws(thrownException);
+
+        _sut = GetServiceUnderTest();
+
+        // Act
+        var result = _sut.SendReExConfirmationOfAnApprovedPerson("678", "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", "Welsh");
+
+        // Assert
+        result.Should().BeNull();
     }
 }

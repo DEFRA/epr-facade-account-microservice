@@ -20,7 +20,7 @@ public class MessagingServiceRejectionConfirmationToAPTests : BaseMessagingTest
 
         // Act
         var result = _sut.SendRejectionConfirmationToApprovedPerson("123", "76543211", "Test Ltd", "John Doe", "john.doe@test.com");
-        
+
         // Assert
         result.Should().NotBeNullOrEmpty();
         result.Should().Be("8171");
@@ -50,5 +50,30 @@ public class MessagingServiceRejectionConfirmationToAPTests : BaseMessagingTest
     {
         _sut = GetServiceUnderTest();
         _ = _sut.SendRejectionConfirmationToApprovedPerson(userId, organisationId, organisationName, rejectedByName, rejectedAPEmail);
+    }
+
+    [TestMethod]
+    public void SendRejectionConfirmationToApprovedPerson_WhenNotificationClientThrowsException_ReturnsNull_And_LogsError()
+    {
+        // Arrange
+        var thrownException = new InvalidOperationException("some exception");
+
+        _notificationClientMock
+            .Setup(nc => nc.SendEmail(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, dynamic>>(),
+                null,
+                null,
+                null))
+            .Throws(thrownException);
+        
+        _sut = GetServiceUnderTest();
+
+        // Act
+        var result = _sut.SendRejectionConfirmationToApprovedPerson("123", "76543211", "Test Ltd", "John Doe", "john.doe@test.com");
+
+        // Assert
+        result.Should().BeNull();
     }
 }

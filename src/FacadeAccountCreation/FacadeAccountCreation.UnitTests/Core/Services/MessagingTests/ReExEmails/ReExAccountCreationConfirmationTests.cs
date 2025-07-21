@@ -49,4 +49,29 @@ public class ReExAccountCreationConfirmationTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
         _ = _sut.SendReExAccountCreationConfirmation(userId, firstName, lastName, contactEmail);
     }
+
+    [TestMethod]
+    public void SendReExAccountCreationConfirmation_WhenNotificationClientThrowsException_ReturnsNull_And_LogsError()
+    {
+        // Arrange
+        var thrownException = new InvalidOperationException("some exception");
+
+        _notificationClientMock
+            .Setup(nc => nc.SendEmail(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, dynamic>>(),
+                null,
+                null,
+                null))
+            .Throws(thrownException);
+
+        _sut = GetServiceUnderTest();
+
+        // Act
+        var result = _sut.SendReExAccountCreationConfirmation("456-787-9050", "John", "Doe", "john.doe@test.com");
+
+        // Assert
+        result.Should().BeNull();
+    }
 }

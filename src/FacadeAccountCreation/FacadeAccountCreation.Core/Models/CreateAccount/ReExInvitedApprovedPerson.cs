@@ -22,5 +22,8 @@ public class ReExInvitedApprovedPerson
 
     public string? InviteToken { get; set; }
 
-    public ServiceRoleResponse? ServiceRole { get; set; }
+    /// <summary>
+    /// required when mapping the response from back-end for email-service
+    /// </summary>
+   public ServiceRoleResponse? ServiceRole { get; set; }
 }
