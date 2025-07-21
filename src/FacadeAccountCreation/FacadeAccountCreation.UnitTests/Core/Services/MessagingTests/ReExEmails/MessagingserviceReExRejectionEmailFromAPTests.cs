@@ -1,4 +1,6 @@
-﻿namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests.ReExEmails;
+﻿using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
+
+namespace FacadeAccountCreation.UnitTests.Core.Services.MessagingTests.ReExEmails;
 
 [TestClass]
 public class MessagingserviceReExRejectionEmailFromAPTests : BaseMessagingTest
@@ -55,5 +57,30 @@ public class MessagingserviceReExRejectionEmailFromAPTests : BaseMessagingTest
 
         // Act
         _ = _sut.SendRejectionEmailFromInvitedAP(userId, userFullName, userEmail, organisationId, organisationName, rejectedByName);
+    }
+
+    [TestMethod]
+    public void SendRejectionEmailFromInvitedAP_WhenNotificationClientThrowsException_ReturnsNull_And_LogsError()
+    {
+        // Arrange
+        var thrownException = new InvalidOperationException("some exception");
+
+        _notificationClientMock
+            .Setup(nc => nc.SendEmail(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, dynamic>>(),
+                null,
+                null,
+                null))
+            .Throws(thrownException);
+
+        _sut = GetServiceUnderTest();
+
+        // Act        
+        var result = _sut.SendRejectionEmailFromInvitedAP("123", "John Smith", "john.smith@test.com", "85654", "Test Ltd", "John Doe");
+
+        // Assert
+        result.Should().BeNull();
     }
 }

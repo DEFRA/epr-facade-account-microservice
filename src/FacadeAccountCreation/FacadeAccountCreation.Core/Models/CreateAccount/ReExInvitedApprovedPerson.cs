@@ -1,4 +1,6 @@
-﻿namespace FacadeAccountCreation.Core.Models.CreateAccount;
+﻿using FacadeAccountCreation.Core.Models.CreateAccount.ReExResponse;
+
+namespace FacadeAccountCreation.Core.Models.CreateAccount;
 
 /// <summary>
 /// Re-Ex invited approved person model
@@ -19,4 +21,9 @@ public class ReExInvitedApprovedPerson
     public string Email { get; set; }
 
     public string? InviteToken { get; set; }
+
+    /// <summary>
+    /// required when mapping the response from back-end for email-service
+    /// </summary>
+   public ServiceRoleResponse? ServiceRole { get; set; }
 }

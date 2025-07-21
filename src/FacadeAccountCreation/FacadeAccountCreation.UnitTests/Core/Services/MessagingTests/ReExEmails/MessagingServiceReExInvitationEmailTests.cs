@@ -247,4 +247,30 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
            null,
            null), Times.Never());
     }
+
+    [TestMethod]
+    public void SendReExInvitationToBeApprovedPerson_WhenNotificationClientThrowsException_ReturnsNull_And_LogsError()
+    {
+        // Arrange
+        var notificationModel = _fixture.Create<ReExNotificationModel>();
+        var thrownException = new InvalidOperationException("some exception");
+
+        _notificationClientMock
+            .Setup(nc => nc.SendEmail(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, dynamic>>(),
+                null,
+                null,
+                null))
+            .Throws(thrownException);
+
+        _sut = GetServiceUnderTest();
+
+        // Act
+        var result = _sut.SendReExInvitationToBeApprovedPerson(notificationModel);
+
+        // Assert
+        result.Count.Should().Be(0);
+    }
 }

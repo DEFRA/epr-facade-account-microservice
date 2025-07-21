@@ -10,7 +10,7 @@ public class MessagingServiceReExInvitationConfirmationTests : BaseMessagingTest
         ];
 
     [TestMethod]
-    public void SendReExInvitationToBeApprovedPerson_Email_Sent_Successfully_With_Response()
+    public void SendReExInvitationConfirmationToInviter_Email_Sent_Successfully_With_Response()
     {
         // Arrange
         _ = _notificationClientMock.SetupSequence(nc => nc.SendEmail(
@@ -45,12 +45,37 @@ public class MessagingServiceReExInvitationConfirmationTests : BaseMessagingTest
     [DataRow("123", "Adam", "Smith", " ", "Test Ltd")]
     [DataRow("123", "Adam", "Smith", "adam.smith@test.com", null)]
     [DataRow("123", "Adam", "Smith", "adam.smith@test.com", "  ")]
-    public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_As(string userId, string inviterFirstName, string inviterLastName, string userEmail, string companyName)
+    public void SendReExInvitationConfirmationToInviter_Email_Throws_ArgumentException_As(string userId, string inviterFirstName, string inviterLastName, string userEmail, string companyName)
     {
         // Arrange
         _sut = GetServiceUnderTest();
 
         // Act
         _ = _sut.SendReExInvitationConfirmationToInviter(userId, inviterFirstName, inviterLastName, userEmail, companyName, notificationList);
+    }
+
+    [TestMethod]
+    public void SendReExInvitationConfirmationToInviter_WhenNotificationClientThrowsException_ReturnsNull()
+    {
+        // Arrange
+        var thrownException = new InvalidOperationException("some exception");
+
+        _notificationClientMock
+            .Setup(nc => nc.SendEmail(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<Dictionary<string, dynamic>>(),
+                null,
+                null,
+                null))
+            .Throws(thrownException);
+
+        _sut = GetServiceUnderTest();
+
+        // Act
+        var result = _sut.SendReExInvitationConfirmationToInviter("10", "Adam", "Smith", "adam.smith@test.com", "Test Ltd", notificationList);
+
+        // Assert
+        result.Should().BeNull();
     }
 }

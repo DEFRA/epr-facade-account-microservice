@@ -611,15 +611,19 @@ public class MessagingService(
             ArgumentException.ThrowIfNullOrWhiteSpace(reExNotification.UserFirstName);
             ArgumentException.ThrowIfNullOrWhiteSpace(reExNotification.UserLastName);            
             ArgumentException.ThrowIfNullOrWhiteSpace(reExNotification.CompanyName);
-            ArgumentException.ThrowIfNullOrWhiteSpace(member.InviteToken);  
+            ArgumentException.ThrowIfNullOrWhiteSpace(member.InviteToken);
+            ArgumentException.ThrowIfNullOrWhiteSpace(member.ServiceRole.Name);
+            ArgumentException.ThrowIfNullOrWhiteSpace(member.ServiceRole.Description);
 
             var parameters = new Dictionary<string, object>
             {
                 { "emailaddress", member.Email },
+                { "serviceRole", member.ServiceRole.Name },
                 { "organisationName", reExNotification.CompanyName },
                 { "inviteeName", $"{member.FirstName} {member.LastName}" },
                 { "inviterName", $"{reExNotification.UserFirstName} {reExNotification.UserLastName}" },
-                { "acceptRejectLink", member.InviteToken }                
+                { "serviceDescription", member.ServiceRole.Description },
+                { "acceptLink", member.InviteToken }                
             };
 
             var templateId = _messagingConfig.ReExApprovedPersonInvitationTemplateId;
@@ -677,7 +681,7 @@ public class MessagingService(
             { "lastName", inviterLastName }
         };
 
-        // IF HAS INVITED PERSON EMAILS
+        // If has invited person emails then append as we want to show them all in an email.
         StringBuilder invitedEmails = new();
 
         foreach (var invitedPerson in invitedList)

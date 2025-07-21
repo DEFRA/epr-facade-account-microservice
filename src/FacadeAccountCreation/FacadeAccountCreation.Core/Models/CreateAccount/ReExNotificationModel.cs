@@ -9,6 +9,8 @@ public class ReExNotificationModel
     public string OrganisationId { get; set; }
     public string OrganisationExternalId { get; set; }
 
+    public string ServiceRole { get; set; }
+
     /// <summary>
     /// Sets company name or Trading name
     /// </summary>

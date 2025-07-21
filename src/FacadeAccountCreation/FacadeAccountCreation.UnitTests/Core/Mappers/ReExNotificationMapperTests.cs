@@ -64,10 +64,11 @@ public class ReExNotificationMapperTests
         {
             OrganisationId = Guid.Parse("7ea62027-2bd9-4267-aeea-7f6dbc71824a"),
             ReferenceNumber = "122345678",
+            UserServiceRoles = [],
             InvitedApprovedUsers =
-           [
-               new() { Email = "john.smith@tester.com", InviteToken = "B786tgs12856==" }
-           ],
+            [
+               new() { Email = "john.smith@tester.com", InviteToken = "B786tgs12856==", ServiceRole = new ServiceRoleResponse() }
+            ],
             UserFirstName = "Peter",
             UserLastName = "Welsh"
         };
@@ -119,12 +120,14 @@ public class ReExNotificationMapperTests
             UserLastName = "Last",
             OrganisationId = organisationId,
             ReferenceNumber = "REF123",
+            UserServiceRoles = [],
             InvitedApprovedUsers =
             [
                 new InvitedApprovedUserResponse
                 {
                     Email = "ap1@test.com",
-                    InviteToken = "token123"
+                    InviteToken = "token123",
+                    ServiceRole = new ServiceRoleResponse()
                 }
             ]
         };
@@ -183,11 +186,13 @@ public class ReExNotificationMapperTests
             UserLastName = "ManualLast",
             OrganisationId = organisationId,
             ReferenceNumber = "REF123",
+            UserServiceRoles = [],
             InvitedApprovedUsers =
             [
                 new() {
                     Email = "ap2@test.com",
-                    InviteToken = "token123"
+                    InviteToken = "token123",
+                    ServiceRole = new ServiceRoleResponse()
                 }
             ]
         };
@@ -226,6 +231,7 @@ public class ReExNotificationMapperTests
             UserLastName = "lastName",
             OrganisationId = organisationId,
             ReferenceNumber = "empty",
+            UserServiceRoles = [],
             InvitedApprovedUsers = []
         };
         var accountCreationUrl = "https://test.com/invite?token=";
@@ -269,13 +275,15 @@ public class ReExNotificationMapperTests
             UserLastName = "Last",
             OrganisationId = organisationId,
             ReferenceNumber = "REF123",
+            UserServiceRoles = [],
             InvitedApprovedUsers =
                 [
                     // No matching email for ap3@test.com
                     new InvitedApprovedUserResponse
                     {
                         Email = "other@test.com",
-                        InviteToken = "othertoken"
+                        InviteToken = "othertoken",
+                        ServiceRole = new ServiceRoleResponse()
                     }
                 ]
         };
@@ -310,7 +318,7 @@ public class ReExNotificationMapperTests
         {
             ReExUser = reExUser,
             Company = new ReExCompanyModel { CompanyName = "Test", CompaniesHouseNumber = "222" },
-            InvitedApprovedPersons = new List<ReExInvitedApprovedPerson> { invitedPerson }
+            InvitedApprovedPersons = [invitedPerson]
         };
         var response = new ReExAddOrganisationResponse
         {
@@ -318,12 +326,15 @@ public class ReExNotificationMapperTests
             UserLastName = "Last",
             OrganisationId = organisationId,
             ReferenceNumber = "REF222",
+            UserServiceRoles = [],
             InvitedApprovedUsers =
                 [
                     new InvitedApprovedUserResponse
                     {
                         Email = "ap4@test.com",
-                        InviteToken = "" // Empty token
+                        InviteToken = "", // Empty token
+                        ServiceRole = new ServiceRoleResponse()
+                       
                     }
                 ]
         };
