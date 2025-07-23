@@ -282,8 +282,11 @@ public class OrganisationService(
             var response = await httpClient.GetAsync(endpoint);
 
             response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadFromJsonWithEnumsAsync<PagedOrganisationRelationshipsModel>();
+            
+            var result = await response.Content.ReadFromJsonWithEnumsAsync<PagedOrganisationRelationshipsModel>();
+            result.Items.Clear();
+            return result;
+            
         }
         catch (Exception e)
         {
