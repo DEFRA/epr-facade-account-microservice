@@ -141,10 +141,10 @@ public class ComplianceSchemesController(
         {
             var response = await complianceSchemeService.GetComplianceSchemeForProducerAsync(producerOrganisationId, User.UserId());
 
-            if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.NoContent)
             {
                 logger.LogError("No current selected compliance scheme for producerOrganisationId {ProducerOrganisationId}", producerOrganisationId);
-                return new NotFoundResult();
+                return response.StatusCode == HttpStatusCode.NotFound?new NotFoundResult(): new NoContentResult();
             }
 
             if (response.IsSuccessStatusCode)
