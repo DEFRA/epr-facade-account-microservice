@@ -3,6 +3,7 @@ using FacadeAccountCreation.Core.Services.ReprocessorExporter;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
+[TestClass]
 public class ReprocessorExporterServiceTests
 {
 	private const string baseAddress = "http://localhost";

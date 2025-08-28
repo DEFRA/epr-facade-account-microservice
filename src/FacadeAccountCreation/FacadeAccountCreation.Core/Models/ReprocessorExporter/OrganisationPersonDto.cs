@@ -1,6 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.ReprocessorExporter;
 
-public class OrganisationPersonDto
+public record OrganisationPersonDto
 {
 	public Guid UserId { get; set; }
 	public string FirstName { get; set; }

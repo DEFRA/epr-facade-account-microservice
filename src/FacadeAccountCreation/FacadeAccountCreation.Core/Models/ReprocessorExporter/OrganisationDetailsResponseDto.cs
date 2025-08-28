@@ -1,6 +1,6 @@
 ﻿namespace FacadeAccountCreation.Core.Models.ReprocessorExporter;
 
-public class OrganisationDetailsResponseDto
+public record OrganisationDetailsResponseDto
 {
 	public string OrganisationName { get; set; }
 	public string TradingName { get; set; }
