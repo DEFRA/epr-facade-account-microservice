@@ -50,6 +50,21 @@ public class UserService(
         return await httpClient.GetAsync(url);
     }
 
+    public async Task<HttpResponseMessage> GetUserIdByPersonId(Guid personId)
+    {
+        var endpoint = config.GetValue<string>("ComplianceSchemeEndpoints:GetUserIdByPersonId");
+        if (string.IsNullOrWhiteSpace(endpoint))
+        {
+            throw new InvalidOperationException("The 'GetUserIdByPersonId' endpoint is not configured.");
+        }
+
+        var url = $"{endpoint}?personId={personId}";
+
+        logger.LogInformation("Attempting to fetch user id for personId '{PersonId}' from the backend", personId);
+
+        return await httpClient.GetAsync(url);
+    }
+
     public async Task<HttpResponseMessage> UpdatePersonalDetailsAsync(
     Guid userId, Guid organisationId, string serviceKey, UpdateUserDetailsRequest userDetailsUpdateModelRequest)
     {
