@@ -445,13 +445,13 @@ public class UsersControllerTests
     public async Task GetUserIdByPersonId_ReturnsOk_WhenSuccessful()
     {
         // Arrange
-        var apiResponse = new StringContent(_userId.ToString());
+        var apiResponse = _userId;
 
         _mockUserService.Setup(s => s.GetUserIdByPersonId(_personId))
             .ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = apiResponse
+                Content = new StringContent(apiResponse.ToString())
             });
 
         // Act

@@ -94,7 +94,8 @@ public class UsersController(
             if (response.IsSuccessStatusCode)
             {
                 logger.LogInformation("Fetched the userId for the person {PersonId}", personId);
-                return Ok(response.Content);
+                var userId = await response.Content.ReadFromJsonAsync<Guid?>();
+                return Ok(userId);
             }
 
             logger.LogError("Failed to fetch the userIdfor the person {PersonId}", personId);
