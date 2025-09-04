@@ -98,7 +98,7 @@ public class UsersController(
                 return Ok(userId);
             }
 
-            logger.LogError("Failed to fetch the userIdfor the person {PersonId}", personId);
+            logger.LogError("Failed to fetch the userId for the person {PersonId}", personId);
             return HandleError.HandleErrorWithStatusCode(response.StatusCode);
         }
         catch (Exception e)
