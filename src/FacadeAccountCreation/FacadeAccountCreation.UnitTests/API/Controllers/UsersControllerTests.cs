@@ -445,14 +445,13 @@ public class UsersControllerTests
     public async Task GetUserIdByPersonId_ReturnsOk_WhenSuccessful()
     {
         // Arrange
-        var apiResponse = _userId;
+        var apiResponse = $"\"{_userId}\"";
 
-        _mockUserService.Setup(s => s.GetUserIdByPersonId(_personId))
-            .ReturnsAsync(new HttpResponseMessage
-            {
-                StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(apiResponse.ToString())
-            });
+        var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(apiResponse)
+        };
+        _mockUserService.Setup(x => x.GetUserIdByPersonId(_personId)).ReturnsAsync(responseMessage);
 
         // Act
         var result = await _sut.GetUserIdByPersonId(_personId);
@@ -460,8 +459,7 @@ public class UsersControllerTests
         // Assert
         result.Should().BeOfType<OkObjectResult>();
         var okResult = result as OkObjectResult;
-        okResult.StatusCode.Should().Be(200);
-        okResult.Value.Should().BeEquivalentTo(apiResponse);
+        okResult.Value.Should().BeEquivalentTo(_userId);
     }
 
     [TestMethod]
