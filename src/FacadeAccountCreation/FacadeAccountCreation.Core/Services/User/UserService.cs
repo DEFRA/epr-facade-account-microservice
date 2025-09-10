@@ -16,8 +16,25 @@ public class UserService(
     public async Task<HttpResponseMessage> GetUserOrganisations(Guid userId)
     {
         var url = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetUserOrganisations").Value}?userId={userId}";
-        
+
         logger.LogInformation("Attempting to fetch the organisations for user id '{UserId}' from the backend", userId);
+        return await httpClient.GetAsync(url);
+    }
+
+        
+        
+    public async Task<HttpResponseMessage> GetUserIdByPersonId(Guid personId)
+    {
+        var endpoint = config.GetValue<string>("ComplianceSchemeEndpoints:GetUserIdByPersonId");
+        if (string.IsNullOrWhiteSpace(endpoint))
+        {
+            throw new InvalidOperationException("The 'GetUserIdByPersonId' endpoint is not configured.");
+        }
+
+        var url = $"{endpoint}?personId={personId}";
+
+        logger.LogInformation("Attempting to fetch user id for personId '{PersonId}' from the backend", personId);
+
         return await httpClient.GetAsync(url);
     }
 

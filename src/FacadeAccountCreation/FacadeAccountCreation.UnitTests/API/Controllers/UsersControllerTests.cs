@@ -8,28 +8,29 @@ public class UsersControllerTests
 {
     private readonly Guid _oid = Guid.NewGuid();
     private readonly Guid _userId = Guid.NewGuid();
+    private readonly Guid _personId = Guid.NewGuid();
     private readonly Mock<IUserService> _mockUserService = new();
     private readonly Mock<IMessagingService> _mockMessagingService = new();
     private readonly NullLogger<UsersController> _nullLogger = new();
     private UsersController _sut = null!;
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private Mock<HttpContext>? _httpContextMock;
-    
+
     [TestInitialize]
     public void Setup()
     {
         _httpContextMock = new Mock<HttpContext>();
         _sut = new UsersController(
-            _nullLogger, _mockUserService.Object, 
+            _nullLogger, _mockUserService.Object,
             _mockMessagingService.Object);
         _sut.AddDefaultContextWithOid(_oid, "TestAuth");
     }
-    
+
     [TestMethod]
     public async Task Should_fetch_user_and_organisation_details_scheme_when_user_is_linked_to_organisation()
     {
         // Arrange
-        var handlerResponse = 
+        var handlerResponse =
             _fixture
                 .Build<HttpResponseMessage>()
                 .With(x => x.StatusCode, HttpStatusCode.OK)
@@ -66,8 +67,8 @@ public class UsersControllerTests
         var statusCodeResult = result as StatusCodeResult;
         statusCodeResult?.StatusCode.Should().Be(500);
     }
-    
-     [TestMethod]
+
+    [TestMethod]
     public async Task Should_return_notfound_when_fetching_organisations_for_user_returns_notfound()
     {
         // Arrange
@@ -83,7 +84,7 @@ public class UsersControllerTests
         var statusCodeResult = result as NotFoundResult;
         statusCodeResult?.StatusCode.Should().Be(404);
     }
-    
+
     [TestMethod]
     public async Task Should_return_bad_request_when_fetching_organisations_for_user_returns_bad_request()
     {
@@ -100,7 +101,7 @@ public class UsersControllerTests
         var statusCodeResult = result as BadRequestResult;
         statusCodeResult?.StatusCode.Should().Be(400);
     }
-    
+
     [TestMethod]
     public async Task Should_return_statuscode_500_when_fetching_organisations_for_users_returns_500()
     {
@@ -117,7 +118,7 @@ public class UsersControllerTests
         var statusCodeResult = result as StatusCodeResult;
         statusCodeResult?.StatusCode.Should().Be(500);
     }
-    
+
     [TestMethod]
     public async Task Should_return_ok_when_sucess_statuscode()
     {
@@ -139,7 +140,7 @@ public class UsersControllerTests
         var statusCodeResult = result as OkObjectResult;
         statusCodeResult?.StatusCode.Should().Be(200);
     }
-    
+
     [TestMethod]
     public async Task Should_return_500_statuscode_when_empty_user()
     {
@@ -159,7 +160,7 @@ public class UsersControllerTests
         var statusCodeResult = result as ObjectResult;
         statusCodeResult?.StatusCode.Should().Be(500);
     }
-    
+
     [TestMethod]
     public async Task Should_return_error_statuscode_when_error_response()
     {
@@ -338,7 +339,7 @@ public class UsersControllerTests
         var serviceKey = "test-service-key";
         var organisationId = Guid.NewGuid();
         var responseContent = _fixture.Create<UpdateUserDetailsResponse>();
-        
+
         var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(JsonSerializer.Serialize(responseContent))
@@ -357,5 +358,83 @@ public class UsersControllerTests
         var okResult = result as OkObjectResult;
         Assert.IsNotNull(okResult);
         Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+    }
+    
+    
+    
+    
+
+    [TestMethod]
+    public async Task GetUserIdByPersonId_ReturnsOk_WhenSuccessful()
+    {
+        // Arrange
+        var apiResponse = $"\"{_userId}\"";
+
+        var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(apiResponse)
+        };
+        _mockUserService.Setup(x => x.GetUserIdByPersonId(_personId)).ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _sut.GetUserIdByPersonId(_personId);
+
+        // Assert
+        result.Should().BeOfType<OkObjectResult>();
+        var okResult = result as OkObjectResult;
+        okResult.Value.Should().BeEquivalentTo(_userId);
+    }
+
+    [TestMethod]
+    public async Task GetUserIdByPersonId_ReturnsErrorStatus_WhenServiceFails()
+    {
+        // Arrange
+        var userId = _oid;
+
+        _mockUserService.Setup(s => s.GetUserIdByPersonId(_personId))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.BadRequest
+            });
+
+        // Act
+        var result = await _sut.GetUserIdByPersonId(_personId);
+
+        // Assert
+        result.Should().BeOfType<BadRequestResult>();
+        var badRequestResult = result as BadRequestResult;
+        badRequestResult.StatusCode.Should().Be(400);
+    }
+
+    [TestMethod]
+    public async Task GetUserIdByPersonId_ReturnsEmpty_WhenUserIdIsEmpty()
+    {
+        _mockUserService.Setup(s => s.GetUserIdByPersonId(_personId))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NotFound,
+            });
+
+        // Act
+        var result = await _sut.GetUserIdByPersonId(_personId);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [TestMethod]
+    public async Task GetUserIdByPersonId_Returns500_WhenExceptionThrown()
+    {
+        // Arrange
+        _mockUserService.Setup(s => s.GetUserIdByPersonId(It.IsAny<Guid>()))
+            .ThrowsAsync(new Exception("Test Exception"));
+
+        // Act
+        var result = await _sut.GetUserIdByPersonId(_personId);
+
+        // Assert
+        var statusResult = result as StatusCodeResult;
+        Assert.IsNotNull(statusResult);
+        Assert.AreEqual(StatusCodes.Status500InternalServerError, statusResult.StatusCode);
     }
 }
