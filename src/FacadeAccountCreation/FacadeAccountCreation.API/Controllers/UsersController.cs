@@ -81,7 +81,7 @@ public class UsersController(
     }
 
     [HttpGet]
-    [Route("user-by-person-id")]
+    [Route("user-accounts/user-by-person-id")]
     [ProducesResponseType(typeof(UserOrganisationsListModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
