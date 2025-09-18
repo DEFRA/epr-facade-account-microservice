@@ -2,6 +2,8 @@ using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 namespace FacadeAccountCreation.API.Shared;
+
+[ExcludeFromCodeCoverage]
 public class IgnoreHttpTelemetryProcessor : ITelemetryProcessor
 {
     private readonly ITelemetryProcessor _next;
