@@ -68,7 +68,7 @@ public class EnrolmentsController(
         if (personExternalId == Guid.Empty || organisationId == Guid.Empty || enrolmentId == 0)
         {
             var errorMessage = $"Invalid request to delete user {personExternalId} with enrolmentId {enrolmentId}";
-            logger.LogError(errorMessage);
+            logger.LogError("Invalid request to delete user {PersonExternalId} with enrolmentId {EnrolmentId}", personExternalId, enrolmentId);
             return Problem(errorMessage);
         }
 

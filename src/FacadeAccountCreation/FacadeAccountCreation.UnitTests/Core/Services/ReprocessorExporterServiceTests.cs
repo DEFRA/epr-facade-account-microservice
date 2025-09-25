@@ -1,8 +1,10 @@
-﻿using FacadeAccountCreation.Core.Models.ReprocessorExporter;
+﻿using FacadeAccountCreation.Core.Exceptions;
+using FacadeAccountCreation.Core.Models.ReprocessorExporter;
 using FacadeAccountCreation.Core.Services.ReprocessorExporter;
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
+[TestClass]
 public class ReprocessorExporterServiceTests
 {
 	private const string baseAddress = "http://localhost";
@@ -15,7 +17,7 @@ public class ReprocessorExporterServiceTests
 		var organsationId = Guid.NewGuid();
 
 		var endpoint = $"api/organisations/organisation-with-persons/";
-		var expectedUrl = $"{baseAddress}/{endpoint}";
+		var expectedUrl = $"{baseAddress}/{endpoint}{organsationId}";
 
 		var apiResponse = _fixture.Create<OrganisationDetailsResponseDto>();
 
@@ -51,13 +53,14 @@ public class ReprocessorExporterServiceTests
 	[TestMethod]
 	[DataRow(HttpStatusCode.BadRequest)]
 	[DataRow(HttpStatusCode.Unauthorized)]
-	[ExpectedException(typeof(HttpRequestException))]
+	[ExpectedException(typeof(ProblemResponseException))]
 	public async Task GetOrganisationDetailsByOrgId_FailedStatusCode_ThrowHttpRequestException(HttpStatusCode statusCode)
 	{
 		var organsationId = Guid.NewGuid();
 
 		var endpoint = $"api/organisations/organisation-with-persons/";
-		var expectedUrl = $"{baseAddress}/{endpoint}";
+		var expectedUrl = $"{baseAddress}/{endpoint}{organsationId}";
+        var problemDetails = new ProblemDetails();
 
 		_httpMessageHandlerMock.Protected()
 			 .Setup<Task<HttpResponseMessage>>("SendAsync",
@@ -65,6 +68,7 @@ public class ReprocessorExporterServiceTests
 				 ItExpr.IsAny<CancellationToken>())
 			 .ReturnsAsync(new HttpResponseMessage
 			 {
+				 Content = new StringContent(JsonSerializer.Serialize(problemDetails)),
 				 StatusCode = statusCode
 			 }).Verifiable();
 
@@ -84,7 +88,7 @@ public class ReprocessorExporterServiceTests
 		var organsationId = Guid.NewGuid();
 
 		var endpoint = $"api/organisations/organisation-with-persons/";
-		var expectedUrl = $"{baseAddress}/{endpoint}";
+		var expectedUrl = $"{baseAddress}/{endpoint}{organsationId}";
 
 		_httpMessageHandlerMock.Protected()
 			.Setup<Task<HttpResponseMessage>>("SendAsync",
