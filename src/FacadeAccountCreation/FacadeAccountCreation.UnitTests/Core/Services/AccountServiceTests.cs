@@ -288,7 +288,8 @@ public class AccountServiceTests
             InviteUser = "api/accounts-management/invite-user",
             EnrolInvitedUser = "api/accounts-management/enrol-invited-user",
             ApprovedUserAccounts = "/api/producer-accounts/ApprovedUser",
-            ReprocessorExporterAccounts = "api/v1/reprocessor-exporter-user-accounts"
+            ReprocessorExporterAccounts = "api/v1/reprocessor-exporter-user-accounts",
+            ReprocessorExporterOrganisation = "api/v1/reprocessor-exporter-organisation",
         });
         
         var sut = new AccountService(httpClient, accountsEndpointsOptions);

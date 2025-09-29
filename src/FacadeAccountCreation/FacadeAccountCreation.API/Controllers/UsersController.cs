@@ -1,5 +1,6 @@
 using FacadeAccountCreation.Core.Models.User;
 using FacadeAccountCreation.Core.Services.User;
+using System;
 
 namespace FacadeAccountCreation.API.Controllers;
 
@@ -44,7 +45,7 @@ public class UsersController(
             return HandleError.Handle(e);
         }
     }
-    
+
     [HttpGet]
     [Consumes("application/json")]
     [Route("v1/user-accounts")]
@@ -79,6 +80,34 @@ public class UsersController(
         }
     }
 
+    [HttpGet]
+    [Route("user-accounts/user-by-person-id")]
+    [ProducesResponseType(typeof(UserOrganisationsListModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetUserIdByPersonId([FromQuery] Guid personId)
+    {
+        try
+        {
+            var response = await userService.GetUserIdByPersonId(personId);
+
+            if (response.IsSuccessStatusCode)
+            {
+                logger.LogInformation("Fetched the userId for the person {PersonId}", personId);
+                var userId = await response.Content.ReadFromJsonAsync<Guid?>();
+                return Ok(userId);
+            }
+
+            logger.LogError("Failed to fetch the userId for the person {PersonId}", personId);
+            return HandleError.HandleErrorWithStatusCode(response.StatusCode);
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Error fetching the userId for the person");
+            return HandleError.Handle(e);
+        }
+    }
+
     [HttpPut]
     [Consumes("application/json")]
     [Route("user-accounts/personal-details")]
@@ -103,20 +132,20 @@ public class UsersController(
                         var ch = responseContent.ChangeHistory;
                         var notifyEmailInput = new UserDetailsChangeNotificationEmailInput
                         {
-                              Nation = ch.Nation,
-                              ContactEmailAddress = ch.EmailAddress,
-                              ContactTelephone = ch.Telephone,
-                              OrganisationName = ch.OrganisationName ?? "",
-                              OrganisationNumber = ch.OrganisationReferenceNumber?.ToReferenceNumberFormat(),
-                              NewFirstName = ch.NewValues.FirstName,
-                              NewLastName = ch.NewValues.LastName,
-                              NewJobTitle = ch.NewValues.JobTitle ?? "",
-                              OldFirstName = ch.OldValues.FirstName,
-                              OldLastName = ch.OldValues.LastName,
-                              OldJobTitle = ch.OldValues.JobTitle ?? "",
+                            Nation = ch.Nation,
+                            ContactEmailAddress = ch.EmailAddress,
+                            ContactTelephone = ch.Telephone,
+                            OrganisationName = ch.OrganisationName ?? "",
+                            OrganisationNumber = ch.OrganisationReferenceNumber?.ToReferenceNumberFormat(),
+                            NewFirstName = ch.NewValues.FirstName,
+                            NewLastName = ch.NewValues.LastName,
+                            NewJobTitle = ch.NewValues.JobTitle ?? "",
+                            OldFirstName = ch.OldValues.FirstName,
+                            OldLastName = ch.OldValues.LastName,
+                            OldJobTitle = ch.OldValues.JobTitle ?? "",
                         };
 
-                     var notificationId =   messagingService.SendUserDetailChangeRequestEmailToRegulator(notifyEmailInput);
+                        var notificationId = messagingService.SendUserDetailChangeRequestEmailToRegulator(notifyEmailInput);
 
                         logger.LogInformation("UserDetailChangeRequest Notification email {NotificationId} to regulator sent successfully for the user {UserId} from organisation {OrganisationId}", notificationId, userId, organisationId);
                     }

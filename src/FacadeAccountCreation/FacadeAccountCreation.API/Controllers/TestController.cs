@@ -3,6 +3,7 @@ namespace FacadeAccountCreation.API.Controllers;
 [ApiController]
 [RequiredScope("account-creation")]
 [Route("api/[controller]")]
+[ExcludeFromCodeCoverage]
 public class TestController : ControllerBase
 {
     [HttpGet(Name = "GetTestMessage")]

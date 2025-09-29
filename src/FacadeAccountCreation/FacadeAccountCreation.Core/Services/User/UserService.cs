@@ -16,7 +16,7 @@ public class UserService(
     public async Task<HttpResponseMessage> GetUserOrganisations(Guid userId)
     {
         var url = $"{config.GetSection("ComplianceSchemeEndpoints").GetSection("GetUserOrganisations").Value}?userId={userId}";
-        
+
         logger.LogInformation("Attempting to fetch the organisations for user id '{UserId}' from the backend", userId);
         return await httpClient.GetAsync(url);
     }
@@ -28,7 +28,7 @@ public class UserService(
         {
             throw new InvalidOperationException("The 'GetUserOrganisationsWithServiceRoles' endpoint is not configured.");
         }
-        
+
         var queryParameters = new List<string> { $"userId={userId}" };
         if (!string.IsNullOrWhiteSpace(serviceKey))
         {
@@ -36,9 +36,9 @@ public class UserService(
         }
 
         var url = $"{endpoint}?{string.Join("&", queryParameters)}";
-        
-        var sanitizedServiceKey = string.IsNullOrWhiteSpace(serviceKey) 
-            ? "" 
+
+        var sanitizedServiceKey = string.IsNullOrWhiteSpace(serviceKey)
+            ? ""
             : serviceKey.Replace("\n", "").Replace("\r", "");
 
         logger.LogInformation(
@@ -46,6 +46,21 @@ public class UserService(
             userId,
             string.IsNullOrWhiteSpace(sanitizedServiceKey) ? "" : $" with service key '{sanitizedServiceKey}'"
         );
+
+        return await httpClient.GetAsync(url);
+    }
+
+    public async Task<HttpResponseMessage> GetUserIdByPersonId(Guid personId)
+    {
+        var endpoint = config.GetValue<string>("ComplianceSchemeEndpoints:GetUserIdByPersonId");
+        if (string.IsNullOrWhiteSpace(endpoint))
+        {
+            throw new InvalidOperationException("The 'GetUserIdByPersonId' endpoint is not configured.");
+        }
+
+        var url = $"{endpoint}?personId={personId}";
+
+        logger.LogInformation("Attempting to fetch user id for personId '{PersonId}' from the backend", personId);
 
         return await httpClient.GetAsync(url);
     }
