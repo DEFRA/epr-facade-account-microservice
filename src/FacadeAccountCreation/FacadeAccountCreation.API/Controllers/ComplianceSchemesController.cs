@@ -135,16 +135,17 @@ public class ComplianceSchemesController(
     [ProducesResponseType(typeof(ProducerComplianceSchemeModel), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetComplianceSchemeForProducer(Guid producerOrganisationId)
     {
         try
         {
             var response = await complianceSchemeService.GetComplianceSchemeForProducerAsync(producerOrganisationId, User.UserId());
 
-            if (response.StatusCode == HttpStatusCode.NotFound)
+            if (response.StatusCode == HttpStatusCode.NotFound || response.StatusCode == HttpStatusCode.NoContent)
             {
                 logger.LogError("No current selected compliance scheme for producerOrganisationId {ProducerOrganisationId}", producerOrganisationId);
-                return new NotFoundResult();
+                return response.StatusCode == HttpStatusCode.NotFound?new NotFoundResult(): new NoContentResult();
             }
 
             if (response.IsSuccessStatusCode)

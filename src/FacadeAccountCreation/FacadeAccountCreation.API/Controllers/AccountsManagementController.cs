@@ -104,12 +104,11 @@ public class AccountsManagementController(
     
         var enrolInvitedUserResponse = await accountService.EnrolInvitedUserAsync(enrolInvitedUserModel);
 
-        if (enrolInvitedUserResponse.StatusCode == HttpStatusCode.BadRequest)
+        if (enrolInvitedUserResponse.StatusCode == HttpStatusCode.BadRequest || enrolInvitedUserResponse.StatusCode == HttpStatusCode.NoContent)
         {
             logger.LogError("Failed to enrol user. Request model: {EnrolInvitedUserModel}", JsonSerializer.Serialize(enrolInvitedUserModel));
-            return Problem("Failed to enrol user", statusCode: StatusCodes.Status400BadRequest);
-        }
-    
+            return Problem("Failed to enrol user", statusCode: enrolInvitedUserResponse.StatusCode == HttpStatusCode.NoContent? StatusCodes.Status204NoContent : StatusCodes.Status400BadRequest);
+        }    
         if (!enrolInvitedUserResponse.IsSuccessStatusCode)
         {
             logger.LogError("Failed to enrol user. Request model: {EnrolInvitedUserModel}", JsonSerializer.Serialize(enrolInvitedUserModel));
