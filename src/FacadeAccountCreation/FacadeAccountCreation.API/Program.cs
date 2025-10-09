@@ -16,7 +16,7 @@ builder.Services
     .AddApplicationInsightsTelemetry()
     .AddLogging()
     .AddHealthChecks();
-
+builder.Services.AddApplicationInsightsTelemetryProcessor<IgnoreHttpTelemetryProcessor>();
 builder.Services.RegisterComponents(builder.Configuration);
 builder.Services.ConfigureLogging();
 
@@ -65,6 +65,10 @@ app.UseSwaggerUI();
 if (app.Environment.IsDevelopment())
 {
     IdentityModelEventSource.ShowPII = true;
+}
+else
+{
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
