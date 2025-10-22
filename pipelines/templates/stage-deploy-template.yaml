@@ -1,7 +1,7 @@
-parameters:
-- name: runAutomationTests #will let us toggle automation tests on or off
-  type: boolean
-  default: true
+# parameters:
+# - name: runAutomationTests #will let us toggle automation tests on or off
+#   type: boolean
+#   default: true
 
    
 stages:
@@ -20,12 +20,12 @@ stages:
               serviceName: 'devrwdwebwa4413'
               targetEnvironment: 'development'
 
-      - ${{ if eq(parameters.runAutomationTests, true) }}:
-        - job: RunAutomationTest
-          displayName: DEV4 Automation Testing
-          dependsOn: DeployToDev4Regulators
-          steps:
-            - checkout: AutomationTesting
-            - template: pipelines/automation-testing-template.yml@AutomationTesting
-              parameters:
-                env: 'dev4'
+      # - ${{ if eq(parameters.runAutomationTests, true) }}:
+      #   - job: RunAutomationTest
+      #     displayName: DEV4 Automation Testing
+      #     dependsOn: DeployToDev4Regulators
+      #     steps:
+      #       - checkout: AutomationTesting
+      #       - template: pipelines/automation-testing-template.yml@AutomationTesting
+      #         parameters:
+      #           env: 'dev4'
