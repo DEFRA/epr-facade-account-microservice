@@ -45,12 +45,13 @@ resources:
       type: git
       ref: main
 
-    # - repository: AutomationTesting
-    #   name: RWD-CPR-EPR4P-ADO/epr-playwright-bdd
-    #   type: git
-    #   ref: develop-template-fix
+# - repository: AutomationTesting
+#   name: RWD-CPR-EPR4P-ADO/epr-playwright-bdd
+#   type: git
+#   ref: develop-template-fix
 
 stages:
+
 - template: epr-build-pipeline.yaml@CommonTemplates
   parameters:
     solutionFolder: ${{ variables.solutionFolder }}
@@ -68,4 +69,4 @@ stages:
     dotnetVersion: ${{ variables.dotnetVersion }}
     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
 
-- template: templates/stage-deploy-template.yaml
+# - template: templates/stage-deploy-template.yaml
