@@ -256,10 +256,47 @@ public class AccountsManagementControllerTests
             x.LastName == enrolInvitedUserModel.LastName &&
             x.InviteToken == enrolInvitedUserModel.InviteToken)), Times.Once);
         result.Should().NotBeNull();
+        
         result?.Should().BeOfType<ObjectResult>();
         (result as ObjectResult).StatusCode.Should().Be(400);
     }
-    
+
+    [TestMethod]
+    public async Task EnrolInvitedUser_Should_Return_Problem_When_Backend_Returns_Nocontent()
+    {
+        // Arrange
+        var enrolInvitedUserModel = _fixture.Build<EnrolInvitedUserModel>()
+            .Without(x => x.UserId)
+            .Without(x => x.Email)
+            .Create();
+
+        _mockAccountServiceMock
+            .Setup(x => x.EnrolInvitedUserAsync(It.Is<EnrolInvitedUserModel>(x =>
+                x.UserId == _oid &&
+                x.Email == _userEmail &&
+                x.FirstName == enrolInvitedUserModel.FirstName &&
+                x.LastName == enrolInvitedUserModel.LastName &&
+                x.InviteToken == enrolInvitedUserModel.InviteToken)))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NoContent
+            });
+
+        // Act
+        var result = await _sut.EnrolInvitedUser(enrolInvitedUserModel);
+
+        // Assert
+        _mockAccountServiceMock.Verify(x => x.EnrolInvitedUserAsync(It.Is<EnrolInvitedUserModel>(x =>
+            x.UserId == _oid &&
+            x.Email == _userEmail &&
+            x.FirstName == enrolInvitedUserModel.FirstName &&
+            x.LastName == enrolInvitedUserModel.LastName &&
+            x.InviteToken == enrolInvitedUserModel.InviteToken)), Times.Once);
+        result.Should().NotBeNull();
+        result?.Should().BeOfType<ObjectResult>();
+        (result as ObjectResult).StatusCode.Should().Be(204);
+    }
+
     [TestMethod]
     public async Task EnrolInvitedUser_Should_Return_Problem_When_Backend_Returns_Error()
     {

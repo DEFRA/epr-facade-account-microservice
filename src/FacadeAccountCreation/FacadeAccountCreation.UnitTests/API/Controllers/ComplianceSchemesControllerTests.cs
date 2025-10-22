@@ -127,7 +127,28 @@ public class ComplianceSchemesControllerTests
         // Assert
         result.Should().BeOfType<NotFoundResult>();
     }
-    
+
+    [TestMethod]
+    public async Task ShouldReturn_NoContent_WhenComplianceSchemeDoesNotExistForProducer()
+    {
+        // Arrange
+        var handlerResponse =
+            _fixture
+                .Build<HttpResponseMessage>()
+                .With(x => x.StatusCode, HttpStatusCode.NoContent)
+                .Create();
+
+        _mockComplianceSchemeServiceMock
+            .Setup(x => x.GetComplianceSchemeForProducerAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ReturnsAsync(handlerResponse);
+
+        // Act
+        var result = await _sut.GetComplianceSchemeForProducer(Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<NoContentResult>();
+    }
+
     [TestMethod]
     public async Task ShouldReturn_InternalServiceError_WhenNoComplianceSchemeExistsForProducer()
     {

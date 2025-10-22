@@ -18,6 +18,8 @@ public static class HandleError
         {
             case HttpStatusCode.BadRequest:
                 return new BadRequestResult();
+            case HttpStatusCode.NoContent:
+                return new NoContentResult();
             case HttpStatusCode.NotFound:
                 return new NotFoundResult();
             case HttpStatusCode.Forbidden:
