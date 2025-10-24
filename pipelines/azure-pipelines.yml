@@ -48,12 +48,7 @@ resources:
     - repository: CommonTemplates
       name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
       type: git
-      ref: feature/fix-multiple-app-deployment-issue
-
-# - repository: AutomationTesting
-#   name: RWD-CPR-EPR4P-ADO/epr-playwright-bdd
-#   type: git
-#   ref: develop-template-fix
+      ref: main
 
 extends:
   template: epr-build-pipeline.yaml@CommonTemplates
@@ -74,26 +69,3 @@ extends:
     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
     additionalDeployments: ${{ variables.additionalDeployments }}
     RegulatorsServiceName: 'devrwdwebwa4413'
-    
-
-
-# stages:
-
-# - template: epr-build-pipeline.yaml@CommonTemplates
-#   parameters:
-#     solutionFolder: ${{ variables.solutionFolder }}
-#     projectFolder: ${{ variables.projectFolder }}
-#     testProjectFolder: ${{ variables.testProjectFolder }}
-#     sonarQubeProjectKey: ${{ variables.sonarQubeProjectKey }}
-#     sonarQubeProjectName: ${{ variables.sonarQubeProjectName }}
-#     runTests: ${{variables.runTests}}
-#     azureSubscription: $(azureSubscription)
-#     acrAzureContainerRegistryName: $(acr.azureContainerRegistryName)
-#     acrRepositoryName: $(acr.repositoryName)
-#     branchName: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '_') }}
-#     runNugetTasks: ${{ variables.runNugetTasks }}
-#     serviceName: $(serviceName)
-#     dotnetVersion: ${{ variables.dotnetVersion }}
-#     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
-
-# - template: templates/stage-deploy-template.yaml
