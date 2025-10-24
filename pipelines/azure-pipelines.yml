@@ -39,7 +39,6 @@ variables:
     value: dotnetVersion8
 
   - name: additionalDeployments
-    displayName: 'Additional DEV4 Regulators Deployment'
     value: true
     # this parameter will trigger the build pipeline to do a second deployment for regulators apps
 
