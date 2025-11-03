@@ -207,7 +207,7 @@ public class AccountServiceTests
         var sut = GetAccountService();
 
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<ProblemResponseException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest, ServiceKey));
+        var exception = await Assert.ThrowsExactlyAsync<ProblemResponseException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest, ServiceKey));
         Assert.IsNotNull(exception.ProblemDetails);
         Assert.AreEqual(apiResponse.Detail, exception.ProblemDetails.Detail);
         Assert.AreEqual(apiResponse.Type, exception.ProblemDetails.Type);
@@ -235,7 +235,7 @@ public class AccountServiceTests
         var sut = GetAccountService();
 
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest, ServiceKey));
+        var exception = await Assert.ThrowsExactlyAsync<HttpRequestException>(async () => await sut.AddReprocessorExporterAccountAsync(apiRequest, ServiceKey));
         Assert.AreEqual(HttpStatusCode.InternalServerError, exception.StatusCode);
     }
 

@@ -30,9 +30,6 @@ public class MessagingServiceSendApprovedUserAccountCreationTests : BaseMessagin
 
     [TestMethod]
     [DataRow("", "", "", "","")]
-    [DataRow("", "", "", "","")]
-    [DataRow("", "", "", "","")]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendApprovedUserAccountCreationConfirmation_WhenInvalidParameters_ItShouldThrowArgumentException(string companyName,
         string firstName, string lastName, string organisationNumber, string recipient)
     {
@@ -40,7 +37,7 @@ public class MessagingServiceSendApprovedUserAccountCreationTests : BaseMessagin
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendApprovedUserAccountCreationConfirmation(companyName, firstName, lastName,organisationNumber,recipient);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendApprovedUserAccountCreationConfirmation(companyName, firstName, lastName, organisationNumber, recipient));
     }
 
     [TestMethod]
@@ -67,35 +64,32 @@ public class MessagingServiceSendApprovedUserAccountCreationTests : BaseMessagin
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidCompanyName_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
 
-        _ = _sut.SendApprovedUserAccountCreationConfirmation("",
-            "Ramone", "johnny@ramones.com", "Johnny",  "The Ramones");
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendApprovedUserAccountCreationConfirmation("",
+            "Ramone", "johnny@ramones.com", "Johnny",  "The Ramones"));
 
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidFirstName_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
 
-        _ = _sut.SendApprovedUserAccountCreationConfirmation("Ramone",
-            "", "johnny@ramones.com", "Johnny",  "The Ramones");
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendApprovedUserAccountCreationConfirmation("Ramone",
+            "", "johnny@ramones.com", "Johnny",  "The Ramones"));
 
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidLastName_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
 
-        _ = _sut.SendApprovedUserAccountCreationConfirmation("Ramone",
-            "johnny@ramones.com", "", "Johnny",  "The Ramones");
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendApprovedUserAccountCreationConfirmation("Ramone",
+            "johnny@ramones.com", "", "Johnny",  "The Ramones"));
 
     }
 }

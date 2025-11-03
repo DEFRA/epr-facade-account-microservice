@@ -37,7 +37,6 @@ public class MessagingserviceReExRejectionEmailFromAPTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     [DataRow(null, "John Smith", "john.smith@test.com", "85654", "Test Ltd", "John Doe")]
     [DataRow(" ", "John Smith", "john.smith@test.com", "85654", "Test Ltd", "John Doe")]
     [DataRow("123", null, "john.smith@test.com", "85654", "Test Ltd", "John Doe")]
@@ -56,7 +55,7 @@ public class MessagingserviceReExRejectionEmailFromAPTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendRejectionEmailFromInvitedAP(userId, userFullName, userEmail, organisationId, organisationName, rejectedByName);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRejectionEmailFromInvitedAP(userId, userFullName, userEmail, organisationId, organisationName, rejectedByName));
     }
 
     [TestMethod]

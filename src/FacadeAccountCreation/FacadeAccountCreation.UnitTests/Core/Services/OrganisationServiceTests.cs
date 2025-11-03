@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Net.Http.Json;
+#pragma warning disable MSTEST0049
 
 namespace FacadeAccountCreation.UnitTests.Core.Services;
 
@@ -1228,7 +1229,7 @@ public class OrganisationServiceTests
         var sut = new OrganisationService(httpClient, _logger, _configuration);
 
         //Act
-        var ex = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => sut.GetOrganisationNationCodeByExternalIdAsync(organisationId));
+        var ex = await Assert.ThrowsExactlyAsync<HttpRequestException>(() => sut.GetOrganisationNationCodeByExternalIdAsync(organisationId));
 
         // Assert
         ex.Should().NotBeNull();
@@ -1275,7 +1276,7 @@ public class OrganisationServiceTests
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(req =>
-                  req.Content.ReadAsStringAsync().Result == httpRequestMessage.Content.ReadAsStringAsync().Result), ItExpr.IsAny<CancellationToken>())
+                req.Content.ReadAsStringAsync().Result == httpRequestMessage.Content.ReadAsStringAsync().Result), ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,

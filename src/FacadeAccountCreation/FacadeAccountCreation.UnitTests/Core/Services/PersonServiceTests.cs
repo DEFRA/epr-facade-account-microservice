@@ -193,7 +193,6 @@ public class PersonServiceTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ProblemResponseException))]
     public async Task GetPersonByExternalIdAsync_WhenInValidUserId_ShouldReturnProblemResponseExceptionResponse()
     {
         var externalId = Guid.NewGuid();
@@ -216,7 +215,7 @@ public class PersonServiceTests
         var sut = new PersonService(httpClient);
 
         // Act
-        var result = await sut.GetPersonByExternalIdAsync(externalId);
+        await Assert.ThrowsExactlyAsync<ProblemResponseException>(() => sut.GetPersonByExternalIdAsync(externalId));
 
         // Assert
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
@@ -225,8 +224,6 @@ public class PersonServiceTests
                        req.RequestUri != null &&
                        req.RequestUri.ToString() == expectedUrl),
             ItExpr.IsAny<CancellationToken>());
-
-        result.Should().BeOfType<ProblemResponseException>();
     }
 
     [TestMethod]

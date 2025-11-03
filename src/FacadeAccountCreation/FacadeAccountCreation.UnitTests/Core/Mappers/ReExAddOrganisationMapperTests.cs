@@ -281,7 +281,7 @@ public class ReExAddOrganisationMapperTests
     public void MapReExOrganisationModelToReExAddOrganisation_HandlesNullInput_ThrowsArgumentNullException()
     {
         // Act & Assert
-        Assert.ThrowsException<NullReferenceException>(() =>
+        Assert.ThrowsExactly<NullReferenceException>(() =>
             ReExAddOrganisationMapper.MapReExOrganisationModelToReExAddOrganisation(null));
     }
 

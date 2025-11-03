@@ -30,14 +30,13 @@ public class MessagingServiceInviteUserTests : BaseMessagingTest
 
     [TestMethod]
     [DynamicData(nameof(InvalidInviteUserEmailInputs))]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendInviteUserEmail_WhenInvalidParameters_ItShouldThrowArgumentException(InviteUserEmailInput inviteUserEmailInput)
     {
         // Arrange
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendInviteToUser(new InviteUserEmailInput
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendInviteToUser(new InviteUserEmailInput
         {
             UserId = inviteUserEmailInput.UserId,
             FirstName = inviteUserEmailInput.FirstName,
@@ -46,7 +45,7 @@ public class MessagingServiceInviteUserTests : BaseMessagingTest
             OrganisationId = inviteUserEmailInput.OrganisationId,
             OrganisationName = inviteUserEmailInput.OrganisationName,
             JoinTheTeamLink = inviteUserEmailInput.JoinTheTeamLink
-        });
+        }));
     }
 
     [TestMethod]

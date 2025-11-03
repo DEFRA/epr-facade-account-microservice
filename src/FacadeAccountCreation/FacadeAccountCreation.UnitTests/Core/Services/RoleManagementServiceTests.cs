@@ -57,7 +57,7 @@ public class RoleManagementServiceTests
             .Respond(HttpStatusCode.Unauthorized);
 
         // Act & Assert
-        var ex = await Assert.ThrowsExceptionAsync<HttpRequestException>(() =>
+        var ex = await Assert.ThrowsExactlyAsync<HttpRequestException>(() =>
             _rms.AcceptNominationForApprovedPerson(_enrolmentId, _userId, _organisationId, "invalidServiceKey", GetAAPRequest()));
         Assert.AreEqual(HttpStatusCode.Unauthorized, ex.StatusCode);
     }

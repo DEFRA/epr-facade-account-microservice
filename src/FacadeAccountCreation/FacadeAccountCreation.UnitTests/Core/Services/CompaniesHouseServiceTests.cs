@@ -80,7 +80,7 @@ public class CompaniesHouseServiceTests
         var sut = new CompaniesHouseLookupService(httpClient);
 
         // Act
-        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => sut.GetCompaniesHouseResponseAsync(CompaniesHouseNumber));
+        var exception = await Assert.ThrowsExactlyAsync<HttpRequestException>(() => sut.GetCompaniesHouseResponseAsync(CompaniesHouseNumber));
 
         // Assert
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),

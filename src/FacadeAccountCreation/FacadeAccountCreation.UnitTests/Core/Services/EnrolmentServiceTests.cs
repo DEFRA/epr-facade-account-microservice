@@ -68,7 +68,6 @@ public class EnrolmentServiceTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(Exception))]
     public async Task Should_expect_exception_when_backend_fails()
     {
         // Arrange
@@ -78,8 +77,8 @@ public class EnrolmentServiceTests
                 ItExpr.IsAny<CancellationToken>())
             .ThrowsAsync(new Exception());
         
-        // Act
-        await _sut.DeleteUser(_deleteUserModel);
+        // Act & Assert
+        await Assert.ThrowsExactlyAsync<Exception>(async () => await _sut.DeleteUser(_deleteUserModel));
     }
     
     [TestMethod]
@@ -113,7 +112,6 @@ public class EnrolmentServiceTests
     }
     
     [TestMethod]
-    [ExpectedException(typeof(Exception))]
     public async Task DeletePersonConnectionAndEnrolment_ShouldThrowException_WhenBackendFails()
     {
         // Arrange
@@ -123,8 +121,8 @@ public class EnrolmentServiceTests
                 ItExpr.IsAny<CancellationToken>())
             .ThrowsAsync(new Exception());
 
-        // Act
-        await _sut.DeletePersonConnectionAndEnrolment(_deleteUserModel);
+        // Act & Assert
+        await Assert.ThrowsExactlyAsync<Exception>(async () => await _sut.DeletePersonConnectionAndEnrolment(_deleteUserModel));
     }
 
     private void SetupMessageHandlerMock(HttpStatusCode httpStatusCode, bool useEnrolmentEndpoint = false)

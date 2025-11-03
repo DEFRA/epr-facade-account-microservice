@@ -56,7 +56,6 @@ public class NotificationsServiceTests
     [TestMethod]
     [DataRow(HttpStatusCode.BadRequest)]
     [DataRow(HttpStatusCode.Unauthorized)]
-    [ExpectedException(typeof(HttpRequestException))]
     public async Task GetNotificationsForServiceAsync_FailedStatusCode_ThrowHttpRequestException(HttpStatusCode statusCode)
     {
         var userId = Guid.NewGuid();
@@ -82,7 +81,7 @@ public class NotificationsServiceTests
 
         var sut = new NotificationsService(httpClient, _logger);
 
-        await sut.GetNotificationsForServiceAsync(userId, organsationId, serviceKey);
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(() => sut.GetNotificationsForServiceAsync(userId, organsationId, serviceKey));
     }
     
     [TestMethod]
