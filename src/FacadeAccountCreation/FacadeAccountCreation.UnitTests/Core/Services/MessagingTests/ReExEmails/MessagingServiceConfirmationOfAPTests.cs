@@ -35,7 +35,6 @@ public class MessagingServiceConfirmationOfAPTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     [DataRow(null, "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", "Welsh")]
     [DataRow("  ", "john.smith@tester.com", "John", "Smith", "Test Ltd", "Peter", "Welsh")]
     [DataRow("678", null, "John", "Smith", "Test Ltd", "Peter", "Welsh")]
@@ -56,7 +55,7 @@ public class MessagingServiceConfirmationOfAPTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExConfirmationOfAnApprovedPerson(userId, inviterEmail, inviteeFirstName, inviteeLastName, companyName, inviterFirstName, inviterLastName);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExConfirmationOfAnApprovedPerson(userId, inviterEmail, inviteeFirstName, inviteeLastName, companyName, inviterFirstName, inviterLastName));
     }
 
     [TestMethod]

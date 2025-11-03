@@ -34,16 +34,15 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
     [DataRow("", "Ramone", "johnny@ramone.com", "111222")]
     [DataRow("Joey", "", "joey@ramone.com", "333444")]
     [DataRow("Tommy", "Ramone", "tommy@ramone.com", "")]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendAccountCreationConfirmation_WhenInvalidParameters_ItShouldThrowArgumentException(string firstName,
         string lastName, string recipient, string organisationId)
     {
         // Arrange
         _sut = GetServiceUnderTest();
 
-        // Act
-        _ = _sut.SendAccountCreationConfirmation(Guid.NewGuid(), firstName, lastName, recipient, organisationId,
-            Guid.NewGuid());
+        // Act & Assert
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendAccountCreationConfirmation(Guid.NewGuid(), firstName, lastName, recipient, organisationId,
+            Guid.NewGuid()));
     }
 
     [TestMethod]
@@ -103,8 +102,6 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
     }
 
     [TestMethod]
-
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInvalidParameters_ItShouldThrowArgumentException()
     {
         _sut = GetServiceUnderTest();
@@ -119,7 +116,8 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             OrganisationName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendDelegatedUserNomination(emailInput);
+
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedUserNomination(emailInput));
     }
 
 
@@ -155,7 +153,6 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidOrganisationId_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -173,11 +170,10 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             OrganisationName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendDelegatedUserNomination(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedUserNomination(emailInput));
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidUserId_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -195,11 +191,10 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             OrganisationName = "The Ramones",
             UserId = Guid.Empty
         };
-        _ = _sut.SendDelegatedUserNomination(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedUserNomination(emailInput));
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidTemplateId_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -217,11 +212,10 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             OrganisationName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendDelegatedUserNomination(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedUserNomination(emailInput));
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidNominatorFirstName_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -239,11 +233,10 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             OrganisationName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendDelegatedUserNomination(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedUserNomination(emailInput));
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidOrganisationName_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -261,11 +254,10 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             OrganisationName = "",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendDelegatedUserNomination(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedUserNomination(emailInput));
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInValidOrganisationNumber_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -283,7 +275,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             OrganisationName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendDelegatedUserNomination(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedUserNomination(emailInput));
 
     }
 
@@ -309,8 +301,6 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException),
-        "FirstName cannot be empty string.")]
     public void SendDelegatedRoleNotification_ThrowsError_WhenInvalidFirstName()
     {
         //Arrange
@@ -323,18 +313,15 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
         
         //Act
-        var result = _sut.SendDelegatedRoleNotification(delagateRoleEmailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedRoleNotification(delagateRoleEmailInput));
         
         //Assert
-        result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null, null), Times.Never);
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException),
-        "LastName cannot be empty string.")]
     public void SendDelegatedRoleNotification_ThrowsError_WhenInvalidLastName()
     {
         //Arrange
@@ -345,20 +332,17 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             null,
             null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
-        
+
         //Act
-        var result = _sut.SendDelegatedRoleNotification(delagateRoleEmailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedRoleNotification(delagateRoleEmailInput));
         
         //Assert
-        result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null, null), Times.Never);
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException),
-        "Recipient cannot be empty string.")]
     public void SendDelegatedRoleNotification_ThrowsError_WhenInvalidRecipient()
     {
         //Arrange
@@ -369,20 +353,17 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             null,
             null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
-        
+
         //Act
-        var result = _sut.SendDelegatedRoleNotification(delagateRoleEmailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedRoleNotification(delagateRoleEmailInput));
         
         //Assert
-        result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null, null), Times.Never);
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException),
-        "OrganisationNumber cannot be empty string.")]
     public void SendDelegatedRoleNotification_ThrowsError_WhenInvalidOrganisationNumber()
     {
         //Arrange
@@ -393,19 +374,16 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             null,
             null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
-        
+
         //Act
-        var result = _sut.SendDelegatedRoleNotification(delagateRoleEmailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedRoleNotification(delagateRoleEmailInput));
         
         //Assert
-        result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null, null), Times.Never);
     }
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException),
-        "OrganisationName cannot be empty string.")]
     public void SendDelegatedRoleNotification_ThrowsError_WhenInvalidOrganisationName()
     {
         //Arrange
@@ -416,20 +394,17 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             null,
             null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
-        
+
         //Act
-        var result = _sut.SendDelegatedRoleNotification(delagateRoleEmailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedRoleNotification(delagateRoleEmailInput));
         
         //Assert
-        result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null, null), Times.Never);
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException),
-        "NominatorFirstName cannot be empty string.")]
     public void SendDelegatedRoleNotification_ThrowsError_WhenInvalidNominatorFirstName()
     {
         //Arrange
@@ -440,20 +415,17 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             null,
             null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
-        
+
         //Act
-        var result = _sut.SendDelegatedRoleNotification(delagateRoleEmailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedRoleNotification(delagateRoleEmailInput));
         
         //Assert
-        result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null, null), Times.Never);
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException),
-        "TemplateId cannot be empty string.")]
     public void SendDelegatedRoleNotification_ThrowsError_WhenInvalidTemplateId()
     {
         //Arrange
@@ -464,20 +436,17 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             null,
             null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
-        
+
         //Act
-        var result = _sut.SendDelegatedRoleNotification(delagateRoleEmailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedRoleNotification(delagateRoleEmailInput));
         
         //Assert
-        result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null, null), Times.Never);
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException),
-        "UserId is required.")]
     public void SendDelegatedRoleNotification_ThrowsError_WhenInvalidUserId()
     {
         //Arrange
@@ -488,20 +457,17 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             null,
             null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
-        
+
         //Act
-        var result = _sut.SendDelegatedRoleNotification(delagateRoleEmailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedRoleNotification(delagateRoleEmailInput));
         
         //Assert
-        result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null, null), Times.Never);
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException),
-        "OrganisationId is required.")]
     public void SendDelegatedRoleNotification_ThrowsError_WhenInvalidOrganisationId()
     {
         //Arrange
@@ -512,12 +478,11 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
             null,
             null, null)).Returns(new EmailNotificationResponse {id = "p12356"});
         _sut = GetServiceUnderTest();
-        
+
         //Act
-        var result = _sut.SendDelegatedRoleNotification(delagateRoleEmailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendDelegatedRoleNotification(delagateRoleEmailInput));
         
         //Assert
-        result.Should().BeNull();
         _notificationClientMock.Verify(n => n.SendEmail(delagateRoleEmailInput.Recipient, delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
             null,
             null, null), Times.Never);
@@ -551,7 +516,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         var delagateRoleEmailInput = EmailInput();
         _ = _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
-           null,
+            null,
             null, null)).Returns(new EmailNotificationResponse { id = "p12356" });
         _sut = GetServiceUnderTest();
 
@@ -574,7 +539,7 @@ public class MessagingServiceSendAccountCreationTests : BaseMessagingTest
         var delagateRoleEmailInput = EmailInput();
         _notificationClientMock.Setup(n => n.SendEmail(delagateRoleEmailInput.Recipient,
             delagateRoleEmailInput.TemplateId, It.IsAny<Dictionary<string, dynamic>>(),
-           null,
+            null,
             null, null)).Returns(new EmailNotificationResponse { id = "p78655" });
         _sut = GetServiceUnderTest();
 

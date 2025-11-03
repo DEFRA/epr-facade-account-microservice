@@ -124,7 +124,7 @@ public class ComplianceSchemeServiceTests
 
         response.Should().BeEquivalentTo(apiResponse);
 
-        var responseContent = response.Content.ReadFromJsonAsync<ComplianceSchemeMembershipResponse>().Result;
+        var responseContent = response.Content.ReadFromJsonAsync<ComplianceSchemeMembershipResponse>(CancellationToken.None).Result;
         responseContent.Should().NotBeNull();
         responseContent.PagedResult.CurrentPage.Should().Be(pagedResult.CurrentPage);
         responseContent.PagedResult.PageSize.Should().Be(pagedResult.PageSize);
@@ -517,7 +517,6 @@ public class ComplianceSchemeServiceTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(HttpRequestException))] // Assert
     public async Task ComplianceSchemesSummaries_WhenServiceReturnsError_ThenControllerThrows()
     {
         // Arrange
@@ -539,7 +538,7 @@ public class ComplianceSchemeServiceTests
             ).Verifiable();
 
         // Act
-        await service.GetComplianceSchemesSummary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(() => service.GetComplianceSchemesSummary(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()));
     }
 
     [TestMethod]

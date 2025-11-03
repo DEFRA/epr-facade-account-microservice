@@ -154,7 +154,6 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendUserDetailChangeRequestEmailToRegulator_ShouldThrowException_ForDefaultNation()
     {
         // Arrange
@@ -185,7 +184,7 @@ public class MessagingServiceSendUserDetailsChangeRequestEmailTests : BaseMessag
         _sut = GetServiceUnderTest();
 
         // Act & Assert
-        _sut.SendUserDetailChangeRequestEmailToRegulator(input);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendUserDetailChangeRequestEmailToRegulator(input));
     }
 
     [TestMethod]

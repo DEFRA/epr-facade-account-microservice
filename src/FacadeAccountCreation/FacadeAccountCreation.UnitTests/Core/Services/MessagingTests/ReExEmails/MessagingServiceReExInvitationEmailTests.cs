@@ -45,7 +45,6 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_ForFirstName()
     {
         // Arrange
@@ -55,11 +54,10 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExInvitationToAcceptServiceRole(notificationModel));
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_ForLastName()
     {
         // Arrange
@@ -80,7 +78,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExInvitationToAcceptServiceRole(notificationModel));
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
             It.IsAny<string>(),
@@ -92,7 +90,6 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_ForMember_InviteToken()
     {
         // Arrange
@@ -111,7 +108,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExInvitationToAcceptServiceRole(notificationModel));
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
             It.IsAny<string>(),
@@ -123,7 +120,6 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_For_ApprovedPersonEmail()
     {
         // Arrange
@@ -144,7 +140,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExInvitationToAcceptServiceRole(notificationModel));
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
            It.IsAny<string>(),
@@ -156,7 +152,6 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_ForOrganisationName()
     {
         // Arrange
@@ -175,7 +170,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExInvitationToAcceptServiceRole(notificationModel));
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
            It.IsAny<string>(),
@@ -187,7 +182,6 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_For_InviteeFirstName()
     {
         // Arrange
@@ -206,7 +200,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExInvitationToAcceptServiceRole(notificationModel));
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
            It.IsAny<string>(),
@@ -218,7 +212,6 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendReExInvitationToBeApprovedPerson_Email_Throws_ArgumentException_For_InviteeLastName()
     {
         // Arrange
@@ -237,7 +230,7 @@ public class MessagingServiceReExInvitationEmailTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationToAcceptServiceRole(notificationModel);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExInvitationToAcceptServiceRole(notificationModel));
 
         _notificationClientMock.Verify(nc => nc.SendEmail(
            It.IsAny<string>(),

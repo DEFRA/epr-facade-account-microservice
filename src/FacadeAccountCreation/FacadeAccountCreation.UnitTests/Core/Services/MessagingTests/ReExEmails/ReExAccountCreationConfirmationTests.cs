@@ -35,7 +35,6 @@ public class ReExAccountCreationConfirmationTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     [DataRow(null, "John", "Doe", "john.doe@test.com")]
     [DataRow("  ", "John", "Doe", "john.doe@test.com")]
     [DataRow("96325899", null, "Doe", "john.doe@test.com")]
@@ -47,7 +46,7 @@ public class ReExAccountCreationConfirmationTests : BaseMessagingTest
     public void SendReExAccountCreationConfirmation_Throws_Exception_As(string userId, string firstName, string lastName, string contactEmail)
     {
         _sut = GetServiceUnderTest();
-        _ = _sut.SendReExAccountCreationConfirmation(userId, firstName, lastName, contactEmail);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExAccountCreationConfirmation(userId, firstName, lastName, contactEmail));
     }
 
     [TestMethod]

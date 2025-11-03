@@ -102,7 +102,6 @@ public class ConnectionsServiceTests
         result.Should().BeNull();
     }
 
-    [ExpectedException(typeof(HttpRequestException))]
     [TestMethod]
     public async Task GetPerson_WhenBadRequest_ShouldError()
     {
@@ -129,7 +128,7 @@ public class ConnectionsServiceTests
 
         var sut = new RoleManagementService(httpClient, _logger, connectionsEndpointsConfig);
 
-        _= await sut.GetPerson(connectionId, serviceKey, userId, organsationId);
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(() => sut.GetPerson(connectionId, serviceKey, userId, organsationId));
     }
 
     [TestMethod]
@@ -210,7 +209,6 @@ public class ConnectionsServiceTests
         result.Should().BeNull();
     }
 
-    [ExpectedException(typeof(HttpRequestException))]
     [TestMethod]
     public async Task GetEnrolments_WhenBadRequest_ShouldError()
     {
@@ -239,11 +237,10 @@ public class ConnectionsServiceTests
 
         var sut = new RoleManagementService(httpClient, _logger, connectionsEndpointsConfig);
 
-        _ = await sut.GetEnrolments(connectionId, serviceKey, userId, organsationId);
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(() => sut.GetEnrolments(connectionId, serviceKey, userId, organsationId));
     }
 
     [TestMethod]
-    [ExpectedException(typeof(HttpRequestException))]
     [TestCategory("AcceptNominationToDelegatedPerson")]
     public async Task AcceptNominationToDelegatedPerson_WhenServiceReturnsBadRequest_ThenThrow()
     {
@@ -264,7 +261,7 @@ public class ConnectionsServiceTests
                 }
             ).Verifiable();
 
-        await service.AcceptNominationToDelegatedPerson(
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(() => service.AcceptNominationToDelegatedPerson(
             enrolmentId: Guid.NewGuid(),
             userId: Guid.NewGuid(),
             organisationId: Guid.NewGuid(),
@@ -273,7 +270,7 @@ public class ConnectionsServiceTests
             {
                 NomineeDeclaration = "Nominee Declaration",
                 Telephone = "01234000000"
-            });
+            }));
     }
 
     [TestMethod]
@@ -362,7 +359,7 @@ public class ConnectionsServiceTests
 
         //Assert
         result.Should().NotBeNull();
-        Assert.IsTrue(result.RemovedServiceRoles.Count >= 1);
+        Assert.IsGreaterThanOrEqualTo(1, result.RemovedServiceRoles.Count);
 
         var expectedUri = new Uri(new Uri(baseAddress), $"api/connections/{connectionId}/roles?serviceKey=Packaging");
         

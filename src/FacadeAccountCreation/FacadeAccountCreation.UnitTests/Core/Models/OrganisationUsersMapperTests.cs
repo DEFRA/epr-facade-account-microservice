@@ -64,7 +64,7 @@ public class OrganisationUsersMapperTests
         
         //Assert
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Count >= 1);
+        Assert.IsGreaterThanOrEqualTo(1, result.Count);
         Assert.AreEqual(expectedOrganiseUserModel.ConnectionId, result[0].ConnectionId);
         Assert.AreEqual(expectedOrganiseUserModel.Email, result[0].Email);
         Assert.AreEqual(expectedOrganiseUserModel.EnrolmentStatus, result[0].EnrolmentStatus);

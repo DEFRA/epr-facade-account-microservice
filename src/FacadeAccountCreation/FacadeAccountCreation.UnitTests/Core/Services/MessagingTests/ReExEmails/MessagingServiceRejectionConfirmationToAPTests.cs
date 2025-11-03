@@ -35,7 +35,6 @@ public class MessagingServiceRejectionConfirmationToAPTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     [DataRow(null, "96325899", "Test Ltd", "John Doe", "john.doe@test.com")]
     [DataRow(" ", "96325899", "Test Ltd", "John Doe", "john.doe@test.com")]
     [DataRow("123", null, "Test Ltd", "John Doe", "john.doe@test.com")]
@@ -49,7 +48,7 @@ public class MessagingServiceRejectionConfirmationToAPTests : BaseMessagingTest
     public void SendRejectionConfirmationToApprovedPerson_Throws_Exception_As(string userId, string organisationId, string organisationName, string rejectedByName, string rejectedAPEmail)
     {
         _sut = GetServiceUnderTest();
-        _ = _sut.SendRejectionConfirmationToApprovedPerson(userId, organisationId, organisationName, rejectedByName, rejectedAPEmail);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRejectionConfirmationToApprovedPerson(userId, organisationId, organisationName, rejectedByName, rejectedAPEmail));
     }
 
     [TestMethod]

@@ -36,7 +36,6 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
     }
    
    [TestMethod]
-   [ExpectedException(typeof(ArgumentException))]
    public void SendRemovedUserNotification_WhenInvalidParameters_ItShouldThrowArgumentException()
    {
        _sut = GetServiceUnderTest();
@@ -50,7 +49,7 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
            OrganisationId = "100 125",
             UserId = Guid.NewGuid()
        };
-       _ = _sut.SendRemovedUserNotification(emailInput);
+       Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
    }
    
    [TestMethod]
@@ -82,7 +81,6 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
    }
    
    [TestMethod]
-   [ExpectedException(typeof(ArgumentException))]
    public void SendRemovedUserNotification_WhenInvalidOrganisationId_ItShouldThrowException()
    {
        _sut = GetServiceUnderTest();
@@ -97,12 +95,11 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
            CompanyName = "The Company",
            UserId = Guid.NewGuid()
        };
-       _ = _sut.SendRemovedUserNotification(emailInput);
+       Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
 
    }
    
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInvalidUserId_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -117,12 +114,11 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
             CompanyName = "The Ramones",
             UserId = Guid.Empty
         };
-        _ = _sut.SendRemovedUserNotification(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
 
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInvalidUserEmail_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -137,13 +133,12 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
             CompanyName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendRemovedUserNotification(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
 
     }
 
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInvalidTemplateId_ItShouldThrowException()
     {
        _sut = GetServiceUnderTest();
@@ -158,12 +153,11 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
            CompanyName = "The Ramones",
            UserId = Guid.NewGuid()
        };
-       _ = _sut.SendRemovedUserNotification(emailInput);
+       Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
 
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInvalidNominatorFirstName_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -178,12 +172,11 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
             CompanyName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendRemovedUserNotification(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
 
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInvalidNominatorSurname_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -198,12 +191,11 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
             CompanyName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendRemovedUserNotification(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
 
     }
    
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInvalidCompanyName_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -218,12 +210,11 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
             CompanyName = string.Empty,
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendRemovedUserNotification(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
 
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenInvalidOrganisationId_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -238,12 +229,11 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
             CompanyName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendRemovedUserNotification(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
 
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void SendDelegatedUserNomination_WhenNullemplateId_ItShouldThrowException()
     {
         _sut = GetServiceUnderTest();
@@ -258,6 +248,6 @@ public class MessagingServiceRemovedUserEmailTests : BaseMessagingTest
             CompanyName = "The Ramones",
             UserId = Guid.NewGuid()
         };
-        _ = _sut.SendRemovedUserNotification(emailInput);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendRemovedUserNotification(emailInput));
     }
 }

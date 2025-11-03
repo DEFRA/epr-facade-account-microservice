@@ -33,7 +33,6 @@ public class MessagingServiceReExInvitationConfirmationTests : BaseMessagingTest
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     [DataRow(null, "Adam", "Smith", "adam.smith@test.com", "Test Ltd")]
     [DataRow("", "Adam", "Smith", "adam.smith@test.com", "Test Ltd")]
     [DataRow("   ", "Adam", "Smith", "adam.smith@test.com", "Test Ltd")]
@@ -51,7 +50,7 @@ public class MessagingServiceReExInvitationConfirmationTests : BaseMessagingTest
         _sut = GetServiceUnderTest();
 
         // Act
-        _ = _sut.SendReExInvitationConfirmationToInviter(userId, inviterFirstName, inviterLastName, userEmail, companyName, notificationList);
+        Assert.ThrowsExactly<ArgumentException>(() => _sut.SendReExInvitationConfirmationToInviter(userId, inviterFirstName, inviterLastName, userEmail, companyName, notificationList));
     }
 
     [TestMethod]

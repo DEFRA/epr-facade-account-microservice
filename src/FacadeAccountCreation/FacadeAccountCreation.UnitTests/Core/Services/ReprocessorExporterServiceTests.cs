@@ -53,7 +53,6 @@ public class ReprocessorExporterServiceTests
 	[TestMethod]
 	[DataRow(HttpStatusCode.BadRequest)]
 	[DataRow(HttpStatusCode.Unauthorized)]
-	[ExpectedException(typeof(ProblemResponseException))]
 	public async Task GetOrganisationDetailsByOrgId_FailedStatusCode_ThrowHttpRequestException(HttpStatusCode statusCode)
 	{
 		var organsationId = Guid.NewGuid();
@@ -79,7 +78,7 @@ public class ReprocessorExporterServiceTests
 
 		var sut = new ReprocessorExporterService(httpClient);
 
-		await sut.GetOrganisationDetailsByOrgId(organsationId);
+        await Assert.ThrowsExactlyAsync<ProblemResponseException>(() => sut.GetOrganisationDetailsByOrgId(organsationId));
 	}
 
 	[TestMethod]

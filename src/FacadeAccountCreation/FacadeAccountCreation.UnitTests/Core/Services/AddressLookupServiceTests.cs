@@ -109,7 +109,7 @@ public class AddressLookupServiceTests
         var sut = new AddressLookupService(httpClient);
         
         // Act
-        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => sut.GetAddressLookupResponseAsync(PostcodeQueryStringValue));
+        var exception = await Assert.ThrowsExactlyAsync<HttpRequestException>(() => sut.GetAddressLookupResponseAsync(PostcodeQueryStringValue));
 
         // Assert
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
