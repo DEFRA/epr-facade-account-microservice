@@ -5,6 +5,8 @@ public class RelationshipResponseModel
 {
     public Guid? ParentOrganisationExternalId { get; set; }
 
+    public string ParentOrganisationNumber { get; set; }
+
     public string OrganisationNumber { get; set; }
 
     public string OrganisationName { get; set; }
