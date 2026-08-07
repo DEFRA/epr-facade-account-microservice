@@ -1,4 +1,4 @@
-﻿**/.dockerignore
+**/.dockerignore
 **/.env
 **/.git
 **/.gitignore
@@ -8,7 +8,10 @@
 **/.vs
 **/.vscode
 **/.idea
+**/.claude
 **/*.*proj.user
+**/*.user
+**/*.DotSettings*
 **/*.dbmdl
 **/*.jfm
 **/azds.yaml
@@ -21,5 +24,6 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+**/TestResults
 LICENSE
 README.md

@@ -3,7 +3,7 @@ USER root
 ENV ASPNETCORE_URLS=http://*:8080
 EXPOSE 8080
  
-RUN apk update && apk --no-cache add icu-libs
+RUN apk add --no-cache icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
  
 FROM defradigital/dotnetcore-development:dotnet10.0 AS build
@@ -21,7 +21,6 @@ RUN dotnet restore "FacadeAccountCreation.API/FacadeAccountCreation.API.csproj" 
 COPY FacadeAccountCreation.API/. ./FacadeAccountCreation.API/.
 COPY FacadeAccountCreation.Core/. ./FacadeAccountCreation.Core/.
 WORKDIR "/src/FacadeAccountCreation.API"
-RUN dotnet build "FacadeAccountCreation.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "FacadeAccountCreation.API.csproj" -c Release -o /app/publish
@@ -34,5 +33,4 @@ USER dotnet
  
 WORKDIR /app
 COPY --from=publish /app/publish .
-USER dotnet
 ENTRYPOINT ["dotnet", "FacadeAccountCreation.API.dll"]
