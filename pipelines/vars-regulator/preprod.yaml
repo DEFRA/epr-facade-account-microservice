@@ -1,6 +1,12 @@
 variables:
-  azureSubscription: 'AZR-RWD-PRE1'
-  docker.imageName: 'facadeaccountcreationrepository'
-  acr.azureContainerRegistryName: 'prerwdinfac1401'
-  acr.repositoryName: 'facadeaccountcreationrepository'
-  serviceName: 'prerwdwebwa1413'
+- group: ServiceConnections
+- name: azureSubscription
+  value: $(ServiceConnectionPRE1)
+- name: docker.imageName
+  value: 'facadeaccountcreationrepository'
+- name: acr.azureContainerRegistryName
+  value: 'prerwdinfac1401'
+- name: acr.repositoryName
+  value: 'facadeaccountcreationrepository'
+- name: serviceName
+  value: 'prerwdwebwa1413'
